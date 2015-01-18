@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Trac on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/trac/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Tue, 01 Feb 2011 00:00:00 UTC</updated>
+    
+    <item>
+      <title>EasyTrac, un despliegue automatizado de Trac</title>
+      <link>http://blog.manuelviera.es/blog/easytrac-un-despliegue-automatizado-de-trac/</link>
+      <pubDate>Tue, 01 Feb 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/easytrac-un-despliegue-automatizado-de-trac/</guid>
+      <description>&lt;p&gt;Como ya comenté en posts anteriores, en &lt;a href=&#34;http://www.yaco.es&#34;
+target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt; trabajamos a diario con Trac, todas nuestras
+tareas están en Trac, incluyendo documentación de proyectos, etc; en &lt;a
+href=&#34;http://www.yaco.es&#34; target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt; no eres nadie si no
+creas una wiki ;-)&lt;/p&gt;
+
+&lt;h2&gt;Eso está muy bien, ¿pero qué es easyTrac?&lt;/h2&gt;
+EasyTrac es un instalador basado en &lt;a href=&#34;http://www.buildout.org/&#34;
+target=&#34;_blank&#34;&gt;zc.buildout&lt;/a&gt; que despliega un entorno de Trac de forma
+automatizada incluyendo dependencias necesarias.
+
+Este instalador no solo puede ser utilizado para desarrollo sino que también
+podría utilizarse en un sistema de producción ya que los proyectos de Trac se
+despliegan bajo &lt;a href=&#34;http://wiki.nginx.org/Main&#34; target=&#34;_blank&#34;&gt;Nginx&lt;/a&gt;
+y &lt;a href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt;, con lo
+que tendremos un sistema bastante rápido, estable y liviano en nuestro sistema.
+
+Si es cierto que para poder compilar Nginx y uWSGI, es necesario que se
+encuentren ciertas librerias de desarrollo en el sistema, por lo que deberemos
+tener instalados los siguientes paquetes en nuestro sistema:
+&lt;ul&gt;
+    &lt;li&gt;libpcre3-dev&lt;/li&gt;
+    &lt;li&gt;libssl-dev&lt;/li&gt;
+    &lt;li&gt;libxml2-dev&lt;/li&gt;
+    &lt;li&gt;libxslt-dev&lt;/li&gt;
+    &lt;li&gt;libsqlite3-dev&lt;/li&gt;
+    &lt;li&gt;libzzip-dev&lt;/li&gt;
+    &lt;li&gt;libapr1-dev&lt;/li&gt;
+    &lt;li&gt;libaprutil1-dev&lt;/li&gt;
+    &lt;li&gt;python-dev&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Me parece correcto... ¿pero de dónde me lo descargo?&lt;/h2&gt;
+
+&lt;p&gt;Puedes descargarlo de forma comprimida tanto en formato &lt;a
+href=&#34;http://github.com/mviera/easyTrac/zipball/master&#34;&gt;zip&lt;/a&gt; como en formato
+&lt;a href=&#34;http://github.com/mviera/easyTrac/tarball/master&#34;&gt;tar.gz&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;O si lo prefieres, puedes hacer un clone con Git de mi repositorio en &lt;a
+href=&#34;https://github.com/mviera&#34;&gt;Github&lt;/a&gt; ejecutando lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ git clone git://github.com/mviera/easyTrac
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;Vale, ya lo tengo ¿y ahora cómo lo instalo?&lt;/h2&gt;
+EasyTrac se puede instalar tanto como root como con cualquier usuario sin
+privilegios, ya que la instalación no interferirá para nada en nuestro sistema.
+Personalmente, prefiero instalar con un usuario sin privilegios.
+
+El instalador de easyTrac funciona sin tener que hacer ninguna modificación en
+la configuración, pero si quieres personalizar la configuración, puedes editar
+el fichero &lt;strong&gt;buildout.cfg &lt;/strong&gt;y modificar alguno de los siguientes
+parámetros:
+&lt;ul&gt;
+    &lt;li&gt;&lt;strong&gt;nginx-http-port&lt;/strong&gt;: puerto utilizado por Nginx para escuchar las peticiones vía http.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;nginx-https-port&lt;/strong&gt;: puerto a través del cual Nginx escuchará las peticiones vía https (en caso de que quieras usar https).&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;supervisor-http-port&lt;/strong&gt;: puerto utilizado por Supervisor.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;host&lt;/strong&gt;: IP del host o FQDN (Fully Qualified Domain Name)&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;socket-directory&lt;/strong&gt;: directorio donde se almacenarán los sockets.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;pid-directory&lt;/strong&gt;: directorio donde se alojarán los ficheros pid.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;log-directory&lt;/strong&gt;: directorio de logs.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;trac-projects-directory&lt;/strong&gt;: directorio donde se crearán los proyectos de Trac. Por defecto este directorio es &lt;tt&gt;&amp;lt;installdir&amp;gt;/opt/trac/&lt;/tt&gt;.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;svn-repository-directory&lt;/strong&gt;: directorio donde se crearán los repositorios de código SVN. Por defecto, este directorio es &lt;tt&gt;&amp;lt;installdir&amp;gt;/opt/svn/&lt;/tt&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+Una vez instaladas las anteriores dependencias, y configurados los parámetros de configuración, en caso de que quisieras personalizarlos, podemos seguir con la instalación, así que ejecutaremos lo siguiente:
+
+    $ python bootstrap.py
+
+Con esto prepararemos el entorno y una vez hecho, podremos lanzar la instalación ejecutando lo siguiente:
+
+    $ ./bin/buildout
+
+Comenzará el proceso de compilado de Nginx y uWSGI; y la instalación de los
+módulos de Python necesarios. Además, easyTrac compila Subversion e instala los
+bindings necesarios para que Trac pueda enlazarse con repositorios de código
+SVN.
+
+&lt;h2&gt;He ido a por un café y al volver ya estaba instalado ¿ahora qué hago?&lt;/h2&gt;
+
+&lt;p&gt;EasyTrac incluye la instalación de &lt;a href=&#34;http://supervisord.org/index.html&#34;
+target=&#34;_blank&#34;&gt;Supervisor&lt;/a&gt;. Pero ¿qué es Supervisor? Es un sistema de
+control de procesos que nos va a permitir arrancar, parar y reiniciar cada uno
+de nuestros servicios. En easyTrac tendremos dos servicios:
+&lt;strong&gt;Nginx&lt;/strong&gt; y &lt;strong&gt;uWSGI&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;La sintaxis de uso de Supervisor es la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por lo tanto si quisiéramos iniciar el servicio Nginx, ejecutaríamos lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl start nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En caso de querer pararlo, ejecutaremos:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl stop nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y si quisiéramos reiniciarlo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl restart nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Supervisor incluye una palabra especial llamada &lt;strong&gt;all&lt;/strong&gt; que hace
+referencia a todos los servicios configurados en supervisor. Con ella podremos
+controlar todos los servicios al mismo tiempo. Por ejemplo, si quisiéramos
+reiniciar todos los servicios, ejecutaríamos lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorct restart all
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero esto no es todo, es que además Supervisor, por si fuera poco, incluye una
+interfaz web desde la que podemos controlar nuestros servicios. Podremos
+acceder a ella accediendo a &lt;a href=&#34;http://localhost:9000&#34;&gt;http://localhost:9000&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Por defecto, el usuario es &lt;strong&gt;admin&lt;/strong&gt; y la contraseña es
+&lt;strong&gt;admin.&lt;/strong&gt; (nótese el punto al final de admin). Es posible cambiar
+estos datos editando la parte &lt;code&gt;[supervisor]&lt;/code&gt; en el fichero
+&lt;strong&gt;buildout.cfg&lt;/strong&gt; y volveremos a ejecutar la instrucción
+&lt;code&gt;./bin/buildout&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Ya tenemos nuestro entorno listo y accederemos a él a través de&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://localhost:8080
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;¡Qué bien! ¿y ahora cómo creo un Trac?&lt;/h2&gt;
+
+&lt;p&gt;Tranquilos, la creación de un proyecto Trac es muy sencilla. Utilizaremos el
+binario &lt;strong&gt;trac-admin&lt;/strong&gt; creado por el instalador, y que se
+encuentra en el directorio &lt;code&gt;bin/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Crearemos un proyecto llamado &lt;strong&gt;demo&lt;/strong&gt;, por lo que ejecutaremos lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/trac-admin opt/trac/demo initenv demo sqlite:db/trac.db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y ya que estamos, vamos a crear un repositorio SVN con el mismo nombre. Para ello utilizaremos el binario llamado &lt;strong&gt;svnadmin&lt;/strong&gt; que podremos encontrar también en el directorio &lt;code&gt;bin/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/svnadmin create opt/svn/demo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;Fiuf! ahora solo falta que pudiera hacer backups de mis Tracs&lt;/h2&gt;
+
+&lt;p&gt;Aunque no es una solución feténica, easyTrac cuenta con un comando
+&lt;strong&gt;backup&lt;/strong&gt; con el que podremos comprimir nuestros proyectos y
+guardarlos en otra localización. Para ello, simplemente ejecutaremos la
+siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/backup
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y todos los proyectos Trac serán comprimidos y guardados en un directorio
+llamado &lt;code&gt;backups/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Vale, tengo backups, quiero restaurarlos ¿cómo lo hago?&lt;/h2&gt;
+
+&lt;p&gt;Tan simple como ejecutar lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/restore backups/backup-file.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y todos los tracs serán restaurados automáticamente en el directorio, por
+defecto, &lt;code&gt;opt/trac/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2&gt;No me convence. Quiero desinstalarlo.&lt;/h2&gt;
+
+&lt;p&gt;Solamente es necesario parar todos los servicios:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl shutdown
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y borrar el directorio de instalación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ rm -rf easyTrac
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And that&amp;rsquo;s all folks!!! ;-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

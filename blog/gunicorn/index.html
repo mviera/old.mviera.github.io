@@ -1,0 +1,299 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Gunicorn
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2011-09-01" title="2011-09-01">September 01, 2011</time>
+            </div>
+            <h1 class="title">Gunicorn</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/yaco">#yaco</a>
+              
+              <a href="/tags/python">#python</a>
+              
+            </div>
+        </header>
+
+        <section>
+            <p>Hace no mucho que empecé a escuchar sobre <a title="Gunicorn" href="http://gunicorn.org/" target="_blank">Gunicorn</a>, creo que allá por Marzo cuando <a title="Lorenzo Gil" href="http://www.lorenzogil.com/" target="_blank">Lorenzo Gil</a> se encontraba en la PyCon 2011, pero no me había propuesto probarlo hasta hace unos días. Pero bueno, empecemos por el principio&hellip;</p>
+
+<p><h2>¿Qué es Gunicorn?</h2>
+<a title="Gunicorn" href="http://gunicorn.org/" target="_blank">Gunicorn</a>, también conocido como Green Unicorn (Unicornio Verde), es un servidor WSGI HTTP para Python. Es un pre-fork del proyecto Unicorn de Ruby.
+Gunicorn es compatible con varios web frameworks, soporta WSGI, Django y Paster de forma nativa; consume pocos recursos en ejecución y es bastante rápido.</p>
+
+<p>Como he comentado en el párrafo anterior, soporta nativamente WSGI, Django y Paster; administra los workers de forma automática, permite establecer hooks para hacerlo más extensible, compatible con Python 2.5 o superior.</p>
+
+<p><h2>Instalando Gunicorn</h2>
+Su instalación es realmente sencilla, justo como cualquier otro módulo de Python.</p>
+
+<pre><code>$ pip install gunicorn
+</code></pre>
+
+<p>o si lo preferimos, podemos obtener el código con git e instalarlo como cualquier otra aplicación en Python.</p>
+
+<pre><code>$ git clone git://github.com/benoitc/gunicorn.git
+$ cd gunicorn
+$ python setup.py install
+</code></pre>
+
+<p>Una vez instalado Gunicorn tendremos a nuestra disposición tres comandos con los que servir diferentes web frameworks.</p>
+
+<p><h2>Ejecutando Gunicorn</h2>
+Los comandos disponibles en Gunicorn son:
+<ul>
+    <li><strong>gunicorn</strong>: utilizado para servir aplicaciones WSGI.</li>
+    <li><strong>gunicorn_django</strong>: utilizado para servir aplicaciones Django.</li>
+    <li><strong>gunicorn_paster</strong>: para frameworks compatibles con Paster como Pylons, TurboGears 2, &hellip;</li>
+</ul></p>
+
+<p>En este post me centraré en el comando <strong>gunicorn</strong> pero podeis encontrar más información de cada uno de ellos en <a title="la documentación oficial de Gunicorn" href="http://gunicorn.org/run.html" target="_blank">la documentación oficial de Gunicorn</a>.</p>
+
+<p><h2>Configurando Gunicorn</h2>
+La configuración de Gunicorn también es muy sencilla, básicamente consiste en un fichero Python que tenga permisos de lectura en el sistema de ficheros, excepto que nuestra aplicación haya sido desarrollada utilizando Paster, en este caso haremos uso de un fichero INI.</p>
+
+<p>Su sintaxis de uso es:</p>
+
+<pre><code>$ gunicorn [OPTIONS] APP_MODULE
+</code></pre>
+
+<p>Donde APP_MODULE está compuesto por $(MODULE_NAME):$(VARIABLE_NAME). Un ejemplo de uso sería el siguiente:</p>
+
+<pre><code>$ gunicorn --workers 2 prueba:aplicacion
+</code></pre>
+
+<p>Gunicorn buscará el módulo, es decir, el fichero prueba.py, y el nombre de la variable (aplicacion) debe hacer referencia a una función, normalmente a la función main de nuestra aplicación, que debe encontrarse especificada en el módulo.</p>
+
+<p>El comando <strong>gunicorn</strong> ofrece una extensa lista de opciones para configurar su comportamiento, pero las que he utilizado y que me han parecido más interesantes son:
+<ul>
+    <li><code>&ndash;config FILE</code>: ruta hacia el fichero de configuración.</li>
+    <li><code>&ndash;bind ADDRESS</code>: es posible especificar tanto <code>HOST:PUERTO</code> como la ruta a un socket con <code>unix:RUTA_SOCKET</code>.
+Ejemplo: <code>&ndash;bind unix:///home/mviera/gunicorn/gunicorn.sock</code></li>
+    <li><code>&ndash;workers INT</code>: número de procesos workers que se arrancarán para servir las peticiones.</li>
+    <li><code>&ndash;max-requests INT</code>: número máximo de peticiones que servirá un worker antes de ser reiniciado.</li>
+    <li><code>&ndash;debug</code>: activa el debug en el servidor.</li>
+    <li><code>&ndash;log-file</code>: fichero de log.</li>
+</ul></p>
+
+<p>Un ejemplo de ejecución sería:</p>
+
+<pre><code>$ gunicorn modulo:application --workers 2 \
+--bind unix:///home/mviera/gunicorn/gunicorn.sock \
+--max-requets 1000 --log-file /home/mviera/gunicorn/gunicorn.log
+</code></pre>
+
+<p>Podeis consultar el resto de opciones en <a title="la documentación de configuración de Gunicorn" href="http://gunicorn.org/configure.html" target="_blank">la documentación de configuración de Gunicorn</a>.</p>
+
+<p>Por último y para terminar con el despliegue, una vez que tengamos a Gunicorn sirviendo nuestra aplicación lo correcto sería instalar un servidor web que actúe como proxy HTTP hacia nuestra aplicación, yo como siempre recomiendo utilizar Nginx :-)</p>
+
+<p>Y hasta aquí lo que he aprendido sobre Gunicorn, un breve resumen de la documentación oficial.</p>
+
+<p><h2>Conclusiones</h2>
+Gunicorn me ha sorprendido no solo por su fácil instalación, a diferencia de <a title="uWSGI" href="http://projects.unbit.it/uwsgi/" target="_blank">uWSGI</a> que necesita ser compilado; sino también por su fácil configuración y uso.</p>
+
+<p>Como dije al principio, cuenta con una serie de hooks que permite ejecutar código Python en los diferentes puntos de ejecución: <code>on_start</code>, <code>when_ready</code>, <code>on_reload</code>, <code>pre_fork</code>, <code>post_fork</code>, etc. Esto también me ha gustado mucho, aunque no los he llegado a probar.</p>
+
+<p>La verdad es que Gunicorn me ha dejado con un muy buen sabor de boca aunque no he llegado a probarlo en un entorno real de producción para ver cómo se comporta. De momento seguiré con <a title="uWSGI" href="http://projects.unbit.it/uwsgi/" target="_blank">uWSGI</a> hasta que tenga la ocasión de utilizar Gunicorn ;-)</p>
+
+<p>Un saludo.</p>
+
+<p>PD: En el próximo post explicaré cómo desplegar Trac utilizando Gunicorn!</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Gunicorn [4 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/gunicorn/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

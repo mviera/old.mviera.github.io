@@ -1,0 +1,876 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Yaco on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/yaco/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Sun, 15 Apr 2012 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Autenticando con certificado digital tras un proxy reverso</title>
+      <link>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</link>
+      <pubDate>Sun, 15 Apr 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</guid>
+      <description>&lt;p&gt;Hace ya algún tiempo, trabajando en &lt;a title=&#34;Yaco Sistemas&#34;
+href=&#34;http://www.yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;, me encontré con un contratiempo
+tras desplegar una aplicación web y hoy he decidido compartir con vosotros la
+experiencia. Así que voy a ello.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Escenario&lt;/h2&gt;
+Como apunte inicial, comenzaré diciendo que este post trata la autenticación
+con certificado digital x509 entre Apache y Tomcat y el escenario en el que nos
+movemos sería, a grandes rasgos, como el que muestra la imagen a continuación.&lt;/p&gt;
+
+&lt;p style=&#34;text-align: center;&#34;&gt;&lt;a
+href=&#34;/images/blog/apache-tomcat-escenario.png&#34;&gt;&lt;img class=&#34;size-full
+wp-image-510 aligncenter&#34; title=&#34;apache-tomcat-escenario&#34; src=&#34;/images/blog/apache-tomcat-escenario.png&#34; alt=&#34;Escenario autenticacion Apache Tomcat&#34; width=&#34;513&#34; height=&#34;222&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Bien, empecemos por el principio. Tenemos un usuario el cual ya tiene un
+certificado digital x509 configurado en su navegador con el cual se le permite
+autenticar en una aplicación web que se encuentra desplegada en un servidor
+&lt;strong&gt;Tomcat con el conector AJP debidamente configurado&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Con todo esto, si el usuario lanzara la petición de autenticación directamente
+al servidor Tomcat, éste le pediría un certificado válido al usuario, y tras
+recibirlo y validar que es correcto, realizaría la autenticación sin problemas.&lt;/p&gt;
+
+&lt;p&gt;Pero nuestro escenario no es tan idílico, ya que para poder llegar al servidor
+Tomcat, antes pasaremos por un servidor Apache que actuará como proxy reverso
+(Reverse Proxy) y aquí es donde se complican las cosas, obteniendo el resultado
+que muestra la siguiente imagen.&lt;/p&gt;
+
+&lt;p style=&#34;text-align: center;&#34;&gt;&lt;a
+href=&#34;/images/blog/apache-tomcat-fail-request.png&#34;&gt;&lt;img class=&#34;size-full
+wp-image-516 aligncenter&#34; title=&#34;apache-tomcat-fail-request&#34; src=&#34;/images/blog/apache-tomcat-fail-request.png&#34; alt=&#34;Apache Tomcat autenticacion fallida&#34; width=&#34;513&#34; height=&#34;222&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;El usuario accede a la aplicación intentando autenticar con certificado
+digital, pero no obtiene la respuesta esperada sino un error indicando que no
+se ha ofrecido ningún certificado. ¿Por qué ha pasado esto?&lt;/p&gt;
+
+&lt;p&gt;Lo que ha ocurrido es que la petición del usuario ha llegado al proxy reverso
+(Apache2) y éste inicia una petición similar, &lt;strong&gt;pero nueva&lt;/strong&gt;,
+hacia la aplicación web en Tomcat. Es decir, realiza una petición similar,
+creando una nueva petición, pero &lt;strong&gt;no&lt;/strong&gt; manteniendo la anterior;
+con lo cual, la aplicación web (Tomcat) pide un certificado digital al proxy
+reverso (Apache2), originando un error e imposibilitando la autenticación, pues
+el proxy reverso no tiene configurado ningún certificado.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Solución&lt;/h2&gt;
+Y aquí es donde viene la magia y lo que me salvó de la tragedia aquel día. Se
+trata de una opción especial en SSL
+llamada &lt;strong&gt;+ExportCertData&lt;/strong&gt;. Sí sí, a mi también me
+pareció increíble, pero esta opción lo arregla todo en la comunicación entre
+nuestro usuario y la aplicación final.&lt;/p&gt;
+
+&lt;p&gt;En la configuración HTTPS de nuestro proxy reverso, es decir Apache2, deberemos
+incluir la siguiente opción SSL:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;SSLOptions +ExportCertData
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Un ejemplo de configuración HTTPS para el proxy reverso podría ser la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Listen 443
+NameVirtualHost *:443
+&amp;lt;VirtualHost *:443&amp;gt;
+   ServerName localhost
+
+   ErrorLog /var/log/apache2/https-error.log
+   CustomLog /var/log/apache2/https-access.log combined
+
+   SSLEngine On
+   SSLCertificateFile    /etc/apache2/ssl/server.crt
+   SSLCertificateKeyFile /etc/apache2/ssl/server.key
+
+   SSLCACertificateFile /etc/apache2/ssl/client-accepted-ca-chain.crt
+   SSLVerifyClient require
+   SSLVerifyDepth 2
+
+   SSLOptions +ExportCertData
+
+   &amp;lt;Proxy *&amp;gt;
+     AddDefaultCharset Off
+     Order deny,allow
+     Allow from all
+   &amp;lt;/Proxy&amp;gt;
+
+   ProxyPass / ajp://tomcat:8009/
+   ProxyPassReverse / ajp://tomcat:8009/
+
+&amp;lt;/VirtualHost&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Bien! Ya tenemos el proxy reverso configurado correctamente! Rápidamente
+comprobamos que la sintaxis sea correcta y reiniciamos el servicio para que los
+cambios se hagan al fin efectivos.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# apachectl -t
+Syntax OK
+# apachectl graceful
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Comprobando el resultado&lt;/h2&gt;
+Hecho todo esto, ahora la autenticación debería realizarse sin problemas. El
+esquema de la comunicación entre el usuario y la aplicación final sería algo
+como lo que muestra la imagen que sigue:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;/images/blog/apache-tomcat-cert-ok.png&#34;&gt;&lt;img src=&#34;/images/blog/apache-tomcat-cert-ok.png&#34; alt=&#34;Apache Tomcat autenticación correcta&#34; title=&#34;apache-tomcat-cert-ok&#34; width=&#34;513&#34; height=&#34;222&#34; class=&#34;aligncenter size-full wp-image-521&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;El usuario inicia la petición de autenticación a la aplicación web haciendo uso
+de su navegador. La petición viaja a través del proxy reverso (Apache2) que
+ahora, al contar con la opción especial &lt;strong&gt;+ExportCertData&lt;/strong&gt;, éste
+no inicia una nueva petición, sino que &amp;ldquo;retransmite&amp;rdquo; la petición iniciada por
+el usuario y los datos del certificado, haciendo posible la autenticación.&lt;/p&gt;
+
+&lt;p&gt;Pues esto es todo. Espero que a alguien le sirva de ayuda en caso de tener el
+mismo problema, a mi &lt;strong&gt;+ExportCertData&lt;/strong&gt; &amp;ldquo;me salvó el día&amp;rdquo; :-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Actualizando CentOS a una release concreta</title>
+      <link>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</link>
+      <pubDate>Tue, 06 Mar 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</guid>
+      <description>&lt;p&gt;Ya hacía bastante tiempo que no paraba por aquí para escribir un artículo, así
+que hoy me voy a tomar mi tiempo y voy a escribir acerca de CentOS.&lt;/p&gt;
+
+&lt;p&gt;¿Y por qué sobre CentOS? Pues resulta que hoy trabajando en &lt;a title=&#34;Yaco
+Sistemas&#34; href=&#34;http://www.yaco.es&#34; target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt;, mi
+compañero &lt;a title=&#34;@sepu66&#34; href=&#34;http://twitter.com/sepu66&#34;
+target=&#34;_blank&#34;&gt;@sepu66&lt;/a&gt; necesitaba varias máquinas virtuales con CentOS
+5.6, aunque la template de la que disponía era de CentOS 5.5.&lt;/p&gt;
+
+&lt;p&gt;Fácil, pensé, creo la máquina virtual con CentOS 5.5 y actualizo la
+distribución con &lt;code&gt;yum update&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y claro, pasados unos minutos actualizando paquetes, compruebo la release de la
+distribución y, para mi sorpresa, observo que se ha actualizado a la última
+release de CentOS 5, es decir, a CentOS 5.7:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
+
+CentOS release 5.7 (Final)
+Kernel \r on an \m
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;FAIL!, pensé (últimamente pienso mucho). Esto ya lo había yo solucionado antes,
+pero no lo recordaba bien. Es una de esas tareas que haces una vez en muchos
+meses y que al final terminas olvidando, así que por eso he decidido hacer un
+volcado de conocimiento en este artículo :-)&lt;/p&gt;
+
+&lt;p&gt;Tras un rato buscando alguna solución en internet, sin éxito por cierto, ya que
+todos los artículos que encontraba eran acerca de &amp;ldquo;Cómo actualizar CentOS de
+5.4 a 5.5&amp;rdquo; o &amp;ldquo;Cómo actualizar CentOS de 5.5 a 5.6&amp;rdquo;, en resumen, todos los
+artículos que encontraba eran actualizaciones a la release inmediatamente
+superior, así que se resumían en ejecutar &lt;code&gt;yum update&lt;/code&gt; y listo&amp;hellip;
+Pero mi idea era decidir yo a qué release concreta a actualizar.&lt;/p&gt;
+
+&lt;p&gt;Para solucionar este tema, volví a regenerar la máquina virtual con CentOS 5.5 y empecé a modificar la configuración de los repositorios.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Configurando los repositorios&lt;/h2&gt;
+En CentOS normalmente los repositorios se encuentran configurados en ficheros
+que terminan en &lt;code&gt;.repo&lt;/code&gt; en el directorio
+&lt;code&gt;/etc/yum.repos.d/&lt;/code&gt;. En mi caso los repositorios configurados por
+defecto se encuentran en el fichero
+&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, así que lo primero que hice fue
+editar dicho fichero y deshabilitar los repositorios por defecto, añadiendo la
+siguiente linea en cada parte de configuración de cada repositorio:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;enabled=0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Dicha linea indica a &lt;code&gt;yum&lt;/code&gt; que el repositorio en cuestión se
+encuentra deshabilitado y no queremos que se utilice. Otra forma de
+deshabilitar los repositorios por defecto sería eliminando el fichero
+&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, pero no me parece un solución
+muy elegante.&lt;/p&gt;
+
+&lt;p&gt;Hecho esto, creé un nuevo fichero llamado
+&lt;code&gt;/etc/yum.repos.d/CentOS-Vault.repo&lt;/code&gt; en el que añadí lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#---- Packages previously released as 5.6, and its updates
+[C5.6-base]
+name=CentOS-5.6 - Base
+baseurl=http://vault.centos.org/5.6/os/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+
+[C5.6-updates]
+name=CentOS-5.6 - Updates
+baseurl=http://vault.centos.org/5.6/updates/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+
+[C5.6-extras]
+name=CentOS-5.6 - Extras
+baseurl=http://vault.centos.org/5.6/extras/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¿Dónde está el truco? El secreto se encuentra en el dominio utilizado en la
+URL, &lt;code&gt;vault.centos.org&lt;/code&gt; que se trata de un sitio perteneciente a
+CentOS donde se pueden encontrar los paquetes de releases antiguas de CentOS.
+Destacar como segundo truco que he fijado la versión de la release a 5.6 en la
+URL, por tanto esta distribución no pasará a una release posterior.&lt;/p&gt;
+
+&lt;p&gt;Importante también marcar los repositorios como activos especificando:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;enabled=1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Listando los repositorios disponibles&lt;/h2&gt;
+Una vez configurado los repositorios a utilizar, podemos listarlos ejecutando
+&lt;code&gt;yum repolist&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# yum repolist
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+repo id                                                                     repo name
+C5.6-base                                                                   CentOS-5.6 - Base
+C5.6-centosplus                                                             CentOS-5.6 - Plus
+C5.6-extras                                                                 CentOS-5.6 - Extras
+C5.6-updates                                                                CentOS-5.6 - Updates
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Actualizando la distribución&lt;/h2&gt;
+Hecho esto, ya sólo nos queda forzar la actualización del sistema completo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y pasados unos minutos actualizando los paquetes del sistema, deberíamos tener
+nuestra distribución en la versión deseada, en mi caso, CentOS 5.6:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
+CentOS release 5.6 (Final)
+Kernel \r on an \m
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Espero que os sea de utilidad, a mi seguro que no se me vuelve a olvidar :-D
+Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Desplegando Trac con Gunicorn</title>
+      <link>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</link>
+      <pubDate>Fri, 02 Sep 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</guid>
+      <description>&lt;p&gt;En &lt;a title=&#34;mi anterior post&#34;
+href=&#34;/blog/gunicorn/&#34; target=&#34;_blank&#34;&gt;mi anterior
+post&lt;/a&gt; hablé sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org&#34;
+target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, un servidor HTTP WSGI para Python, y terminé
+diciendo que en el próximo articulo iba a explicar cómo desplegar Trac con
+Gunicorn y como lo prometido es deuda, vamos a ello&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Preparando el entorno&lt;/h2&gt;
+Antes de nada, vamos a crear un directorio de
+trabajo, donde se alojará todo. Se me ocurre llamarlo
+&lt;code&gt;testing-gunicorn&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkdir testing-gunicorn
+$ cd testing-gunicorn
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Antes de comenzar a instalar Trac y Gunicorn, vamos a crear un virtualenv en el
+directorio &lt;code&gt;testing-gunicorn&lt;/code&gt;, dentro del cual instalaremos todos
+los modulos de Python necesarios:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ virtualenv --no-site-packages --distribute .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y activamos el virtualenv:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ source bin/activate
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Instalando Trac y Gunicorn&lt;/h2&gt;
+La instalación es realmente sencilla. Al igual que para instalar cualquier otro
+módulo de Python, utilizaremos &lt;code&gt;easy_install&lt;/code&gt; o &lt;code&gt;pip&lt;/code&gt;. Yo
+opto por utilizar &lt;code&gt;pip&lt;/code&gt;, así que ejecutamos las siguientes
+instrucciones:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pip install Trac
+$ pip install gunicorn
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez hecho esto, deberemos tener instalado Trac y Gunicorn dentro de nuestro
+virtualenv, el mismo que tenemos activado.&lt;/p&gt;
+
+&lt;p&gt;Para comprobar que la instalación se ha realizado correctamente, abriremos una
+shell de Python e importaremos los dos módulos instalados:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ python
+Python 2.7.1+ (r271:86832, Apr 11 2011, 18:13:53) 
+[GCC 4.5.2] on linux2
+Type &amp;quot;help&amp;quot;, &amp;quot;copyright&amp;quot;, &amp;quot;credits&amp;quot; or &amp;quot;license&amp;quot; for more information.
+&amp;gt;&amp;gt;&amp;gt; 
+&amp;gt;&amp;gt;&amp;gt; import trac
+&amp;gt;&amp;gt;&amp;gt; import gunicorn
+&amp;gt;&amp;gt;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esto quiere decir que la instalación se ha realizado correctamente. En caso
+contrario, obtendriamos un error al intentar importar el módulo, y se mostraría
+un error como el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt; import trac
+Traceback (most recent call last):
+  File &amp;quot;&amp;quot;, line 1, in 
+ImportError: No module named trac&amp;lt;/pre&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero no es nuestro caso, asi que sigamos adelante :-)&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Creando un Trac de ejemplo&lt;/h2&gt; Tenemos Trac instalado, así que el
+siguiente paso será crear una instancia de Trac.&lt;/p&gt;
+
+&lt;p&gt;Crearemos un directorio llamado &amp;lsquo;projects&amp;rsquo; donde crearemos nuestras instancias
+de Trac:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkdir projects
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y finalmente crearemos la instancia de Trac llamada demo, haciendo uso de la
+utilidad &lt;code&gt;trac-admin&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ trac-admin projects/demo initenv demo sqlite:db/trac.db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A modo de resumen, le hemos especificado a trac-admin que cree una instancia de
+Trac en el directorio &lt;code&gt;projects/demo&lt;/code&gt; con la opción
+&lt;code&gt;initenv&lt;/code&gt;, cuyo nombre es &amp;ldquo;demo&amp;rdquo; y siendo la base de datos de tipo
+sqlite, que se encontrará en &lt;code&gt;db/trac.db&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Hecho esto, tendremos nuestra instancia de Trac creada con una estructura como la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;projects/
+└── demo
+    ├── attachments
+    ├── conf
+    │   ├── trac.ini
+    │   └── trac.ini.sample
+    ├── db
+    │   └── trac.db
+    ├── htdocs
+    ├── log
+    ├── plugins
+    ├── README
+    ├── templates
+    │   └── site.html.sample
+    └── VERSION
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Configurando Gunicorn&lt;/h2&gt; Como comenté en &lt;a title=&#34;el anterior post&#34;
+href=&#34;http://blog.manuelviera.es/2011/09/gunicorn/&#34; target=&#34;_blank&#34;&gt;el anterior
+post&lt;/a&gt;, la configuración de Gunicorn la realizaremos creando un fichero
+Python.&lt;/p&gt;
+
+&lt;p&gt;Nuestro fichero de configuración se llamará &lt;code&gt;trac_launcher.py&lt;/code&gt; y su
+contenido debe ser el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#!/usr/bin/env python                                                                          
+import sys                                                                                     
+import os
+import trac.web.main
+
+sys.stdout = sys.stderr                                                                        
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+os.environ[&#39;TRAC_ENV_PARENT_DIR&#39;] = os.path.join(PROJECT_ROOT,&#39;projects&#39;)
+os.environ[&#39;PYTHON_EGG_CACHE&#39;] = os.path.join(PROJECT_ROOT, &#39;.egg-cache&#39;)
+application = trac.web.main.dispatch_request
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Básicamente el fichero de configuración está compuesto por:
+&lt;ol&gt;
+    &lt;li&gt;Importaciones de los módulos &lt;code&gt;sys&lt;/code&gt;, &lt;code&gt;os&lt;/code&gt; y &lt;code&gt;trac.web.main&lt;/code&gt;.&lt;/li&gt;
+    &lt;li&gt;Creación de dos variables de entorno:
+&lt;ul&gt;
+    &lt;li&gt;&lt;code&gt;TRAC_ENV_PARENT_DIR&lt;/code&gt;: directorio donde se alojan las instancias de Trac.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;PYTHON_EGG_CACHE&lt;/code&gt;: directorio de caché de los huevos de Python.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+    &lt;li&gt;Instancia de la funcion &lt;code&gt;trac.web.main.dispatch_request&lt;/code&gt; en la variable &lt;code&gt;application&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;&lt;/p&gt;
+
+&lt;p&gt;Antes de seguir hagamos un breve repaso:
+&lt;ul&gt;
+    &lt;li&gt;Nos encontramos en el directorio &lt;code&gt;testing-gunicorn&lt;/code&gt;.&lt;/li&gt;
+    &lt;li&gt;Tenemos nuestra instancia de Trac en &lt;code&gt;projects/demo&lt;/code&gt;.&lt;/li&gt;
+    &lt;li&gt;Hemos creado en el directorio actual el fichero de configuración para Gunicorn, llamado &lt;code&gt;trac_launcher.py&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;El siguiente paso será ejecutar Gunicorn!&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Ejecutando Gunicorn&lt;/h2&gt;
+Tan fácil como ejecutar la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn trac_launcher:application
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Guay! Ya deberíamos tener nuestro proyecto Trac accesible en
+&lt;a href=&#34;http://localhost:8000&#34;&gt;http://localhost:8000&lt;/a&gt; :-D&lt;/p&gt;
+
+&lt;p&gt;Por defecto Gunicorn arranca un solo worker, pero podemos indicarle que
+arranque más de uno, un número máximo de peticiones por worker y un fichero de
+log, por ejemplo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn trac_launcher:application \
+--workers 2 \
+--worker-connections 100 \
+--log-file gunicorn.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como hemos podido observar, Gunicorn abre por defecto el puerto 8000 en nuestro
+sistema, pero si por el contrario la comunicación la queremos hacer a través de
+un socket, deberemos indicarle la opción &lt;code&gt;&amp;ndash;bind
+unix:///home/mviera/testing-gunicorn/gunicorn.sock&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Por último y para terminar el despliegue, deberíamos instalar un servidor web
+que actuara de proxy, ya sea hacia &lt;code&gt;HOST:PUERTO&lt;/code&gt; o hacia el fichero
+de socket.&lt;/p&gt;
+
+&lt;p&gt;Y eso esto todo amig@s! Espero que os haya gustado y gracias por leerme!&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Gunicorn</title>
+      <link>http://blog.manuelviera.es/blog/gunicorn/</link>
+      <pubDate>Thu, 01 Sep 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/gunicorn/</guid>
+      <description>&lt;p&gt;Hace no mucho que empecé a escuchar sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, creo que allá por Marzo cuando &lt;a title=&#34;Lorenzo Gil&#34; href=&#34;http://www.lorenzogil.com/&#34; target=&#34;_blank&#34;&gt;Lorenzo Gil&lt;/a&gt; se encontraba en la PyCon 2011, pero no me había propuesto probarlo hasta hace unos días. Pero bueno, empecemos por el principio&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Qué es Gunicorn?&lt;/h2&gt;
+&lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, también conocido como Green Unicorn (Unicornio Verde), es un servidor WSGI HTTP para Python. Es un pre-fork del proyecto Unicorn de Ruby.
+Gunicorn es compatible con varios web frameworks, soporta WSGI, Django y Paster de forma nativa; consume pocos recursos en ejecución y es bastante rápido.&lt;/p&gt;
+
+&lt;p&gt;Como he comentado en el párrafo anterior, soporta nativamente WSGI, Django y Paster; administra los workers de forma automática, permite establecer hooks para hacerlo más extensible, compatible con Python 2.5 o superior.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Instalando Gunicorn&lt;/h2&gt;
+Su instalación es realmente sencilla, justo como cualquier otro módulo de Python.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pip install gunicorn
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;o si lo preferimos, podemos obtener el código con git e instalarlo como cualquier otra aplicación en Python.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ git clone git://github.com/benoitc/gunicorn.git
+$ cd gunicorn
+$ python setup.py install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez instalado Gunicorn tendremos a nuestra disposición tres comandos con los que servir diferentes web frameworks.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Ejecutando Gunicorn&lt;/h2&gt;
+Los comandos disponibles en Gunicorn son:
+&lt;ul&gt;
+    &lt;li&gt;&lt;strong&gt;gunicorn&lt;/strong&gt;: utilizado para servir aplicaciones WSGI.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;gunicorn_django&lt;/strong&gt;: utilizado para servir aplicaciones Django.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;gunicorn_paster&lt;/strong&gt;: para frameworks compatibles con Paster como Pylons, TurboGears 2, &amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;En este post me centraré en el comando &lt;strong&gt;gunicorn&lt;/strong&gt; pero podeis encontrar más información de cada uno de ellos en &lt;a title=&#34;la documentación oficial de Gunicorn&#34; href=&#34;http://gunicorn.org/run.html&#34; target=&#34;_blank&#34;&gt;la documentación oficial de Gunicorn&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Configurando Gunicorn&lt;/h2&gt;
+La configuración de Gunicorn también es muy sencilla, básicamente consiste en un fichero Python que tenga permisos de lectura en el sistema de ficheros, excepto que nuestra aplicación haya sido desarrollada utilizando Paster, en este caso haremos uso de un fichero INI.&lt;/p&gt;
+
+&lt;p&gt;Su sintaxis de uso es:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn [OPTIONS] APP_MODULE
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Donde APP_MODULE está compuesto por $(MODULE_NAME):$(VARIABLE_NAME). Un ejemplo de uso sería el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn --workers 2 prueba:aplicacion
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Gunicorn buscará el módulo, es decir, el fichero prueba.py, y el nombre de la variable (aplicacion) debe hacer referencia a una función, normalmente a la función main de nuestra aplicación, que debe encontrarse especificada en el módulo.&lt;/p&gt;
+
+&lt;p&gt;El comando &lt;strong&gt;gunicorn&lt;/strong&gt; ofrece una extensa lista de opciones para configurar su comportamiento, pero las que he utilizado y que me han parecido más interesantes son:
+&lt;ul&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;config FILE&lt;/code&gt;: ruta hacia el fichero de configuración.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;bind ADDRESS&lt;/code&gt;: es posible especificar tanto &lt;code&gt;HOST:PUERTO&lt;/code&gt; como la ruta a un socket con &lt;code&gt;unix:RUTA_SOCKET&lt;/code&gt;.
+Ejemplo: &lt;code&gt;&amp;ndash;bind unix:///home/mviera/gunicorn/gunicorn.sock&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;workers INT&lt;/code&gt;: número de procesos workers que se arrancarán para servir las peticiones.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;max-requests INT&lt;/code&gt;: número máximo de peticiones que servirá un worker antes de ser reiniciado.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;debug&lt;/code&gt;: activa el debug en el servidor.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;log-file&lt;/code&gt;: fichero de log.&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;Un ejemplo de ejecución sería:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn modulo:application --workers 2 \
+--bind unix:///home/mviera/gunicorn/gunicorn.sock \
+--max-requets 1000 --log-file /home/mviera/gunicorn/gunicorn.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podeis consultar el resto de opciones en &lt;a title=&#34;la documentación de configuración de Gunicorn&#34; href=&#34;http://gunicorn.org/configure.html&#34; target=&#34;_blank&#34;&gt;la documentación de configuración de Gunicorn&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Por último y para terminar con el despliegue, una vez que tengamos a Gunicorn sirviendo nuestra aplicación lo correcto sería instalar un servidor web que actúe como proxy HTTP hacia nuestra aplicación, yo como siempre recomiendo utilizar Nginx :-)&lt;/p&gt;
+
+&lt;p&gt;Y hasta aquí lo que he aprendido sobre Gunicorn, un breve resumen de la documentación oficial.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Conclusiones&lt;/h2&gt;
+Gunicorn me ha sorprendido no solo por su fácil instalación, a diferencia de &lt;a title=&#34;uWSGI&#34; href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt; que necesita ser compilado; sino también por su fácil configuración y uso.&lt;/p&gt;
+
+&lt;p&gt;Como dije al principio, cuenta con una serie de hooks que permite ejecutar código Python en los diferentes puntos de ejecución: &lt;code&gt;on_start&lt;/code&gt;, &lt;code&gt;when_ready&lt;/code&gt;, &lt;code&gt;on_reload&lt;/code&gt;, &lt;code&gt;pre_fork&lt;/code&gt;, &lt;code&gt;post_fork&lt;/code&gt;, etc. Esto también me ha gustado mucho, aunque no los he llegado a probar.&lt;/p&gt;
+
+&lt;p&gt;La verdad es que Gunicorn me ha dejado con un muy buen sabor de boca aunque no he llegado a probarlo en un entorno real de producción para ver cómo se comporta. De momento seguiré con &lt;a title=&#34;uWSGI&#34; href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt; hasta que tenga la ocasión de utilizar Gunicorn ;-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+
+&lt;p&gt;PD: En el próximo post explicaré cómo desplegar Trac utilizando Gunicorn!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Automatizando con Tox</title>
+      <link>http://blog.manuelviera.es/blog/automatizando-con-tox/</link>
+      <pubDate>Tue, 23 Aug 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/automatizando-con-tox/</guid>
+      <description>&lt;p&gt;Hace unos días me encontré con &lt;a title=&#34;Tox&#34; href=&#34;https://bitbucket.org/hpk42/tox&#34;&gt;Tox&lt;/a&gt; y realmente me llamó la atención, pero&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Qué es Tox?&lt;/h2&gt;
+Tox es un gestor de virtualenvs y una herramienta para realizar tests en linea de comandos. Según su documentación se puede utilizar para:
+&lt;ul&gt;
+    &lt;li&gt;Probar que tu paquete se instala correctamente con diferentes versiones de Python.&lt;/li&gt;
+    &lt;li&gt;Ejecutar los tests de tu proyecto en cada uno de los entornos.&lt;/li&gt;
+    &lt;li&gt;Integración Continua (CI = Continuous Integration).&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;No me ha quedado claro, ¿Cual es el objetivo?&lt;/h2&gt;
+El objetivo de &lt;code&gt;tox&lt;/code&gt; es automatizar el arte de empaquetado, testeo e instalación de software Python ya sea desde tu consola o desde tu servidor de CI (Integración Continua).&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Lo quiero probar, ¿cómo lo instalo?&lt;/h2&gt;
+Es muy fácil, solamente se necesita ejecutar la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pip install tox
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Instalado, pero ¿cómo hago una primera prueba?&lt;/h2&gt;
+Se necesita crear un fichero llamado &lt;code&gt;tox.ini&lt;/code&gt; que debe estar en el mismo directorio que&lt;code&gt;setup.py&lt;/code&gt; cuyo contenido puede ser algo como:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[tox]
+envlist = py26,py27
+[testenv]
+deps =
+    unittest2
+    pytest
+commands=python bin/test
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Y ahora qué hago?&lt;/h2&gt;
+Una vez creado el fichero &lt;code&gt;tox.ini&lt;/code&gt; solamente será necesario ejecutar:&lt;/p&gt;
+
+&lt;p&gt;tox&lt;/p&gt;
+
+&lt;p&gt;Será entonces cuando &lt;code&gt;tox&lt;/code&gt; comienze a:
+&lt;ol&gt;
+    &lt;li&gt;empaquetar las fuentes del proyecto en un fichero zip&lt;/li&gt;
+    &lt;li&gt;creará un virtualenv por cada uno de los interpretes especificados, en este caso un virtualenv para Python-2.6 y otro para Python-2.7, cuyos nombres serán py26 y py27 respectivamente.&lt;/li&gt;
+    &lt;li&gt;instalará las dependencias especificadas (en este caso de ejemplo,&lt;code&gt;unittest2&lt;/code&gt; y &lt;code&gt;pytest&lt;/code&gt;).&lt;/li&gt;
+    &lt;li&gt;por último se ejecutarán los comandos especificados, en nuestro ejemplo solamente uno, &lt;code&gt;python bin/test&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;strong&gt;Importante:&lt;/strong&gt; los intérpretes de Python deben estar previamente instalados en el sistema.&lt;code&gt;tox&lt;/code&gt; no instala ningún intérprete de Python y en caso de no encontrar alguno de los especificados, informará de ello mostrando un error en linea de comandos.&lt;/p&gt;
+
+&lt;p&gt;Si ejecutamos &lt;code&gt;tox&lt;/code&gt; por segunda vez podremos comprobar que la ejecución durará mucho menos puesto que no necesita resolver de nuevo las dependencias.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Y si sólo quiero ejecutar los tests en uno de los intérpretes?&lt;/h2&gt;
+Bastaría con ejecutar la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;tox -e py27
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Dónde se almacena el resultado de la ejecución de tox?&lt;/h2&gt;
+&lt;code&gt;tox&lt;/code&gt; crea un directorio oculto llamado &lt;code&gt;.tox&lt;/code&gt; que tiene la siguiente estructura:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;.tox
+├── dist
+├── _download
+├── log
+└── py27
+    ├── bin
+    ├── include
+    ├── lib
+    └── log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;dist: directorio donde se almacenan las fuentes del proyecto comprimidas en formato zip.&lt;/li&gt;
+    &lt;li&gt;_download: directorio de descarga de todas las dependencias de Python.&lt;/li&gt;
+    &lt;li&gt;log: directorio donde se almacenan los ficheros de log de la ejecución.&lt;/li&gt;
+    &lt;li&gt;py27: directorio del virtualenv creado para instalar el proyecto utilizando python2.7.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&amp;hellip; y eso es todo amig@s! Podéis aprender más acerca de &lt;code&gt;tox&lt;/code&gt; consultando la documentación oficial en &lt;a href=&#34;http://tox.readthedocs.org/&#34;&gt;http://tox.readthedocs.org&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Cambiar contraseñas en OS X sin un CD de OS X</title>
+      <link>http://blog.manuelviera.es/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</link>
+      <pubDate>Sun, 21 Aug 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</guid>
+      <description>&lt;p&gt;Hace no mucho una amiga que tiene un Macbook me comentó que por alguna extraña
+razón no podía acceder a su cuenta de usuario. Ella aseguraba no haber cambiado
+la contraseña y que la que estaba introduciendo era la contraseña correcta. Y
+sí, el teclado respondía al layout en español, y el bloqueo de mayúsculas no
+estaba activado. Me comentaba que tenía material gráfico de mucha importancia y
+que no se podía perder, vamos, lo de siempre :-D. Solo existía su usuario en el
+sistema, y por lo tanto el único usuario administrador.&lt;/p&gt;
+
+&lt;p&gt;Fue entonces cuando busqué un poco por internet, y los pasos a seguir son los
+siguientes:
+&lt;ol&gt;
+    &lt;li&gt;Reiniciar el sistema.&lt;/li&gt;
+  &lt;li&gt;Mantener pulsado la tecla Command en Apple (⌘) + s antes de escuchar el
+  sonido inicial de arranque.&lt;/li&gt;
+  &lt;li&gt;Deberá aparecer una shell en la que
+  tendremos privilegios de root y desde la cual ejecutaremos las siguientes
+  instrucciones:&lt;/li&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# mount -uw /
+# rm /var/db/.AppleSetupDone
+# shutdown -h now
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;li&gt;Después del reinicio del sistema aparecerá de nuevo el video de
+  bienvenida y la posibilidad de crear un nuevo usuario administrador tal y
+  como cuando sacamos nuestro Mac de la caja por primera vez.&lt;/li&gt;
+  &lt;li&gt;Creado el nuevo usuario administrador y habiendo hecho login con él
+  podremos acceder a las &lt;strong&gt;Preferencias del Sistema&lt;/strong&gt; &amp;gt;
+  &lt;strong&gt;Cuentas&lt;/strong&gt; y cambiar la contraseña del anterior usuario
+  administrador.&lt;/li&gt;
+&lt;/ol&gt;&lt;/p&gt;
+
+&lt;p&gt;Parece ser que tras completar los primeros pasos en OS X, se crea el fichero
+&lt;code&gt;/var/db/.AppleSetupDone&lt;/code&gt; en el sistema. Es un fichero vacío, no
+contiene ninguna configuración, así que imagino que durante el arranque se
+comprueba si existe este fichero, y si existe es que el sistema ya ha sido
+configurado, si no, se muestra la bienvenida a OS X.&lt;/p&gt;
+
+&lt;p&gt;Espero que os sea útil, y tened cuidado con el lado oscuro ;-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>EasyTrac, un despliegue automatizado de Trac</title>
+      <link>http://blog.manuelviera.es/blog/easytrac-un-despliegue-automatizado-de-trac/</link>
+      <pubDate>Tue, 01 Feb 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/easytrac-un-despliegue-automatizado-de-trac/</guid>
+      <description>&lt;p&gt;Como ya comenté en posts anteriores, en &lt;a href=&#34;http://www.yaco.es&#34;
+target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt; trabajamos a diario con Trac, todas nuestras
+tareas están en Trac, incluyendo documentación de proyectos, etc; en &lt;a
+href=&#34;http://www.yaco.es&#34; target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt; no eres nadie si no
+creas una wiki ;-)&lt;/p&gt;
+
+&lt;h2&gt;Eso está muy bien, ¿pero qué es easyTrac?&lt;/h2&gt;
+EasyTrac es un instalador basado en &lt;a href=&#34;http://www.buildout.org/&#34;
+target=&#34;_blank&#34;&gt;zc.buildout&lt;/a&gt; que despliega un entorno de Trac de forma
+automatizada incluyendo dependencias necesarias.
+
+Este instalador no solo puede ser utilizado para desarrollo sino que también
+podría utilizarse en un sistema de producción ya que los proyectos de Trac se
+despliegan bajo &lt;a href=&#34;http://wiki.nginx.org/Main&#34; target=&#34;_blank&#34;&gt;Nginx&lt;/a&gt;
+y &lt;a href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt;, con lo
+que tendremos un sistema bastante rápido, estable y liviano en nuestro sistema.
+
+Si es cierto que para poder compilar Nginx y uWSGI, es necesario que se
+encuentren ciertas librerias de desarrollo en el sistema, por lo que deberemos
+tener instalados los siguientes paquetes en nuestro sistema:
+&lt;ul&gt;
+    &lt;li&gt;libpcre3-dev&lt;/li&gt;
+    &lt;li&gt;libssl-dev&lt;/li&gt;
+    &lt;li&gt;libxml2-dev&lt;/li&gt;
+    &lt;li&gt;libxslt-dev&lt;/li&gt;
+    &lt;li&gt;libsqlite3-dev&lt;/li&gt;
+    &lt;li&gt;libzzip-dev&lt;/li&gt;
+    &lt;li&gt;libapr1-dev&lt;/li&gt;
+    &lt;li&gt;libaprutil1-dev&lt;/li&gt;
+    &lt;li&gt;python-dev&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Me parece correcto... ¿pero de dónde me lo descargo?&lt;/h2&gt;
+
+&lt;p&gt;Puedes descargarlo de forma comprimida tanto en formato &lt;a
+href=&#34;http://github.com/mviera/easyTrac/zipball/master&#34;&gt;zip&lt;/a&gt; como en formato
+&lt;a href=&#34;http://github.com/mviera/easyTrac/tarball/master&#34;&gt;tar.gz&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;O si lo prefieres, puedes hacer un clone con Git de mi repositorio en &lt;a
+href=&#34;https://github.com/mviera&#34;&gt;Github&lt;/a&gt; ejecutando lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ git clone git://github.com/mviera/easyTrac
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;Vale, ya lo tengo ¿y ahora cómo lo instalo?&lt;/h2&gt;
+EasyTrac se puede instalar tanto como root como con cualquier usuario sin
+privilegios, ya que la instalación no interferirá para nada en nuestro sistema.
+Personalmente, prefiero instalar con un usuario sin privilegios.
+
+El instalador de easyTrac funciona sin tener que hacer ninguna modificación en
+la configuración, pero si quieres personalizar la configuración, puedes editar
+el fichero &lt;strong&gt;buildout.cfg &lt;/strong&gt;y modificar alguno de los siguientes
+parámetros:
+&lt;ul&gt;
+    &lt;li&gt;&lt;strong&gt;nginx-http-port&lt;/strong&gt;: puerto utilizado por Nginx para escuchar las peticiones vía http.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;nginx-https-port&lt;/strong&gt;: puerto a través del cual Nginx escuchará las peticiones vía https (en caso de que quieras usar https).&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;supervisor-http-port&lt;/strong&gt;: puerto utilizado por Supervisor.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;host&lt;/strong&gt;: IP del host o FQDN (Fully Qualified Domain Name)&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;socket-directory&lt;/strong&gt;: directorio donde se almacenarán los sockets.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;pid-directory&lt;/strong&gt;: directorio donde se alojarán los ficheros pid.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;log-directory&lt;/strong&gt;: directorio de logs.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;trac-projects-directory&lt;/strong&gt;: directorio donde se crearán los proyectos de Trac. Por defecto este directorio es &lt;tt&gt;&amp;lt;installdir&amp;gt;/opt/trac/&lt;/tt&gt;.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;svn-repository-directory&lt;/strong&gt;: directorio donde se crearán los repositorios de código SVN. Por defecto, este directorio es &lt;tt&gt;&amp;lt;installdir&amp;gt;/opt/svn/&lt;/tt&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+Una vez instaladas las anteriores dependencias, y configurados los parámetros de configuración, en caso de que quisieras personalizarlos, podemos seguir con la instalación, así que ejecutaremos lo siguiente:
+
+    $ python bootstrap.py
+
+Con esto prepararemos el entorno y una vez hecho, podremos lanzar la instalación ejecutando lo siguiente:
+
+    $ ./bin/buildout
+
+Comenzará el proceso de compilado de Nginx y uWSGI; y la instalación de los
+módulos de Python necesarios. Además, easyTrac compila Subversion e instala los
+bindings necesarios para que Trac pueda enlazarse con repositorios de código
+SVN.
+
+&lt;h2&gt;He ido a por un café y al volver ya estaba instalado ¿ahora qué hago?&lt;/h2&gt;
+
+&lt;p&gt;EasyTrac incluye la instalación de &lt;a href=&#34;http://supervisord.org/index.html&#34;
+target=&#34;_blank&#34;&gt;Supervisor&lt;/a&gt;. Pero ¿qué es Supervisor? Es un sistema de
+control de procesos que nos va a permitir arrancar, parar y reiniciar cada uno
+de nuestros servicios. En easyTrac tendremos dos servicios:
+&lt;strong&gt;Nginx&lt;/strong&gt; y &lt;strong&gt;uWSGI&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;La sintaxis de uso de Supervisor es la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por lo tanto si quisiéramos iniciar el servicio Nginx, ejecutaríamos lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl start nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En caso de querer pararlo, ejecutaremos:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl stop nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y si quisiéramos reiniciarlo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl restart nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Supervisor incluye una palabra especial llamada &lt;strong&gt;all&lt;/strong&gt; que hace
+referencia a todos los servicios configurados en supervisor. Con ella podremos
+controlar todos los servicios al mismo tiempo. Por ejemplo, si quisiéramos
+reiniciar todos los servicios, ejecutaríamos lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorct restart all
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero esto no es todo, es que además Supervisor, por si fuera poco, incluye una
+interfaz web desde la que podemos controlar nuestros servicios. Podremos
+acceder a ella accediendo a &lt;a href=&#34;http://localhost:9000&#34;&gt;http://localhost:9000&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Por defecto, el usuario es &lt;strong&gt;admin&lt;/strong&gt; y la contraseña es
+&lt;strong&gt;admin.&lt;/strong&gt; (nótese el punto al final de admin). Es posible cambiar
+estos datos editando la parte &lt;code&gt;[supervisor]&lt;/code&gt; en el fichero
+&lt;strong&gt;buildout.cfg&lt;/strong&gt; y volveremos a ejecutar la instrucción
+&lt;code&gt;./bin/buildout&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Ya tenemos nuestro entorno listo y accederemos a él a través de&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://localhost:8080
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;¡Qué bien! ¿y ahora cómo creo un Trac?&lt;/h2&gt;
+
+&lt;p&gt;Tranquilos, la creación de un proyecto Trac es muy sencilla. Utilizaremos el
+binario &lt;strong&gt;trac-admin&lt;/strong&gt; creado por el instalador, y que se
+encuentra en el directorio &lt;code&gt;bin/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Crearemos un proyecto llamado &lt;strong&gt;demo&lt;/strong&gt;, por lo que ejecutaremos lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/trac-admin opt/trac/demo initenv demo sqlite:db/trac.db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y ya que estamos, vamos a crear un repositorio SVN con el mismo nombre. Para ello utilizaremos el binario llamado &lt;strong&gt;svnadmin&lt;/strong&gt; que podremos encontrar también en el directorio &lt;code&gt;bin/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/svnadmin create opt/svn/demo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;Fiuf! ahora solo falta que pudiera hacer backups de mis Tracs&lt;/h2&gt;
+
+&lt;p&gt;Aunque no es una solución feténica, easyTrac cuenta con un comando
+&lt;strong&gt;backup&lt;/strong&gt; con el que podremos comprimir nuestros proyectos y
+guardarlos en otra localización. Para ello, simplemente ejecutaremos la
+siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/backup
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y todos los proyectos Trac serán comprimidos y guardados en un directorio
+llamado &lt;code&gt;backups/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Vale, tengo backups, quiero restaurarlos ¿cómo lo hago?&lt;/h2&gt;
+
+&lt;p&gt;Tan simple como ejecutar lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/restore backups/backup-file.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y todos los tracs serán restaurados automáticamente en el directorio, por
+defecto, &lt;code&gt;opt/trac/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2&gt;No me convence. Quiero desinstalarlo.&lt;/h2&gt;
+
+&lt;p&gt;Solamente es necesario parar todos los servicios:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ./bin/supervisorctl shutdown
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y borrar el directorio de instalación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ rm -rf easyTrac
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And that&amp;rsquo;s all folks!!! ;-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,1362 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Linux on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/linux/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Thu, 17 Jan 2013 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Qué es un sparse file</title>
+      <link>http://blog.manuelviera.es/blog/que-es-un-sparse-file/</link>
+      <pubDate>Thu, 17 Jan 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/que-es-un-sparse-file/</guid>
+      <description>
+
+&lt;p&gt;Hoy me he encontrado con el término &lt;em&gt;sparse file&lt;/em&gt; y realmente no lo conocía,
+aunque puede que os pase como a mi, que después de que os diga qué es, muchos
+de vosotros ya sabíais de su existencia e incluso es muy probable que hayáis
+trabajado con este tipo de ficheros. Pero&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es un &lt;em&gt;sparse file&lt;/em&gt;?&lt;/h2&gt;
+
+&lt;p&gt;Un &lt;em&gt;sparse file&lt;/em&gt; es un tipo de fichero el cual se crea con un tamaño específico
+pero no se reserva dicho espacio en el sistema de ficheros inicialmente. Su
+tamaño irá creciendo a medida que vaya siendo necesario. Por ejemplo, podríamos
+crear un fichero cuyo tamaño máximo sea 2G pero que inicialmente en nuestro
+sistema de ficheros ocupe 0 bytes.&lt;/p&gt;
+
+&lt;p&gt;Es muy probable que ya es sea más familiar este tipo de ficheros, sobre todo
+aquellos que hayáis trabajado con virtualización, por ejemplo con KVM
+utilizando virt-manager, cuando al crear un volumen de almacenamiento para una máquina virtual ofrece la opción de alojar la totalidad del volumen en el pool de almacenamiento, o que el tamaño del volumen vaya creciendo dinámicamente.&lt;/p&gt;
+
+&lt;p&gt;Para temas de virtualización &lt;strong&gt;no&lt;/strong&gt; es aconsejable utilizar este tipo de
+ficheros porque pueden generar problemas de rendimiento e integridad de los
+datos. De todas formas, son bastante útiles para realizar pruebas.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;¿Qué ventajas me aporta?&lt;/h2&gt;
+
+&lt;p&gt;Como ventajas puntualizaría la rapidez con la que son creados, que como he
+comentado anteriormente, para realizar pruebas son perfectos, ya que
+inicialmente &amp;ldquo;no ocupan&amp;rdquo; espacio en el sistema.&lt;/p&gt;
+
+&lt;p&gt;Además utilizar un &lt;em&gt;sparse file&lt;/em&gt; nos permitirá crear un fichero de gran tamaño
+aunque en ese momento no dispongamos de tal espacio en nuestro sistema de
+ficheros.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Pero no es oro todo lo que reluce&amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;Este tipo de fichero es soportado en la mayoría de los sistemas de ficheros
+modernos en Unix, incluso en NTFS; pero al parecer no es posible, y lo he
+comprobado, en HFS+ de Apple.&lt;/p&gt;
+
+&lt;p&gt;A parte de los problemas de rendimiento e integridad con los datos comentados
+anteriormente, es posible que obtengamos resultados inesperados cuando tratemos
+de copiar este tipo de ficheros, pues si la utilidad que hemos usado para
+copiarlo no soporta este tipo de ficheros, será copiado con el tamaño completo.
+Afortunadamente &lt;em&gt;cp&lt;/em&gt;, por defecto, y &lt;em&gt;rsync&lt;/em&gt; con la opción &lt;strong&gt;-S&lt;/strong&gt; /
+&lt;strong&gt;&amp;ndash;sparse&lt;/strong&gt;, soportan este tipo de ficheros.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;¿Y cómo creo un &lt;em&gt;sparse file&lt;/em&gt;?&lt;/h2&gt;
+
+&lt;p&gt;La creación de un &lt;em&gt;sparse file&lt;/em&gt; es muy sencillo, es posible hacerlo con el
+comando &lt;em&gt;dd&lt;/em&gt; que muchos ya conoceréis al haber creado ficheros llenos de ceros
+de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dd if=/dev/zero of=file.img bs=1M count=1G
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esta instrucción creará un fichero lleno de ceros ocupando 1G de espacio en
+vuestro sistema de ficheros.&lt;/p&gt;
+
+&lt;p&gt;Pero para crear un &lt;em&gt;sparse file&lt;/em&gt; será necesario ejecutar la siguiente
+instrucción, similar a la anterior:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dd if=/dev/zero of=file.img bs=1M count=0 seek=1024
+0+0 registros leídos
+0+0 registros escritos
+0 bytes (0 B) copiados, 1,802e-05 s, 0,0 kB/s
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El truco se encuentra en el operador &lt;strong&gt;seek&lt;/strong&gt;. En este caso tendremos un
+fichero que inicialmente ocupa 0 bytes pero con un tamaño de 1G en potencia.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -hs file.img 
+0   file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Sin embargo, podemos ver su tamaño real con la opción &lt;strong&gt;&amp;ndash;apparent-size&lt;/strong&gt; de
+la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h --apparent-size file.img
+1,0G    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;¿Pero cómo compruebo que su tamaño crece dinámicamente?&lt;/h2&gt;
+
+&lt;p&gt;Es muy sencillo, crearemos ficheros dentro de este y veremos cómo aumenta de
+tamaño dinámicamente hasta un total de 1G. Para ello seguiremos los siguiente
+pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Crearemos un sistema de ficheros en &lt;em&gt;file.img&lt;/em&gt;, lo cual nos va a permitir
+alojar ficheros dentro de él convirtiéndolo en un volumen de almacenamiento:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkfs.ext4 -q file.img  
+file.img no es un dispositivo especial de bloques.
+¿Continuar de todas formas? (s,n) s
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Montamos el fichero como si de un dispositivo de almacenamiento se
+tratase, utilizando el comando &lt;em&gt;mount&lt;/em&gt;, de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkdir mnt
+$ sudo mount -t auto file.img mnt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si listamos los puntos de montaje actuales en nuestro sistema, deberíamos
+ver el fichero &lt;em&gt;file.img&lt;/em&gt; montado en el directorio local &lt;em&gt;mnt&lt;/em&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mount |grep file.img
+/tmp/file.img on /tmp/mnt type ext4 (rw)
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Creamos varios ficheros temporales dentro del punto de montaje:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ for i in {1..10};do mktemp --tmpdir=mnt; done
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; aprovecho para enseñar el comando &lt;em&gt;mktemp&lt;/em&gt; crea un fichero
+temporal del tipo &lt;em&gt;tmp.XXXXXXXX&lt;/em&gt; en el directorio actual. Con la opción
+&lt;em&gt;&amp;ndash;tmpdir&lt;/em&gt; es posible indicar el directorio destino donde se creará el
+fichero temporal.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Comprobamos que el tamaño del fichero ha crecido con respecto al estado
+anterior:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h file.img 
+49M    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y obviamente el tamaño total sigue siendo 1G:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h --apparent-size file.img 
+1,0G    file.img
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Dónde está el límite&lt;/h2&gt;
+
+&lt;p&gt;Lo único que nos falta comprobar es dónde está el limite. En el ejemplo
+utilizado es 1G, así que intentaremos crear un fichero de un tamaño mayor que
+el total del &lt;em&gt;sparse file&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Teniendo montado el fichero en el directorio &lt;em&gt;mnt&lt;/em&gt;, crearemos un fichero de 2G
+dentro de este, ejecutando lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dd if=/dev/zero of=file bs=1M count=2048
+dd: escribiendo «file»: No queda espacio en el dispositivo
+924+0 registros leídos
+923+0 registros escritos
+968290304 bytes (968 MB) copiados, 4,71871 s, 205 MB/s
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como podemos observar, nos ha avisado de que no queda espacio libre en el
+dispositivo y si comprobamos el tamaño actual del fichero obtendremos lo
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h file.img 
+973M    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; Hay un resto de espacio de 27M que es posible que sea debido a la
+reserva del 5% de espacio para el usuario root. Siempre hay una reserva de
+espacio para el usuario root, por defecto del 5%, de forma que este pueda
+acceder al dispositivo cuando haya alcanzado su límite de espacio. Si
+eliminamos dicha reserva, &lt;strong&gt;para nada recomendable en producción&lt;/strong&gt; pero en este
+caso estamos probando en un fichero local, podremos comprobar que si volvemos a
+crear el fichero de 2G dentro del &lt;em&gt;sparse file&lt;/em&gt;, el espacio llega a ocuparse
+completamente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ tune2fs -m 0 file.img 
+tune2fs 1.41.14 (22-Dec-2010)
+Setting reserved blocks percentage to 0% (0 blocks)
+
+$ dd if=/dev/zero of=file bs=1M count=2048
+dd: escribiendo «file»: No queda espacio en el dispositivo
+965+0 registros leídos
+964+0 registros escritos
+1011208192 bytes (1,0 GB) copiados, 3,27181 s, 309 MB/s
+
+$ du -h file.img  
+1,0G    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Actualización: ¿Y si queremos aumentar el límite?&lt;/h2&gt;
+
+&lt;p&gt;Ayer se me debió pasar esta cuestión mientras me centraba en escribir, pero sí,
+es posible aumentar el tamaño del &lt;em&gt;sparse file&lt;/em&gt;, ¿pero cómo?&lt;/p&gt;
+
+&lt;p&gt;Pues muy sencillo, solo tenemos que volver a utilizar el comando &lt;em&gt;dd&lt;/em&gt; indicando
+un tamaño mayor en el parámetro &lt;em&gt;seek&lt;/em&gt;, como indico a continuación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dd if=/dev/zero of=file.img bs=1M count=0 seek=2048
+0+0 registros leídos
+0+0 registros escritos
+0 bytes (0 B) copiados, 1,6064e-05 s, 0,0 kB/s
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si comprobamos ahora el tamaño del fichero, podremos observar que su tamaño
+total a aumentado en 1G:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h --apparent-size file.img 
+2,0G    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero aun no hemos terminado, sólo nos falta &lt;strong&gt;redimensionar&lt;/strong&gt; el sistema de
+ficheros incluido en él, y esto lo haremos haciendo uso del comando
+&lt;em&gt;resize2fs&lt;/em&gt;, pero primero realizaremos un chequeo del sistema de ficheros:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;e2fsck -f file.img 
+e2fsck 1.41.14 (22-Dec-2010)
+Paso 1: Verificando nodos-i, bloques y tamaños
+Paso 2: Verificando la estructura de directorios
+Paso 3: Revisando la conectividad de directorios
+Paso 4: Revisando las cuentas de referencia
+Paso 5: Revisando el resumen de información de grupos
+file.img: 22/65536 ficheros (0.0% no contiguos), 259513/262144 bloques
+
+$ resize2fs file.img 
+resize2fs 1.41.14 (22-Dec-2010)
+Resizing the filesystem on file.img to 524288 (4k) blocks.
+El sistema de ficheros en file.img tiene ahora 524288 bloques.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por último, si comprobamos el total de espacio disponible dentro del &lt;em&gt;sparse
+file&lt;/em&gt; podremos observar que a aumentado a 2G:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ df -h mnt 
+S.ficheros     Tamaño Usado  Disp Uso% Montado en
+/dev/loop0       2,0G  998M  998M  51% /tmp/mnt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como decía el maestro &lt;a href=&#34;http://es.wikipedia.org/wiki/Juan_Tamariz&#34;&gt;Juan
+Tamariz&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Chianananaaaaaaaa&amp;hellip; La magia no tiene trucos, por la razón de que todos sabemos que sí que los tiene.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Espero que os haya parecido interesante! No dudéis en comentar!&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Nginx como proxy HTTP</title>
+      <link>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</link>
+      <pubDate>Sun, 06 Jan 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</guid>
+      <description>
+
+&lt;p&gt;De regalo de Reyes os traigo un post bastante sencillo sobre Nginx. Se trata de
+configurar Nginx para que funcione como un proxy HTTP, pero antes de nada&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es un proxy?&lt;/h2&gt;
+
+&lt;p&gt;Un proxy no es más que un &lt;strong&gt;intermediario&lt;/strong&gt;, que es el significado que tiene la
+palabra &lt;em&gt;proxy&lt;/em&gt; en inglés, en la comunicación que se realiza entre dos puntos.
+Por ejemplo, entre un cliente, que puede ser un navegador web, petición Ajax,
+etc; y un servidor.  Hay muchos tipos o aplicaciones distintas para un proxy
+como pueden ser proxy inverso (reverse proxy), proxy transparente, proxy cache;
+y todas ellas se pueden combinar en una misma configuración. Por ejemplo
+podríamos configurar un proxy HTTP inverso con cache para acelerar el tiempo de
+respuesta de éste a medida que se va utilizando. En este caso vamos a
+configurar un proxy HTTP inverso, pero&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;¿Que nos ofrece un proxy HTTP inverso?&lt;/h2&gt;
+
+&lt;p&gt;Antes de nada, nuestro proxy, como su propio nombre indica, va a estar
+orientado al servicio HTTP o HTTPS (HTTP Secure), es decir, sólo va a trabajar
+con peticiones HTTP. Aunque Nginx como tal, también podría actuar como IMAP
+Proxy, un proxy para el protocolo IMAP (Internet Message Access Protocol) de
+correo, pero no va a ser este el caso. Como proxy inverso nos va a permitir:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Añadir &lt;strong&gt;seguridad&lt;/strong&gt;, protegiendo al resto de servidores web del ataque directo de los usuarios.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Reescribir&lt;/strong&gt; las &lt;strong&gt;URLs&lt;/strong&gt; según nuestras necesidades.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Securizar&lt;/strong&gt; el acceso a nuestras aplicaciones web con &lt;strong&gt;HTTPS&lt;/strong&gt;, es decir, podremos enrutar la petición HTTP hacia HTTPS y securizar la comunicación entre los dos puntos.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Imaginemos que en nuestra red corporativa o doméstica, tenemos varios
+servidores web en nuestra DMZ publicando diferentes aplicaciones web, pero
+queremos controlar la publicación de cada una de éstas al exterior. En ese
+caso, podríamos redirigir todo el tráfico HTTP entrante desde el firewall hacia
+el proxy HTTP y controlar la publicación de las aplicaciones web al exterior.
+Como he comentado anteriormente, podríamos añadir HTTPS obligatoriamente al
+acceder a una aplicación web, añadir autenticación básica (usuario y
+contraseña), etc.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Configuración&lt;/h2&gt;
+
+&lt;p&gt;Vamos a suponer que Nginx ya se encuentra instalado en nuestro sistema. Si no
+fuera el caso, es posible consultar mi anterior articulo sobre la &lt;a href=&#34;/blog/nginx/&#34;&gt;instalación
+de Nginx&lt;/a&gt;. La configuración que
+obtengo, eliminando los comentarios, tras haber instalado Nginx desde los
+&lt;strong&gt;repositorios de Debian 7&lt;/strong&gt; (Wheezy) es la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@nginx:/# grep -v &amp;quot;#&amp;quot; /etc/nginx/nginx.conf |uniq
+user www-data;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 768;
+}
+
+http {
+
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  types_hash_max_size 2048;
+
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log;
+
+  gzip on;
+  gzip_disable &amp;quot;msie6&amp;quot;;
+
+  include /etc/nginx/conf.d/*.conf;
+  include /etc/nginx/sites-enabled/*;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;NOTA: la configuración suele ser diferente dependiendo del método de
+instalación: utilizando los repositorios de la distribución o compilando desde
+las fuentes.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;¿Qué significa ésta configuración?&lt;/h3&gt;
+
+&lt;p&gt;Podemos apreciar varias &lt;strong&gt;directivas&lt;/strong&gt; que son &lt;strong&gt;globales&lt;/strong&gt;: &lt;code&gt;user&lt;/code&gt;,
+&lt;code&gt;worker_processes&lt;/code&gt; y &lt;code&gt;pid&lt;/code&gt;; y varios bloques como &lt;code&gt;events&lt;/code&gt;, que configura el
+número de conexiones para cada worker (recordad, número de conexiones totales =
+worker_processes * worker_connections) y el bloque &lt;code&gt;http&lt;/code&gt; que define algunas
+directivas como:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;keepalive_timeout&lt;/code&gt; : tiempo que se va a mantener una conexión viva.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;include&lt;/code&gt; : permite incluir ficheros que contienen más configuración como en este caso los tipos MIME y los ficheros de configuración en el directorio sites-enabled.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;access_log&lt;/code&gt; : define el fichero de acceso donde se registrarán las conexiones al proxy http.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;error_log&lt;/code&gt; :  igual que access_log pero solo registrará los intentos fallidos de conexión.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;gzip&lt;/code&gt; : permite comprimir los datos enviados con gzip, consumiendo menos ancho de banda.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Es posible que dentro del bloque &lt;code&gt;http&lt;/code&gt; podamos encontrar otro bloque
+llamado &lt;code&gt;server&lt;/code&gt; y que contenga algo como lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen       80;
+    server_name  localhost;
+
+    location / {
+        root   html;
+        index  index.html index.htm;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   html;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Es necesario eliminar este bloque de configuración en el fichero de
+configuración principal nginx.conf ya que el bloque &lt;code&gt;server&lt;/code&gt; lo definiremos
+para cada uno de los sitios a publicar, dentro del directorio &lt;code&gt;sites-
+available&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;sites-available y sites-enabled&lt;/h2&gt;
+
+&lt;p&gt;Normalmente, y sobretodo si se instala Nginx utilizando los repositorios del
+sistema, durante la instalación se crean dos directorios llamados &lt;code&gt;sites-
+available&lt;/code&gt; y &lt;code&gt;sites-enabled&lt;/code&gt;, pero ¿para qué función tienen y para qué se
+usan? Muy fácil.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;sites-available&lt;/code&gt; : se utiliza para almacenar la configuración de cada sitio o aplicación web. Siguiendo las buenas prácticas, se debe crear un fichero de configuración por cada sitio, para evitar tener la configuración de todos los sitios en un solo fichero.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sites-enabled&lt;/code&gt; : directorio que utiliza Nginx para saber qué sitios están activados. El contenido de este directorio deben ser enlaces simbólicos que apuntan a los ficheros de configuración del directorio &lt;code&gt;sites-available&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota&lt;/strong&gt;: la creación de los directorios &lt;code&gt;sites-available&lt;/code&gt; y &lt;code&gt;sites-enabled&lt;/code&gt;
+son una práctica muy común realizada por la paquetería del sistema, es decir,
+es una acción que realiza el paquete descargado de los repositorios durante la
+instalación. Pero es muy probable que dichos directorios no aparezcan si se
+instala Nginx desde las fuentes. En ese caso, solamente habría que crear dichos
+directorios e incluir el futuro contenido de estos mediante la
+directiva &lt;code&gt;include&lt;/code&gt; en la configuración principal de Nginx.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Publicando un sitio web&lt;/h2&gt;
+
+&lt;p&gt;Ya estamos casi a punto. Sólo nos falta configurar una redirección en el
+directorio &lt;code&gt;sites-available&lt;/code&gt; y enlazarla con un enlace simbólico en &lt;code&gt;sites-
+enabled&lt;/code&gt;, así que vamos a ello!&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Creamos el fichero de configuración test.manuelviera.es.conf en el
+directorio &lt;code&gt;/etc/nginx/sites-available/&lt;/code&gt; con una configuración como la
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen 80;
+    server_name     test.manuelviera.es;
+    location / {
+        proxy_pass http://192.168.1.200:8080;
+        proxy_set_header  X-Real-IP  $remote_addr;
+        proxy_set_header  Host  $http_host;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota&lt;/strong&gt;: creo que es buena práctica establecer como nombre de fichero el
+mismo que el dominio que estamos publicando, es decir, el valor de la
+directiva &lt;code&gt;server_name&lt;/code&gt;. De esta forma, le indicando nuestro Nginx que
+cuando reciba una petición del dominio &amp;ldquo;test.manuelviera.es&amp;rdquo; por el puerto
+80, debe redirigir la petición HTTP al host 192.168.1.200 al puerto 8080,
+que es donde se encuentra nuestra aplicación web desplegada. El ingrediente
+estrella en esta configuración es el uso del módulo &lt;code&gt;proxy_pass&lt;/code&gt; incluido
+en el Core de Nginx, y es la directiva que nos permite pasar la petición
+que nos llega hacia otro destino, en este caso, el servidor web donde se
+aloja nuestra supuesta aplicación. Como podéis observar, también hemos
+hecho uso de otra directiva llamada &lt;code&gt;proxy_set_header&lt;/code&gt; que nos permite
+añadir o modificar cabeceras, en este caso hemos editado dos cabeceras:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;X-Real-IP&lt;/code&gt; : contiene la IP del cliente que inicia la petición, y se ha establecido el valor de la variable $remote_addr con la idea de que al servidor destino le llegue la IP del cliente y no la del proxy HTTP. Si no se hubiese modificado esta cabecera (header) la IP que recibiría el servidor web objetivo siempre sería la del proxy HTTP.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Host&lt;/code&gt; : Al igual que la anterior cabecera, establecemos el valor con el contenido de la variable $http_host, es decir, el nombre de host que especificó el cliente.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Una vez configurado nuestra primera redirección, sólo nos falta activarla,
+es decir, crear un enlace simbólico hacia esta en el directorio
+sites-enabled:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@nginx:~# cd /etc/nginx/sites-enabled/
+root@nginx:/etc/nginx/sites-enabled# ln -s ../sites-available/test.manuelviera.es.conf
+root@nginx:/etc/nginx/sites-enabled# ls -l
+total 0
+
+
+lrwxrwxrwx 1 root root 43 Jan  6 12:05 test.manuelviera.es.conf -&amp;gt; ../sites-available/test.manuelviera.es.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Una vez enlazada el fichero de configuración, debemos obligar a Nginx a
+recargar la configuración con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@nginx:~# service nginx reload
+Reloading nginx configuration: nginx.
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;¡Perfecto! Pero aún nos queda el último paso, y no por ello menos importante&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Comprobar el funcionamiento del proxy HTTP&lt;/h2&gt;
+
+&lt;p&gt;Siempre debemos comprobar que lo que hemos hecho realmente funciona, ya que de
+no ser así, es como si no hubiésemos hecho nada y daremos mala imagen como
+profesionales. Si lo que tenemos es un entorno de prueba, que aún no se
+encuentra implantado en producción, una prueba muy sencilla sería utilizar el
+fichero &lt;code&gt;/etc/hosts&lt;/code&gt; añadiendo la IP de nuestro proxy HTTP y el dominio
+especificado en la directiva &lt;code&gt;server_name&lt;/code&gt;, de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo sh -c &amp;quot;echo 192.168.1.200 test.manuelviera.es &amp;gt;&amp;gt; /etc/hosts&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota&lt;/strong&gt;: en mi caso, el proxy HTTP se encuentra en la IP 192.168.1.200. Si
+todo ha ido bien, nuestro proxy HTTP, tras realizar la petición, deber habernos
+redirigido al host especificado en la directiva &lt;code&gt;proxy_pass&lt;/code&gt; :-) Otra prueba
+sencilla para comprobar que el proxy HTTP funciona es especificar un sitio
+externo como terra.es, google.es, etc; en la directiva &lt;code&gt;proxy_pass&lt;/code&gt;, si aún no
+se dispone de un servidor web interno que sirva una aplicación web.&lt;/p&gt;
+
+&lt;p&gt;Y esto ha sido todo amigos! Espero que os sea de utilidad y Feliz día de Reyes!&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Nginx</title>
+      <link>http://blog.manuelviera.es/blog/nginx/</link>
+      <pubDate>Fri, 23 Nov 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/nginx/</guid>
+      <description>
+
+&lt;p&gt;Hace bastante tiempo que tengo en mente escribir un post sobre Nginx
+(pronunciado como &amp;ldquo;engine x&amp;rdquo;), aunque ya lo he comentado en algún otro post
+anterior, y creo que hoy va a ser el día. No por nada en especial, si no porque
+me apetece compartirlo y además es un servidor web que me gusta mucho y que, en
+ciertos aspectos, ha ido conquistando terreno de otros servidores web.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es Nginx?&lt;/h2&gt;
+
+&lt;p&gt;Como decía, &lt;a href=&#34;http://nginx.org/&#34;&gt;Nginx&lt;/a&gt; es un servidor HTTP libre, de código
+abierto, de alto rendimiento y que puede ser utilizado para actuar tanto como
+proxy HTTP reverso, como proxy IMAP/POP3. Nginx es famoso por ser muy ligero,
+ya que consume muy pocos recursos del sistema; es muy estable, y además su
+configuración es relativamente sencilla, bastante más simple a la vista que la
+configuración de Apache2.&lt;/p&gt;
+
+&lt;p&gt;Su instalación es bastante sencilla también, independientemente de que lo
+hagamos mediante herramientas de paquetería o compilando del código fuente
+directamente.&lt;/p&gt;
+
+&lt;p&gt;Como apunte, decir que fue escrito por &lt;a href=&#34;http://sysoev.ru/en/&#34;&gt;Igor Sysoev&lt;/a&gt;, de
+origen ruso, escrito para solventar un problema llamado
+&lt;a href=&#34;http://www.kegel.com/c10k.html&#34;&gt;C10K&lt;/a&gt;. Resumiendo, ser capaz de manejar 10.000
+clientes de forma simultanea.&lt;/p&gt;
+
+&lt;p&gt;La primera vez que instalé Nginx, compilando desde las fuentes, fue allá por
+2008 simplemente por probarlo. No fue hasta 2009 ó 2010 cuando empecé a usarlo
+de verdad cuando trabajaba en &lt;a href=&#34;http://yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;, para realizar
+despliegues de aplicaciones web con Django. Y recuerdo que mi primer despliegue
+utilizando &lt;a href=&#34;http://merengueproject.org/&#34;&gt;Merengue Project&lt;/a&gt; + Nginx + uWSGI, con
+el fin de ver si mejoraba el rendimiento y la verdad es que quedamos
+encantados. Así que vamos a instalarlo ya!&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Instalando Nginx ¿pero cómo?&lt;/h2&gt;
+
+&lt;p&gt;Es posible que antes de instalar nos surjan dudas con respecto a la forma de
+instalar ya sea Nginx u otro software en nuestro sistema. Hay varias formas de
+instalar Nginx:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Descargar el código fuente y seguir el proceso de instalación típico: configurar, compilar e instalar; también conocido como &lt;strong&gt;cmmi&lt;/strong&gt; (&lt;strong&gt;c&lt;/strong&gt;onfigure - &lt;strong&gt;m&lt;/strong&gt;ake - &lt;strong&gt;m&lt;/strong&gt;ake &lt;strong&gt;i&lt;/strong&gt;nstall).&lt;/li&gt;
+&lt;li&gt;Utilizando las herramientas de paquetería de nuestra distribución: &lt;strong&gt;Aptitude&lt;/strong&gt; o &lt;strong&gt;APT&lt;/strong&gt; si utilizamos una distribución basada en Debian, &lt;strong&gt;yum&lt;/strong&gt; si utilizamos CentOS, RedHat, Fedora o similar; etc.&lt;/li&gt;
+&lt;li&gt;Añadir el repositorio oficial de Nginx a nuestro sistema de paquetería, si hubiera alguno disponible y compatible; en caso de que no estuviese disponible el paquete en nuestra distribución.&lt;/li&gt;
+&lt;li&gt;Descargar el paquete de instalación compatible con nuestro sistema de paquetería, de otra distribución e instalarlo con las herramientas habituales en nuestro sistema.&lt;/li&gt;
+&lt;li&gt;Descargar un paquete de instalación (&lt;strong&gt;.deb&lt;/strong&gt; o &lt;strong&gt;.rpm&lt;/strong&gt;, por ejemplo) y convertirlo con &lt;strong&gt;alien&lt;/strong&gt; si el paquete descargado no es compatible con nuestro sistema de paquetería.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Todas estas formas permitirían instalar Nginx, pero &lt;strong&gt;no todas son
+aconsejables&lt;/strong&gt;, según qué casos, me explico.&lt;/p&gt;
+
+&lt;p&gt;Si se trata de una &lt;strong&gt;instalación en producción&lt;/strong&gt;, y con ello me refiero a la
+instalación de Nginx en un servidor de un cliente, o en un servidor de
+producción para nuestra empresa; me decantaría sin dudar por la &lt;strong&gt;instalación
+mediante el sistema de paquetería&lt;/strong&gt;. De esta forma, contaría con todas las
+posibles futuras actualizaciones de seguridad y/o correcciones del paquete de
+forma muy cómoda utilizando las herramientas de paquetería del sistema.&lt;/p&gt;
+
+&lt;p&gt;Si la instalación de Nginx se va a realizar en un &lt;strong&gt;sistema antiguo&lt;/strong&gt;, y en ese
+caso, si es que existe un paquete para Nginx en el sistema de paquetería, es
+probable que sea &lt;strong&gt;más antiguo y desactualizado&lt;/strong&gt; que la versión actual de
+Nginx. Con lo que es muy posible que no cuente con mejoras de &lt;strong&gt;fallos de
+seguridad&lt;/strong&gt;, arreglos de &lt;strong&gt;bugs&lt;/strong&gt; encontrados, etc; en este caso,
+personalmente, optaría por una &lt;strong&gt;instalación desde las fuentes&lt;/strong&gt;. Es cierto que
+antes de instalar desde las fuentes sopesaría mis necesidades sobre Nginx, es
+decir, si es una instalación en producción pero sólo voy a servir &lt;strong&gt;HTML
+estático&lt;/strong&gt;, es muy posible que aun siendo una versión antigua de Nginx, hubiera
+optado por la &lt;strong&gt;instalación por PAQUETERÍa&lt;/strong&gt;. Pero si el fin es servir una
+&lt;strong&gt;web más compleja&lt;/strong&gt;, optaría por &lt;strong&gt;utilizar la versión estable más reciente de
+Nginx&lt;/strong&gt; y &lt;strong&gt;compilar desde las fuentes&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Con respecto a &lt;strong&gt;descargar un paquete de otra distribución&lt;/strong&gt; o convertir el
+paquete con &lt;strong&gt;alien&lt;/strong&gt;, &lt;strong&gt;no lo recomendaría&lt;/strong&gt; a menos que fuera una situación
+extrema, que no haya otro camino, y si la distribución a la que pertenece el
+paquete es muy similar a la que estamos usando. En cualquier otro caso, no lo
+usaría nunca, ya que: &lt;strong&gt;no&lt;/strong&gt; contamos con futuras &lt;strong&gt;actualizaciones&lt;/strong&gt; del
+paquete, al pertenecer a otra distribución &lt;strong&gt;es posible que los ficheros se
+instalen&lt;/strong&gt; en &lt;strong&gt;directorios no habituales en nuestra distribución&lt;/strong&gt;, es posible
+que los &lt;strong&gt;scripts SysV&lt;/strong&gt; del servicio &lt;strong&gt;no funcionen&lt;/strong&gt;, etc.&lt;/p&gt;
+
+&lt;p&gt;Esto sólo es mi humilde opinión de lo que haría en una situación real. Es
+imposible describir todas las posibilidades o dar unas directrices de qué hacer
+en una determinada situación, más que elegir una nosotros mismos basándonos en
+nuestro conocimiento, experiencia y muchos otros factores. En caso de dudar, si
+es posible, es aconsejable obtener una segunda opinión de un compañero o
+consultarlo con alguien con rango superior.&lt;/p&gt;
+
+&lt;p&gt;Y bueno, después de esta parrafada (perdón), nos puede quedar claro, qué dos
+opciones de instalación elegiría yo, &lt;strong&gt;IMHO&lt;/strong&gt; (¿qué pensais vosotros?) Así que
+veremos la instalación utilizando herramientas de paquetería y compilando desde
+el código fuente.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Instalación por paquetería&lt;/h2&gt;
+
+&lt;p&gt;La instalación por paquetería es bastante trivial si ya estamos familiarizados
+con estas herramientas. Bastaría con buscar el paquete en la base de datos de
+nuestro sistema de paquetería, ver el nombre e instalarlo.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Debian&lt;/h3&gt;
+
+&lt;p&gt;En &lt;strong&gt;Debian 7&lt;/strong&gt; (wheezy) que es la que estoy usando actualmente hay varios
+paquetes de Nginx en los repositorios oficiales de Debian:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;nginx-light&lt;/code&gt; : una versión &amp;ldquo;light&amp;rdquo; que sólo incluye un Nginx precompilado con unos cuantos módulos, pero no todos.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nginx-full&lt;/code&gt; : incluye Nginx precompilado con todos los módulos estandar incluidos.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nginx-extras&lt;/code&gt; : se trata de Nginx precompilado con todos los módulos estandar más una serie de módulos extras incluyendo algunos como Perl.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Depende de las necesidades que tengamos instalaremos uno u otro, pero en este
+caso instalaré nginx-full, y para ello ejecutaremos la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# apt-get install nginx-full
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;La instalación no tardará mucho en finalizar y tendremos instalado Nginx en
+nuestro sistema. Una de las ventajas de utilizar el sistema de paquetería de
+nuestro sistema frente a compilar nuestra propia versión de Nginx es que el
+paquete además de instalar Nginx, instala ciertas utilidades adicionales como
+pueden ser los scripts de inicio SysV y demás scripts que nos permiten
+arrancar, reiniciar o parar nuestro servidor Nginx. Para arrancar Nginx
+utilizaremos, como root, el comando &lt;strong&gt;service&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# service nginx start
+Starting nginx: nginx.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si consultamos el estado utilizando el parámetro &lt;strong&gt;status&lt;/strong&gt; podremos ver que
+Nginx ya se encuentra en funcionamiento:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# service nginx status
+nginx is running.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Para comprobar si realmente el puerto 80 (http/tcp) está escuchando podemos
+utilizar el comando &lt;strong&gt;netstat&lt;/strong&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# netstat -ntp
+Active Internet connections (w/o servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 192.168.1.40:80         192.168.1.35:60110      ESTABLISHED 3262/nginx: worker
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;CentOS&lt;/h3&gt;
+
+&lt;p&gt;En &lt;strong&gt;CentOS&lt;/strong&gt; al parecer no hay paquete en los repositorios oficiales por
+defecto, así que hay que añadir primero el repositorio a nuestra lista de
+repositorios y luego instalarlo. Es muy fácil, sólo hay que hace lo siguiente:&lt;/p&gt;
+
+&lt;p&gt;Podemos descargar el paquete &lt;strong&gt;RPM&lt;/strong&gt; que instala la configuración del
+repositorio y posteriormente instalarlo con la utilida &lt;code&gt;rpm&lt;/code&gt;, o instalarlo
+directamente con la utilidad &lt;code&gt;yum&lt;/code&gt; pasando la URL completa hacia el fichero RPM
+de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@centos /]# yum install http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez instalado, podemos consultar la configuración del repositorio de Nginx
+que se ha instalado en el fichero &lt;code&gt;/etc/yum.repos.d/nginx.repo&lt;/code&gt;. Tras instalar
+la configuración del repositorio, ya solo nos queda utilizar &lt;code&gt;yum&lt;/code&gt; para
+instalar Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@centos /]# yum install nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ya solo nos queda arrancar nuestro Nginx utilizando la utilidad &lt;code&gt;service&lt;/code&gt; al
+igual que hicimos en Debian.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;IMPORTANTE:&lt;/strong&gt; Es posible que en CentOS ya se encuentre ejecutándose una
+instancia de &lt;code&gt;httpd&lt;/code&gt; (Apache2) por defecto. Antes de arrancar Nginx es
+necesario parar dicha instancia o Nginx informará con un error indicando que el
+puerto 80 (http/tcp) se encuentra ocupado.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@centos /]# service nginx start
+Starting nginx: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si accedemos ahora utilizando nuestro navegador a &lt;code&gt;http://localhost:80&lt;/code&gt; veremos
+un útil, pero poco bonito, mensaje: &lt;strong&gt;Welcome to nginx!&lt;/strong&gt; El fichero de
+configuración para ambos casos se encuentra en &lt;code&gt;/etc/nginx/nginx.conf&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Instalando desde las fuentes&lt;/h2&gt;
+
+&lt;p&gt;Antes de comenzar, deberemos disponer en nuestro sistema de ciertas utilidades
+que serán de vital importancia para poder compilar en nuestro sistema, como
+&lt;strong&gt;gcc&lt;/strong&gt;, &lt;strong&gt;make&lt;/strong&gt; y otras librerias de desarrollo que se necesitan instaladas
+para poder compilar Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# apt-get install gcc make libpcre3 libpcre3-dev zlib1g zlib1g-dev
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Instalados los prerequisitos, procedemos entonces con la descarga de las
+fuentes de Nginx desde su sitio oficial:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# wget http://nginx.org/download/nginx-1.2.4.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A continuación descomprimimos y procedemos con la configuración, compilación e
+instalación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# tar xzf nginx-1.2.4.tar.gz 
+root@debian:~# cd nginx-1.2.4/
+root@debian:~/nginx-1.2.4# 
+root@debian:~/nginx-1.2.4# ./configure &amp;amp;&amp;amp; make &amp;amp;&amp;amp; make install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por defecto, Nginx se instala en &lt;code&gt;/usr/local/&lt;/code&gt; aunque podemos modificar este
+comportamiento con &lt;code&gt;./configure --prefix=/path/to/install/&lt;/code&gt;. Como comentaba
+antes, esta vez no contamos con scripts de inicio SysV, así que tendremos que
+arrancar Nginx de forma manual, ejecutando directamente el binario de &lt;code&gt;nginx&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# /usr/local/nginx/sbin/nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si todo va bien, deberíamos tener inmediatamente el puerto 80 escuchando
+peticiones HTTP en nuestro sistema. Para para Nginx, también deberemos hacerlo
+de forma totalmente manual, utilizando la opción &lt;code&gt;-s&lt;/code&gt; y pasándole el argumento
+&lt;code&gt;stop&lt;/code&gt;; aunque también se puede hacer uso de otros argumentos como &lt;code&gt;quit&lt;/code&gt;,
+&lt;code&gt;reopen&lt;/code&gt; y &lt;code&gt;reload&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# /usr/local/nginx/sbin/nginx -s stop
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;La configuración por defecto&lt;/h2&gt;
+
+&lt;p&gt;La ubicación del fichero de configuración cambia dependiendo de la forma en que
+se haya instalado, a menos que cambiemos el comportamiento por defecto con
+&lt;code&gt;./configure --conf-path&lt;/code&gt; al compilar desde las fuentes. Si Nginx ha sido
+instalado utilizando el sistema de paquetería se encontrará en
+&lt;code&gt;/etc/nginx/nginx.conf&lt;/code&gt;. Sin embargo, si se ha compilado desde las fuentes y no
+se ha modificado la ruta del fichero de configuración, entonces lo más probable
+es que se encuentre en &lt;code&gt;/usr/local/nginx/conf/nginx.conf&lt;/code&gt;. El contenido de este
+fichero es bastante similar en ambos casos, aunque por defecto, hay muchas
+lineas de ejemplo comentadas. Si eliminamos todos los comentarios, se puede
+apreciar que la configuración es bastante simple:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# grep -v &amp;quot;#&amp;quot; /usr/local/nginx/conf/nginx.conf |uniq
+
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+
+    keepalive_timeout  65;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como se puede ver, la configuración se estructura en bloques delimitados por
+llaves {} (en inglés &lt;em&gt;curly braces&lt;/em&gt;) haciéndola mucho más legible que un bloque
+de configuración de Apache2, por ejemplo. Como parámetros a destacar, me
+gustaría comentar los siguientes:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;worker_processess&lt;/code&gt; : indica el número de workers/procesos de nginx que se van a arrancar simultaneamente. Si establecemos &lt;code&gt;worker_processes&lt;/code&gt; con valor 2, se ejecutarán dos procesos worker de Nginx.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;worker_connections&lt;/code&gt; : hace referencia al número de conexiones por worker. Esto quiere decir que el número de conexiones que será capaz de servir nuestro servidor nginx corresponde a worker_processes x worker_connections. Según la configuración del ejemplo, solo aceptará 1024 conexiones simultaneas (1 (&lt;em&gt;worker_processes&lt;/em&gt;) x 1024 (&lt;em&gt;worker_connections&lt;/em&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;http {}&lt;/code&gt; : bloque donde se especifica la configuración de cada servidos. Es posible configurar varios bloques &lt;code&gt;server {}&lt;/code&gt; en un mismo bloque &lt;code&gt;http {}&lt;/code&gt;, utilizando diferentes puertos lógicamente.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;server {}&lt;/code&gt; : configuración para un servidor concreto, que normalmente se corresponderá con un número de puerto único.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;listen 80;&lt;/code&gt; : puerto de escucha de Nginx. Se corresponde con la directiva &lt;code&gt;Listen&lt;/code&gt; de Apache2&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;server_name localhost;&lt;/code&gt; : hostname o FQDN del servidor. Se corresponde con la directiva &lt;code&gt;ServerName&lt;/code&gt; de Apache2.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;location&lt;/code&gt; : configuración de un &lt;code&gt;location&lt;/code&gt; concreto. Se corresponde con la directiva &lt;code&gt;Location&lt;/code&gt; en Apache2.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;root&lt;/code&gt; : directorio utilizado para buscar los ficheros estáticos. Se corresponde con la directiva &lt;code&gt;DocumentRoot&lt;/code&gt; de Apache2.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Bueno, eso es todo por hoy amigos, espero que os haya sido de utilidad para
+aquellos que no conocíais Nginx o aquellos que nunca lo habíais instalado. En
+próximos posts veremos diferentes tipos de configuración que podemos realizar
+con Nginx. Mientras tanto, podeis encontrar mucha más información en la wiki de
+Nginx en &lt;a href=&#34;http://wiki.nginx.org/Main&#34;&gt;http://wiki.nginx.org/Main&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Un saludo a todos y no dudéis en comentar! ;-)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Añadir nuevas fuentes en Linux</title>
+      <link>http://blog.manuelviera.es/blog/anadir-nuevas-fuentes-en-linux/</link>
+      <pubDate>Mon, 27 Aug 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/anadir-nuevas-fuentes-en-linux/</guid>
+      <description>
+
+&lt;p&gt;Añadir nuevas fuentes a mi sistema Linux siempre ha sido una incógnita, al
+menos para mí. Supongo que es algo por lo que no me he preocupado demasiado o
+que quizás no me haya hecho falta saberlo, hasta ahora. El objetivo de este
+post, añadir nuevas fuentes a nuestro sistema GNU/Linux, está relacionado
+directamente con nuestro servidor X, es decir, nuestro servidor gráfico. Creo
+que este siempre ha sido un punto problemático en GNU/Linux ya que agregar una
+tipografía nueva a nuestro sistema no es tan sencillo como hacerlo, por
+ejemplo, en otro sistema operativo como Microsoft Windows, que básicamente
+consiste en copiar los ficheros de las fuentes en un directorio. Pero empecemos
+por el principio&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Cuál es mi servidor gráfico o servidor X?&lt;/h2&gt;
+
+&lt;p&gt;Existen varios servidores gráficos disponibles para GNU/Linux, pero
+generalmente, en las distribuciones actuales, nos encontraremos principalmente
+con &lt;strong&gt;XFree86 4.x&lt;/strong&gt; y &lt;strong&gt;X.org-X11&lt;/strong&gt;, sobre todo con este último. Para
+cerciorarnos sobre cuál es nuestro servidor X podemos ejecutar la siguiente
+instrucción en una consola:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# X -version
+X.Org X Server 1.7.7
+Release Date: 2010-05-04
+X Protocol Version 11, Revision 0
+Build Operating System: Linux 3.0.0-1-amd64 x86_64 Debian
+Current Operating System: Linux debian 2.6.32-5-amd64 #1 SMP Wed Jan 12 03:40:32 UTC 2011 x86_64
+Kernel command line: BOOT_IMAGE=/vmlinuz-2.6.32-5-amd64 root=/dev/mapper/debian-root ro quiet
+Build Date: 29 October 2011  06:58:14PM
+xorg-server 2:1.7.7-14 (Julien Cristau ) 
+Current version of pixman: 0.16.4
+        Before reporting problems, check http://wiki.x.org
+        to make sure that you have the latest version.
+root@debian:~#
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como podeis observar, en mi caso estoy utilizando la versión 1.7.7 de Xorg en
+un sistema Debian 6.0, una versión de Xorg algo antigua ya, aunque todo lo que
+se explica en el post será aplicable a versiones más recientes.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Pero, ¿Qué tipos y formatos de fuentes hay?&lt;/h2&gt;
+
+&lt;p&gt;Cuando hablamos de tipografías, o de fuentes, normalmente no sabemos con qué
+tipo de fuentes y formatos estamos tratando, quizás por prisa o bien, porque
+tampoco nos hace falta saberlo para trabajar con ellas; pero básicamente, con
+respecto a tecnologías, hay dos tipos:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fuentes de mapa de bits: que son fuentes muy simples y bastante fáciles de manipular y visualizar. El problema es que hay que optimizar dicha fuente para que pueda visualizarse correctamente en diferentes resoluciones o dispositivos de visualización, como la pantalla o impresa en un papel. Debido a esto, una misma fuente puede constar de varios ficheros, para poderla representar en varios tamaños o dispositivos de visualización.&lt;/li&gt;
+&lt;li&gt;Fuentes escalables, que es el tipo de fuente más utilizado en la actualidad, ya que cada carácter se representa con una serie de curvas y lineas dentro de una matriz; evitando tener que producir varios ficheros para una misma fuente. Uno de los inconvenientes del escalado es que consume más CPU, pero esto ya no supone un problema con las CPUs utilizadas hoy en día.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;En cuanto a los formatos de fuentes, básicamente vamos a encontrar
+&lt;strong&gt;&lt;a href=&#34;http://es.wikipedia.org/wiki/TrueType&#34;&gt;TrueType&lt;/a&gt;&lt;/strong&gt;, desarrollado
+inicialmente por &lt;strong&gt;&lt;a href=&#34;http://es.wikipedia.org/wiki/Apple_Computer&#34;&gt;Apple
+Computers&lt;/a&gt;&lt;/strong&gt; (.ttf); y
+&lt;strong&gt;PostScript Type1&lt;/strong&gt;, o
+&lt;strong&gt;&lt;a href=&#34;http://en.wikipedia.org/wiki/PostScript_fonts#Type_1&#34;&gt;Type1&lt;/a&gt;&lt;/strong&gt; (.pfa, .pfb),
+desarrollado por &lt;strong&gt;Adobe&lt;/strong&gt;. Bueno, pues ya sabemos un poco más acerca de las
+fuentes. Ahora dejémonos de teoría y vayamos al tema que concierne a este post.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Conseguir nuevas fuentes&lt;/h2&gt;
+
+&lt;p&gt;Es posible conseguir fuentes desde varios sitios, por ejemplo, desde el sistema
+de paquetería de nuestra distribución. En mi caso uso Debian, así que si busco
+el término &lt;strong&gt;xfonts&lt;/strong&gt; con APT (Advanced Packaging Tools) seguro que encuentro
+algún que otro paquete con nuevas fuentes para mi distribución:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ apt-cache search xfonts
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Un paquete con una fuente, que a mi personalmente me gusta mucho para la
+terminal, se llama &lt;strong&gt;xfonts-terminus&lt;/strong&gt;. Así que para instalarla ejecutamos la
+siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo apt-get install xfonts-terminus
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero esto no tiene ningún misterio para nosotros, ya que el paquete con las
+nuevas fuentes se instalará en el directorio correspondiente de nuestro
+sistema, y las tendremos disponibles sin tener nosotros que hacer nada. El
+problema de instalar fuentes, en GNU/Linux, es cuando nos encontramos una
+fuente que nos gusta en Internet. Hay muchos sitios en Internet desde donde se
+pueden descargar fuentes como &lt;a href=&#34;http://www.fontsquirrel.com/&#34;&gt;Font Squirrel&lt;/a&gt; o
+&lt;a href=&#34;http://www.1001freefonts.com/&#34;&gt;1001 Free Fonts&lt;/a&gt;. Desde esta última me he
+descargado una fuente llamada &lt;a href=&#34;http://www.1001freefonts.com/font/VideoPhreak.zip&#34;&gt;Video
+Phreak&lt;/a&gt;, que tiene una pinta
+muy retro y me ha gustado.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;Preparando un directorio con fuentes&lt;/h2&gt;
+
+&lt;p&gt;Si echamos un vistazo al fichero de configuración de nuestro servidor X,
+&lt;strong&gt;/etc/X11/xorg.conf&lt;/strong&gt; si estamos usando Xorg-X11 o &lt;strong&gt;/etc/X11/XF86Config&lt;/strong&gt; si
+estamos usando XFree86 4.x; podemos ver la sección llamada &lt;strong&gt;Files&lt;/strong&gt;, que
+tendrá una forma similar a la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Section &amp;quot;Files&amp;quot;
+        ModulePath   &amp;quot;/usr/lib/xorg/modules&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/misc&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/cyrillic&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/100dpi/:unscaled&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/75dpi/:unscaled&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/Type1&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/100dpi&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/75dpi&amp;quot;
+        FontPath     &amp;quot;/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType&amp;quot;
+        FontPath     &amp;quot;built-ins&amp;quot;
+EndSection
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Cada linea &lt;strong&gt;FontPath&lt;/strong&gt; indica una ruta al servidor X donde encontrar ficheros
+de fuentes. El orden establecido para los directorios de fuentes es influyente,
+es decir, el servidor X empieza a buscar en orden empezando por el primero
+hasta encontrar la fuente en uno de los directorios listados. De esta forma, si
+hay directorios con fuentes del mismo nombre, el servidor X utilizará la
+primera que encuentre según el orden establecido. Para hacer bien las cosas, no
+vamos a copiar nuestras fuentes en ninguno de esos directorios, ya que ahí se
+encuentran las fuentes básicas del servidor X. Crearemos nuestro propio
+directorio de fuentes. Siguiendo un poco el estándar
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard&#34;&gt;FHS&lt;/a&gt; es posible
+crear un directorio en &lt;strong&gt;/opt&lt;/strong&gt; o utilizar &lt;strong&gt;/usr/local&lt;/strong&gt;. A mi personalmente
+me gusta más la opción de &lt;strong&gt;/usr/local&lt;/strong&gt;. Dicho esto, procedemos a crear el
+directorio &lt;strong&gt;fonts&lt;/strong&gt; en &lt;strong&gt;/usr/local&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir /usr/local/fonts
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ya tengo descargada mi fuente &lt;a href=&#34;http://www.1001freefonts.com/font/VideoPhreak.zip&#34;&gt;Video
+Phreak&lt;/a&gt; en mi directorio de
+descargas, asi que voy a descomprimir el paquete zip:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ unzip VideoPhreak.zip 
+Archive:  VideoPhreak.zip
+  inflating: VideoPhreak.ttf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como podemos ver, se trata de una fuete TrueType (.ttf). La moveremos a un
+directorio llamado &lt;strong&gt;truetype&lt;/strong&gt; dentro de &lt;strong&gt;/usr/local/fonts/&lt;/strong&gt;, por mantener
+separadas las fuentes por tipos, asi que ejecutaremos lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir /usr/local/fonts/truetype
+$ sudo cp VideoPhreak.ttf /usr/local/fonts/truetype
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El siguiente paso será crear &lt;strong&gt;los ficheros de resumen&lt;/strong&gt; que describen las
+fuentes que vamos a instalar. Estos ficheros se llaman &lt;strong&gt;fonts.dir&lt;/strong&gt; y
+&lt;strong&gt;fonts.scale&lt;/strong&gt; y pueden tener un contenido como el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;10x20-ISO8859-1.pcf.gz -misc-fixed-medium-r-normal--20-200-75-75-c-100-iso8859-1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esta linea por sí sola ya da miedo. Pero tranquilos porque no vamos a tener que
+escribir esta linea manualmente. Para automatizar la creación de estos ficheros
+existen dos comandos: &lt;strong&gt;mkfontdir&lt;/strong&gt; y &lt;strong&gt;mkfontscale&lt;/strong&gt;. Asi que el siguiente
+paso será movernos al directorio &lt;strong&gt;/usr/local/fonts/truetype&lt;/strong&gt; y ejecutar cada
+uno de estos comandos, para generar los ficheros &lt;strong&gt;fonts.scale&lt;/strong&gt; y
+&lt;strong&gt;fonts.dir&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo cd /usr/local/fonts/truetype
+$ sudo mkfontscale
+$ sudo mkfontdir
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Estos dos comandos no generan ninguna salida, asi que si todo ha ido bien,
+deberemos tener los dos ficheros anteriormente comentados. En mi caso se han
+generado con el siguiente contenido:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ cat fonts.dir 
+1
+VideoPhreak.ttf -macromedia-videophreak-medium-r-normal--0-0-0-0-p-0-iso10646-1
+$ cat fonts.scale 
+1
+VideoPhreak.ttf -macromedia-videophreak-medium-r-normal--0-0-0-0-p-0-iso10646-1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Ya tenemos nuestro directorio de fuentes preparado!&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;Añadir el directorio de fuentes al listado de fuentes de X&lt;/h2&gt;
+
+&lt;p&gt;El siguiente paso será añadir la ruta &lt;strong&gt;/usr/local/fonts/truetype&lt;/strong&gt; en la
+sección &lt;strong&gt;Files&lt;/strong&gt; del fichero de configuración de nuestro servidor X, en mi
+caso es el fichero &lt;strong&gt;/etc/X11/xorg.conf&lt;/strong&gt;. Para ello añadiremos la siguiente
+linea al final de la sección &lt;strong&gt;Files&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        FontPath     &amp;quot;/usr/local/fonts/truetype&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Aplicar la configuración&lt;/h2&gt;
+
+&lt;p&gt;Ya está todo hecho, así que el último paso es recargar la configuración. Es
+posible hacerlo de dos maneras: la menos elegante sería parar el servidor X y
+volverlo a ejecutar, pero eso implica que tendríamos que dejar de utilizar el
+entorno gráfico por unos momentos y por tanto, obligando el cierre de todos los
+programas de los que estemos haciendo uso en ese momento o incluso más,
+desconectar a usuarios que esté conectados remotamente a sesiones gráficas de
+nuestro servidor X. La forma más elegante consiste en utilizar el comando
+&lt;strong&gt;xset&lt;/strong&gt;. Si no está instalado en el sistema es posible conseguirlo instalando
+el paquete &lt;strong&gt;x11-xserver-utils&lt;/strong&gt;, al menos en Debian.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo apt-get install x11-xserver-utils
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El comando &lt;strong&gt;xset&lt;/strong&gt; nos permitirá añadir nuestro directorio de fuentes mientras
+se ejecuta el servidor X, no es necesario parar su ejecución en ningún momento;
+ejecutando la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo xset fp+ /usr/local/fonts/truetype
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esta instrucción añade el directorio indicado al final de la lista de
+directorios que hemos visto antes. Es posible añadirla al principio de la lista
+cambiando &lt;strong&gt;fp+&lt;/strong&gt; por &lt;strong&gt;+fp&lt;/strong&gt;. Y por último tendremos que indicar al servidor X
+que vuelva a examinar todos los directorios de fuentes, con la siguiente
+instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo xset fp rehash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Comprobar el resultado&lt;/h2&gt;
+
+&lt;p&gt;El resultado de todo esto es que deberiamos tener a nuestra disposición la
+nueva fuente instalado. Hay una utilidad llamada &lt;strong&gt;xfontsel&lt;/strong&gt; que viene en el
+paquete &lt;strong&gt;x11-utils&lt;/strong&gt;, y que seguramente ya tendréis instalado. &lt;strong&gt;xfontsel&lt;/strong&gt; es
+una aplicación bastante arcaica y tosca, pero bueno, puede servir para ver si
+la instalación ha sido satisfactoria.&lt;/p&gt;
+
+&lt;p&gt;Aun así, es posible que no podais visualizar la nueva fuente instalada en el
+sistema. Esto es debido a que muchas aplicaciones no reconocen el formato de
+las fuentes o simplemente no las encuentran. Las fuentes básicas tampoco
+incluyen antialiasing, es decir, el suavizado de fuentes, etc.&lt;/p&gt;
+
+&lt;p&gt;Para solucionar esto, contamos con el sistema Xft.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_7&#34;&gt;¿Qué es el sistema Xft?&lt;/h2&gt;
+
+&lt;p&gt;El sistema Xft es una biblioteca de código abierto para el renderizado de
+fuentes TrueType y Type1. Xft es un sistema en el lado del cliente, es decir,
+que accede a las fuentes instaladas en el sistema local y además permite el
+suavizado de fuentes o antialiasing, además de otras funcionalidades. Por
+suerte, los directorios de fuentes son compartidos, o mejor dicho, son los
+mismos que los del servidor X. Lo único que tenemos que hacer es añadir nuestro
+directorio de fuentes particular al fichero de configuración de fuentes Xft,
+que se encuentra en &lt;strong&gt;/etc/fonts/fonts.conf&lt;/strong&gt; (al menos en Debian). Se trata de
+un fichero XML, así que deberemos buscar un bloque de configuración como el
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;!-- Font directory list --&amp;gt;
+
+        &amp;lt;dir&amp;gt;/usr/share/fonts&amp;lt;/dir&amp;gt;
+        &amp;lt;dir&amp;gt;/usr/X11R6/lib/X11/fonts&amp;lt;/dir&amp;gt; &amp;lt;dir&amp;gt;/usr/local/share/fonts&amp;lt;/dir&amp;gt;
+        &amp;lt;dir&amp;gt;~/.fonts&amp;lt;/dir&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como podeis observar, hay menos directorios listados que en el fichero
+&lt;strong&gt;/etc/X11/xorg.conf&lt;/strong&gt; y es debido a que el sistema Xft permite añadir el
+directorio padre que contiene todas las fuentes. En nuestro caso, sólo bastará
+con añadir a la lista el directorio &lt;strong&gt;/usr/local/fonts&lt;/strong&gt;, de la siguiente
+forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        &amp;lt;dir&amp;gt;/usr/local/fonts&amp;lt;/dir&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez hecho esto, tendremos que indicar al sistema Xft que vuelva a recorrer
+todos los directorios para crear la lista de fuentes. Así que ejecutaremos el
+comando &lt;strong&gt;fc-cache&lt;/strong&gt; con privilegios de superusuario o &lt;strong&gt;root&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo fc-cache
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Tras la ejecución del comando, deberíamos tener disponible la fuente en todos
+nuestros programas tipo Gimp, editores de texto, etc.&lt;/p&gt;
+
+&lt;p&gt;Espero que os sirva de ayuda o simplemente para aprender algo nuevo, como me ha
+pasado a mi :-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Entendiendo umask</title>
+      <link>http://blog.manuelviera.es/blog/entendiendo-umask/</link>
+      <pubDate>Fri, 01 Jun 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/entendiendo-umask/</guid>
+      <description>
+
+&lt;p&gt;Ahora mismo estoy preparándome para obtener la certificación
+&lt;a href=&#34;http://www.lpi.org/content/exam-101-objective-changes-july-2-2012&#34;&gt;LPIC-1&lt;/a&gt; y
+uno de los objetivos del tema que estoy estudiando es conocer y saber utilizar
+&lt;strong&gt;umask&lt;/strong&gt;, pero me ha parecido que la documentación no es muy clara, al menos
+en el libro &lt;a href=&#34;http://www.amazon.com/LPIC-1-Professional-
+Institute-Certification-Examenes/dp/8441527830&#34;&gt;LPIC-1: Linux Professional Institute Certification: Guia de
+estudio: Examenes 101 y 102&lt;/a&gt;, que es el que estoy leyendo.&lt;/p&gt;
+
+&lt;p&gt;He buscado en otros libros de GNU/Linux y administración de sistemas que tengo,
+y tampoco me ha dejado satisfecho. Así que he decidido escribir este post con
+lo que se acerca de &lt;strong&gt;umask&lt;/strong&gt; y aportar mi humilde granito de arena.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es umask?&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;umask&lt;/strong&gt; o &lt;strong&gt;u&lt;/strong&gt;ser &lt;strong&gt;mask&lt;/strong&gt;, la máscara de usuario usada para establecer los
+permisos a un fichero o directorio recién creado.&lt;/p&gt;
+
+&lt;p&gt;Hagamos una prueba, crearé un fichero nuevo y veremos qué permisos tiene:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ ls -l file.txt
+-rw-r--r-- 1 mviera users 0 jun  1 15:01 file.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podemos observar que el fichero ha sido creado con permisos &lt;strong&gt;0644&lt;/strong&gt;, es decir,
+lectura y escritura para el propietario y lectura para el grupo y para el resto
+de usuarios.&lt;/p&gt;
+
+&lt;p&gt;Ahora crearé un directorio y mostraré los permisos como en el ejemplo anterior:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ ls -l |grep umask
+drwxr-xr-x  2 mviera users       4096 jun  1 15:04 umask-test/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Se puede apreciar que los permisos para los directorios son diferentes, en este
+caso &lt;strong&gt;0755&lt;/strong&gt;, o lo que es lo mismo, lectura, escritura y ejecución para el
+propietario; y lectura y ejecución para el grupo y para el resto de usuarios.&lt;/p&gt;
+
+&lt;p&gt;Es posible que ahora mismo nos surjan varias preguntas, ¿por qué estos permisos
+y no otros?¿Dónde está definido este comportamiento? La respuesta, &lt;strong&gt;umask&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Conociendo más a umask&lt;/h2&gt;
+
+&lt;p&gt;Antes de seguir, lo primero que debemos saber es el valor de umask configurado
+en nuestro sistema. Normalmente su valor suele ser 022. Podemos averiguarlo
+ejecutando el comando &lt;code&gt;umask&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ umask
+022
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El valor devuelto se encuentra en formato octal, es decir, como cuando se
+definen los permisos de un fichero con &lt;code&gt;chmod 755 file&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Es posible modificar el valor ejecutando &lt;code&gt;umask&lt;/code&gt; y especificando el nuevo valor
+a continuación, como en el siguiente ejemplo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ umask 002
+mviera@leonopteryx:~$ umask
+002
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por tanto, si creamos ahora un fichero, veremos que los permisos iniciales
+serán diferentes a los del ejemplo anterior:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ touch file2.txt
+mviera@leonopteryx:~$ ls -l file2.txt
+-rw-rw-r-- 1 mviera users 0 jun  1 18:03 file2.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Hay que tener en cuenta que si modificamos el valor de umask desde la consola,
+este cambio solo estará vigente en la sesión actual. Es decir, si abrimos una
+nueva consola el valor de umask se habrá restablecido al valor por defecto (que
+suele ser 022).&lt;/p&gt;
+
+&lt;p&gt;Para modificar el valor de umask de forma permanente será necesario incluir
+dicha configuración en &lt;code&gt;/etc/profile&lt;/code&gt; o &lt;code&gt;/etc/bash.bashrc&lt;/code&gt; afectando el cambio
+a todo el sistema; o en los ficheros &lt;code&gt;~/.profile&lt;/code&gt; o &lt;code&gt;~/.bashrc&lt;/code&gt; si se quiere
+aplicar el cambio para un usuario en concreto.&lt;/p&gt;
+
+&lt;p&gt;Pero&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Cómo funciona umask&lt;/h2&gt;
+
+&lt;p&gt;Los ficheros y directorios tienen definidos por defecto unos permisos base, 666
+para los ficheros y 777 para los directorios.&lt;/p&gt;
+
+&lt;p&gt;El valor de umask es un valor octal que representa los bits a eliminar de los
+permisos base, así que para determinar el permiso inicial que obtendrá un
+fichero o directorio habrá que restar el valor de umask al permiso base.&lt;/p&gt;
+
+&lt;p&gt;Por eso, cuando creamos un fichero, el permiso inicial de éste será 644
+(-rw-r&amp;ndash;r&amp;ndash;), valor resultante de realizar la operación 666 - 022. Al igual que
+cuando creamos un directorio, el permiso inicial será 755 (drwxr-xr-x),
+resultado de 777 - 022.&lt;/p&gt;
+
+&lt;p&gt;Pero ojo! no se trata de una operación decimal, es decir, no es una resta de un
+número con otro, es una &lt;strong&gt;diferencia a nivel de bits&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;umask&lt;/strong&gt; realiza la &lt;strong&gt;diferencia a nivel de bits&lt;/strong&gt; utilizando el operador
+&lt;strong&gt;AND&lt;/strong&gt;. Para aclararlo, veamos un ejemplo con los permisos de un fichero:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Los permisos base para un fichero son 666 y el valor de umask, por defecto,
+es 022. Estos son valores en &lt;strong&gt;formato octal&lt;/strong&gt;, pero el kernel opera a nivel de
+bits, es decir, en binario. Así que traduciremos estos valores a binario:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;666 = 110 110 110
+022 = 000 010 010
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Para hacer la diferencia con el operador &lt;strong&gt;AND&lt;/strong&gt; tendremos que invertir el
+valor de 022 con &lt;strong&gt;Not&lt;/strong&gt;, quedando el siguiente valor:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Not 022 = 111 101 101
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Aplicamos el operador &lt;strong&gt;AND&lt;/strong&gt; entre ambos valores:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    666 = 110 110 110
+Not 022 = 111 101 101  AND
+--------------------------
+          110 100 100
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;El valor resultante es &lt;code&gt;111 100 100&lt;/code&gt; que si lo volvemos a traducir a octal
+resulta ser 644.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Espero que os sirva de ayuda, a mi me ha servido para afianzar conocimientos
+:-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Actualizando CentOS a una release concreta</title>
+      <link>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</link>
+      <pubDate>Tue, 06 Mar 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</guid>
+      <description>&lt;p&gt;Ya hacía bastante tiempo que no paraba por aquí para escribir un artículo, así
+que hoy me voy a tomar mi tiempo y voy a escribir acerca de CentOS.&lt;/p&gt;
+
+&lt;p&gt;¿Y por qué sobre CentOS? Pues resulta que hoy trabajando en &lt;a title=&#34;Yaco
+Sistemas&#34; href=&#34;http://www.yaco.es&#34; target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt;, mi
+compañero &lt;a title=&#34;@sepu66&#34; href=&#34;http://twitter.com/sepu66&#34;
+target=&#34;_blank&#34;&gt;@sepu66&lt;/a&gt; necesitaba varias máquinas virtuales con CentOS
+5.6, aunque la template de la que disponía era de CentOS 5.5.&lt;/p&gt;
+
+&lt;p&gt;Fácil, pensé, creo la máquina virtual con CentOS 5.5 y actualizo la
+distribución con &lt;code&gt;yum update&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y claro, pasados unos minutos actualizando paquetes, compruebo la release de la
+distribución y, para mi sorpresa, observo que se ha actualizado a la última
+release de CentOS 5, es decir, a CentOS 5.7:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
+
+CentOS release 5.7 (Final)
+Kernel \r on an \m
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;FAIL!, pensé (últimamente pienso mucho). Esto ya lo había yo solucionado antes,
+pero no lo recordaba bien. Es una de esas tareas que haces una vez en muchos
+meses y que al final terminas olvidando, así que por eso he decidido hacer un
+volcado de conocimiento en este artículo :-)&lt;/p&gt;
+
+&lt;p&gt;Tras un rato buscando alguna solución en internet, sin éxito por cierto, ya que
+todos los artículos que encontraba eran acerca de &amp;ldquo;Cómo actualizar CentOS de
+5.4 a 5.5&amp;rdquo; o &amp;ldquo;Cómo actualizar CentOS de 5.5 a 5.6&amp;rdquo;, en resumen, todos los
+artículos que encontraba eran actualizaciones a la release inmediatamente
+superior, así que se resumían en ejecutar &lt;code&gt;yum update&lt;/code&gt; y listo&amp;hellip;
+Pero mi idea era decidir yo a qué release concreta a actualizar.&lt;/p&gt;
+
+&lt;p&gt;Para solucionar este tema, volví a regenerar la máquina virtual con CentOS 5.5 y empecé a modificar la configuración de los repositorios.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Configurando los repositorios&lt;/h2&gt;
+En CentOS normalmente los repositorios se encuentran configurados en ficheros
+que terminan en &lt;code&gt;.repo&lt;/code&gt; en el directorio
+&lt;code&gt;/etc/yum.repos.d/&lt;/code&gt;. En mi caso los repositorios configurados por
+defecto se encuentran en el fichero
+&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, así que lo primero que hice fue
+editar dicho fichero y deshabilitar los repositorios por defecto, añadiendo la
+siguiente linea en cada parte de configuración de cada repositorio:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;enabled=0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Dicha linea indica a &lt;code&gt;yum&lt;/code&gt; que el repositorio en cuestión se
+encuentra deshabilitado y no queremos que se utilice. Otra forma de
+deshabilitar los repositorios por defecto sería eliminando el fichero
+&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, pero no me parece un solución
+muy elegante.&lt;/p&gt;
+
+&lt;p&gt;Hecho esto, creé un nuevo fichero llamado
+&lt;code&gt;/etc/yum.repos.d/CentOS-Vault.repo&lt;/code&gt; en el que añadí lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#---- Packages previously released as 5.6, and its updates
+[C5.6-base]
+name=CentOS-5.6 - Base
+baseurl=http://vault.centos.org/5.6/os/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+
+[C5.6-updates]
+name=CentOS-5.6 - Updates
+baseurl=http://vault.centos.org/5.6/updates/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+
+[C5.6-extras]
+name=CentOS-5.6 - Extras
+baseurl=http://vault.centos.org/5.6/extras/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¿Dónde está el truco? El secreto se encuentra en el dominio utilizado en la
+URL, &lt;code&gt;vault.centos.org&lt;/code&gt; que se trata de un sitio perteneciente a
+CentOS donde se pueden encontrar los paquetes de releases antiguas de CentOS.
+Destacar como segundo truco que he fijado la versión de la release a 5.6 en la
+URL, por tanto esta distribución no pasará a una release posterior.&lt;/p&gt;
+
+&lt;p&gt;Importante también marcar los repositorios como activos especificando:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;enabled=1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Listando los repositorios disponibles&lt;/h2&gt;
+Una vez configurado los repositorios a utilizar, podemos listarlos ejecutando
+&lt;code&gt;yum repolist&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# yum repolist
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+repo id                                                                     repo name
+C5.6-base                                                                   CentOS-5.6 - Base
+C5.6-centosplus                                                             CentOS-5.6 - Plus
+C5.6-extras                                                                 CentOS-5.6 - Extras
+C5.6-updates                                                                CentOS-5.6 - Updates
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Actualizando la distribución&lt;/h2&gt;
+Hecho esto, ya sólo nos queda forzar la actualización del sistema completo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y pasados unos minutos actualizando los paquetes del sistema, deberíamos tener
+nuestra distribución en la versión deseada, en mi caso, CentOS 5.6:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
+CentOS release 5.6 (Final)
+Kernel \r on an \m
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Espero que os sea de utilidad, a mi seguro que no se me vuelve a olvidar :-D
+Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

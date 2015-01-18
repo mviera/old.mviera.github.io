@@ -1,0 +1,756 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Empezando con MongoDB
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2013-02-06" title="2013-02-06">February 06, 2013</time>
+            </div>
+            <h1 class="title">Empezando con MongoDB</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/mongodb">#mongodb</a>
+              
+              <a href="/tags/nosql">#nosql</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>Normalmente muchos de los que nos dedicamos a la informática, cuando escuchamos
+el término <em>base de datos</em> o <em>database</em> (en inglés) pensamos directamente en un
+tipo de base de datos, las bases de datos relacionales, como MySQL, PostgreSQL,
+etc; quizás porque son las más comunes y utilizadas durante mucho tiempo. Pero
+esto está cambiando.</p>
+
+<p>Desde hace un tiempo hasta ahora han ido proliferando otro tipo de base de
+datos conocidas como <em>NoSQL</em> y seguro que conocéis algunas como: <strong>Memcached</strong>,
+una caché tipo clave-valor en RAM, su variante <strong>MemcacheDB</strong> que almacena
+datos clave-valor en disco usando <strong>BerkeleyDB</strong>; <strong>Redis</strong>, otra base de datos
+de tipo clave-valor; o <strong>MongoDB</strong> que a diferencia de las anteriores, está
+<strong>orientada a documentos</strong>.</p>
+
+<h2 id="toc_0">¿Qué es MongoDB?</h2>
+
+<p>Primero, ¿Qué significa <em>NoSQL</em>? El término <em>NoSQL</em> se utiliza para indicar que
+dicha base de datos no utiliza el sistema relacional tan ampliamente utilizado.
+Las bases de datos <em>NoSQL</em> no se construyen sobre <em>tablas</em> y normalmente
+tampoco utilizan el lenguaje <em>SQL</em> para realizar consultas.</p>
+
+<p>Muchos sistemas <em>NoSQL</em> utilizan una arquitectura distribuida y tolerante a
+fallos, lo que permite mantener los datos en varios servidores de forma
+redundante. De esta forma es bastante fácil escalar el sistema añadiendo más
+servidores. Normalmente este tipo de base de datos escala horizontalmente
+permitiendo administrar grandes cantidades de datos.</p>
+
+<p>El nombre de <strong>MongoDB</strong> proviene de &ldquo;hu<strong>mongo</strong>us&rdquo;, que significa enorme en
+inglés, y es una base de datos <em>NoSQL</em> software libre, escalable y de alto
+rendimiento escrita en C++.</p>
+
+<p>Algunas de las características más importantes de MongoDB son:</p>
+
+<ol>
+<li>Almacenamiento orientado a documentos (<em>document-oriented</em> en inglés).</li>
+<li>Replicación y Alta Disponibilidad.</li>
+<li>Soporte de índices.</li>
+<li>Consultas, también basadas en documentos.</li>
+<li>Auto-Sharding, permitiendo escalar horizontalmente.</li>
+<li>GridFS, que permite almacenar ficheros de cualquier tamaño sin necesidad de complicar el entorno.</li>
+</ol>
+
+<h2 id="toc_1">¿Orientado a documentos?</h2>
+
+<p>Si hubiera que destacar una de las características anteriormente citadas, en mi
+opinión, la más importante ahora mismo sería la de <em>orientado a documentos</em> o
+<em>document-oriented</em>, ya que se trata de un concepto fundamental para entender
+cómo funciona y cómo trabajar con MongoDB.</p>
+
+<p>El almacenamiento de los datos en MongoDB utiliza documentos <strong>JSON</strong>
+(JavaScript Object Notation), contando con un esquema dinámico y totalmente
+flexible. De hecho se dice que MongoDB es <em>schemaless</em> (sin esquema).</p>
+
+<h4 id="toc_2">¿Pero qué es un documento JSON?</h4>
+
+<p>De forma rápida y sencilla, un documento JSON no es más que descripción de un
+objecto en formato JSON, un formato muy rápido para el intercambio de datos y
+muy legible para el humano (<em>human-readable</em> en inglés).</p>
+
+<p>Un documento JSON podria tener la siguiente forma:</p>
+
+<pre><code>{&quot;username&quot;:&quot;mviera&quot;, &quot;age&quot;: 26, &quot;city&quot;: &quot;Sevilla&quot;}
+</code></pre>
+
+<p>Este documento describe un usuario cuyo &ldquo;<em>username</em>&rdquo; es &ldquo;mviera&rdquo;, con una edad
+de 26 años y cuya ciudad es &ldquo;Sevilla&rdquo;.</p>
+
+<p>En JSON hay 6 tipos de datos diferentes:</p>
+
+<ul>
+<li>Number</li>
+<li>String</li>
+<li>Boolean (true o false)</li>
+<li>Array</li>
+<li>Object</li>
+<li>null</li>
+</ul>
+
+<p>Podéis aprender más sobre JSON en <a href="http://json.org/json-es.html">http://json.org/json-es.html</a></p>
+
+<h2 id="toc_3">¿Cómo se instala?</h2>
+
+<p>La instalación de MongoDB es bastante sencilla. La versión actual de MongoDB es
+<strong>2.2.3</strong>, en el momento en que escribo este artículo.</p>
+
+<p>Su instalación se puede llevar a cabo a través del sistema de paquetería de
+nuestra distribución, APT, Aptitude, Yum&hellip; En Debian el nombre del paquete que
+contiene el servidor de MongoDB se llaman <strong>mongodb-server</strong> y el paquete que
+contiene el cliente y otras utilidades de MongoDB se llama <strong>mongodb-clients</strong>.
+Así que si estamos en un sistema Debian o derivado, podemos instalarlo de la
+siguiente forma:</p>
+
+<pre><code>mviera@mongodb:~$ sudo apt-get update
+mviera@mongodb:~$ sudo apt-get install mongodb-server mongodb-clients
+</code></pre>
+
+<p>También podemos descargar los binarios desde la propia web oficial de MongoDB
+<a href="http://www.mongodb.org/downloads">www.mongodb.org</a> o el código fuente si lo
+que queremos es compilar nuestro propio MongoDB. Hay binarios disponibles para
+OS X, Linux, Windows para plataformas de 32 y 64bits; y Solaris 64 bits.</p>
+
+<p>Si lo que queremos es realizar un despliegue en producción, recomendaría
+instalar utilizando el sistema de paquetería del sistema con el que contaremos
+con futuras actualizaciones de seguridad, etc. Si el objetivo es aprender
+MongoDB, podemos instalarlo tanto a través del sistema de paquetería, como
+descargando los binarios desde la web de MongoDB.</p>
+
+<p>En este caso voy a descargar los binarios de MongoDB desde la sección de
+descargas de la web oficial, ya que lo utilizaré para aprender y enseñaros
+MongoDB. Son binarios precompilados, así que no será necesario instalar ningún
+paquete adicional en nuestro sistema.</p>
+
+<p>Para ello, descargamos el tarball que se ajuste a nuestro sistema, en este
+caso, Linux x86-64:</p>
+
+<pre><code>mviera@mongodb:~$ wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-2.2.3.tgz
+mviera@mongodb:~$ tar xzf mongodb-linux-x86_64-2.2.3.tgz                                         
+mviera@mongodb:~$ ln -s mongodb-linux-x86_64-2.2.3 mongodb                   
+mviera@mongodb:~$ cd mongodb
+mviera@mongodb:~/mongodb$ 
+</code></pre>
+
+<p><strong>Nota:</strong> he creado un enlace simbólico llamado <em>mongodb</em> para evitar tener
+acceder a un directorio con un nombre tan largo y complejo.</p>
+
+<p>Si listamos el contenido del directorio recién descomprimido, deberíamos tener
+algo similar a los siguiente:</p>
+
+<pre><code>mviera@mongodb:~/mongodb$ tree 
+.
+|-- GNU-AGPL-3.0
+|-- README
+|-- THIRD-PARTY-NOTICES
+`-- bin
+    |-- bsondump
+    |-- mongo
+    |-- mongod
+    |-- mongodump
+    |-- mongoexport
+    |-- mongofiles
+    |-- mongoimport
+    |-- mongooplog
+    |-- mongoperf
+    |-- mongorestore
+    |-- mongos
+    |-- mongosniff
+    |-- mongostat
+    `-- mongotop
+
+1 directory, 17 files
+</code></pre>
+
+<p>Entre ellos se encuentran el fichero de licencia <em>GNU-AGPL-3.0</em>, el
+fichero<em>README</em> y <em>THIRD-PARTY-NOTICES</em>; y el directorio <em>bin/</em> que contiene
+todos los binarios y utilidades necesarios para empezar con MongoDB. Aunque hay
+una buena selección de utilidades, de momento sólo vamos a utilizar <strong>mongod</strong>
+y <strong>mongo</strong> para familiarizarnos con MongoDB.</p>
+
+<p>Si la instalación de MongoDB se ha realizado utilizando el sistema de
+paquetería del sistema, estas utilidades y herramientas se encontrarán en los
+directorios habituales como <em>/usr/bin</em>. En caso de Debian, es posible consultar
+los ficheros instalados con la siguiente instrucción:</p>
+
+<pre><code>mviera@mongodb:~$ dpkg -L mongodb-server mongodb-clients
+</code></pre>
+
+<h2 id="toc_4">Primera toma de contacto</h2>
+
+<p>Una vez tenemos MongoDB instalado en nuestro sistema, lo primero que debemos
+hacer es iniciar la base de datos. Para ello utilizaremos <em>mongod</em>. Si se ha
+instalado utilizando paquetería, es posible que se haya iniciado la base de
+datos automáticamente, especialmente en distribuciones basadas en Debian.</p>
+
+<p>Antes de ejecutarlo se necesita especificar el directorio donde se alojará la
+base de datos. Por defecto, MongoDB buscará el directorio <em>/data/db</em> y si no lo
+encuentra, se producirá un error como el siguiente:</p>
+
+<pre><code>*********************************************************************
+ ERROR: dbpath (/data/db/) does not exist.
+ Create this directory or give existing directory in --dbpath.
+ See http://dochub.mongodb.org/core/startingandstoppingmongo
+*********************************************************************
+</code></pre>
+
+<p>Así que para evitar dicho error, crearemos un directorio local llamado <em>data</em>
+en la ruta actual y especificaremos dicho directorio con el parámetro <em>&ndash;
+dbpath</em> de la siguiente forma:</p>
+
+<pre><code>mviera@mongodb:~/mongodb$ mkdir data 
+mviera@mongodb:~/mongodb$ ./bin/mongod --dbpath data
+</code></pre>
+
+<p>Si todo ha ido bien, deberíamos ver algo similar a la siguiente salida:</p>
+
+<pre><code>mviera@mongodb:~/mongodb$ ./bin/mongod --dbpath data/
+Wed Feb  6 01:36:44 [initandlisten] MongoDB starting : pid=1082 port=27017 dbpath=data/ 64-bit host=mongodb
+Wed Feb  6 01:36:44 [initandlisten] db version v2.2.3, pdfile version 4.5
+Wed Feb  6 01:36:44 [initandlisten] git version: f570771a5d8a3846eb7586eaffcf4c2f4a96bf08
+Wed Feb  6 01:36:44 [initandlisten] build info: Linux ip-10-2-29-40 2.6.21.7-2.ec2.v1.2.fc8xen ...
+Wed Feb  6 01:36:44 [initandlisten] options: { dbpath: &quot;data/&quot; }
+Wed Feb  6 01:36:44 [initandlisten] journal dir=data/journal
+Wed Feb  6 01:36:44 [initandlisten] recover : no journal files present, no recovery needed
+Wed Feb  6 01:36:44 [websvr] admin web console waiting for connections on port 28017
+Wed Feb  6 01:36:44 [initandlisten] waiting for connections on port 27017
+</code></pre>
+
+<p>Como se puede observar, MongoDB se encuentra funcionando en el puerto <strong>27017</strong>
+por defecto, su directorio de almacenamiento de la base de datos se encuentra
+en <strong>dbpath=data/</strong> y además ofrece una consola de administración en el puerto
+<strong>28017</strong>, a través de la cual podemos visualizar el log, listar bases de
+datos, etc.</p>
+
+<p>Si echamos un vistazo al directorio <em>data/</em> deberíamos ver algo similar a lo
+siguiente:</p>
+
+<pre><code>mviera@mongodb:~/mongodb$ ls -l data/
+total 8
+drwxrwxr-x 2 mviera mviera 4096 Feb  6 01:36 journal
+-rwxrwxr-x 1 mviera mviera    5 Feb  6 01:36 mongod.lock
+</code></pre>
+
+<p>Actualmente, sólo tendremos un directorio <em>journal/</em> para recuperaciones de
+datos en caso de desastre y el fichero <em>mongod.lock</em> que almacena el PID del
+proceso <em>mongod</em>.</p>
+
+<h2 id="toc_5">Interactuando con MongoDB</h2>
+
+<p>Una vez tenemos nuestra base de datos MongoDB iniciada, el siguiente paso será
+conectar a ella utilizando la consola o <em>shell</em>, en inglés, de Mongo. Para ello
+utilizaremos <em>mongo</em> ejecutando la siguiente instrucción:</p>
+
+<pre><code>mviera@mongodb:~/mongodb$ ./bin/mongo
+MongoDB shell version: 2.2.3
+connecting to: test
+Welcome to the MongoDB shell.
+For interactive help, type &quot;help&quot;.
+For more comprehensive documentation, see
+    http://docs.mongodb.org/
+Questions? Try the support group
+    http://groups.google.com/group/mongodb-user
+&gt; 
+</code></pre>
+
+<p>Si todo va bien, espero que sí, deberíamos ver el prompt de MongoDB. Por
+defecto Mongo, si no se le especifica lo contrario, siempre conectará a una
+base de datos <strong>test</strong> en la que podremos realizar todas las pruebas que
+queramos.</p>
+
+<p>La <em>shell</em> de Mongo es una shell interactiva de JavaScript, por lo que podremos
+hacer uso de código JavaScript en caso de que nos sea necesario. Es decir,
+podemos realizar operaciones básicas de JavaScript como las siguientes en la
+shell de Mongo:</p>
+
+<pre><code>&gt; 2 + 3
+5
+&gt; 
+&gt; 10 * 2
+20
+&gt; 
+&gt; var double = function (n1) { return n1 * n1 }
+&gt; double(2)
+4
+&gt; double
+function (n1) {
+    return n1 * n1;
+}
+&gt; stuff = [1, 2, 3, 4]
+[ 1, 2, 3, 4 ]
+&gt; for (n in stuff) { print( parseInt(n) * 2 ) }
+0
+2
+4
+6
+&gt; var x = {name: &quot;mviera&quot;, age: 26}
+&gt; x.age
+26
+&gt; x.city = &quot;Sevilla&quot;
+Sevilla
+&gt; x
+{ &quot;name&quot; : &quot;mviera&quot;, &quot;age&quot; : 26, &quot;city&quot; : &quot;Sevilla&quot; }
+</code></pre>
+
+<p><strong>IMPORTANTE:</strong> Estas instrucciones <strong>NO</strong> son de MongoDB, es puro JavaScript.
+<strong>La consola de MongoDB es una shell interactiva de JavaScript</strong>.</p>
+
+<h2 id="toc_6">Familiarización con el entorno&hellip;</h2>
+
+<p>Bien. Estamos conectados a la consola de Mongo, así que nuestro siguiente paso
+será crear una base de datos. Podemos comprobar cuál es la base de datos que
+estamos usando actualmente llamando al objeto <strong>db</strong>:</p>
+
+<pre><code>&gt; db
+test
+&gt; 
+</code></pre>
+
+<p>Crear una base de datos es tan fácil como ejecutar lo siguiente:</p>
+
+<pre><code>&gt; use mydb
+switched to db mydb
+&gt; db
+mydb
+&gt; 
+</code></pre>
+
+<p>Podemos observar que el valor del objeto <em>db</em> ha cambiado a <strong>mydb</strong>. Lo
+siguiente será crear una colección, llamado <em>collection</em> en inglés. Las
+colecciones son los contenedores de los documentos en MongoDB. Serían las
+conocidas tablas que contienen los datos en las bases de datos relacionales.</p>
+
+<p>Podemos crear una colección de prueba de la siguiente forma:</p>
+
+<pre><code>&gt; db.createCollection(&quot;test&quot;)
+{ &quot;ok&quot; : 1 }
+&gt; 
+&gt; show collections
+system.indexes
+test
+</code></pre>
+
+<p>Pero en MongoDB no es necesario crear una colección antes de introducir datos
+por primera vez, ya que Mongo comprobará previamente si existe la colección y
+si no, la creará automáticamente por nosotros.</p>
+
+<pre><code>&gt; db.test2.insert({username:&quot;mviera&quot;})
+&gt; 
+&gt; show collections
+system.indexes
+test
+test2
+</code></pre>
+
+<p>Como se puede observar, la colección <strong>test2</strong> se ha creado automáticamente al
+crear el documento <code>{username:&quot;mviera&quot;}</code> dentro de él. Con esto ya he
+introducido rápidamente la forma de introducir datos en una colección de
+MongoDB. De todas formas, la sintaxis de uso es la siguiente:</p>
+
+<pre><code>db.&lt;nombre_coleccion&gt;.verbo()
+</code></pre>
+
+<p>Donde <code>verbo()</code> puede ser:</p>
+
+<ul>
+<li><code>insert</code>: para insertar documentos en la colección.</li>
+<li><code>find</code>: para buscar o seleccionar documentos dentro de la colección.</li>
+<li><code>count</code>: para contar el total de documentos dentro de una colección.</li>
+<li><code>update</code>: para actualizar uno o varios documentos dentro de una colección.</li>
+<li><code>remove</code>: para eliminar documentos de la colección.</li>
+<li><code>drop</code>: para eliminar una colección.</li>
+</ul>
+
+<h2 id="toc_7">Hagamos unos ejercicios</h2>
+
+<p>Nuestra base de datos actual se llama <code>mydb</code>:</p>
+
+<pre><code>&gt; db
+mydb
+&gt; 
+</code></pre>
+
+<p>y actualmente nuestra base de datos sólo contiene tres colecciones:
+<code>system.indexes</code> (creada por MongoDB automáticamente), <code>test</code> y <code>test2</code>:</p>
+
+<pre><code>&gt; show collections
+system.indexes
+test
+test2
+&gt; 
+</code></pre>
+
+<p>Crearemos tres documentos que describirán usuarios dentro de una colección que
+se llamará <code>users</code>. Los datos a almacenar en los documentos serán: username,
+age (edad), y ciudad. Para ello utilizaremos el método <code>insert</code> y podemos
+hacerlo de varias formas:</p>
+
+<ol>
+<li><p>Directamente especificando el documento JSON en el método <code>insert()</code>:</p>
+
+<pre><code>&gt; db.users.insert({username:&quot;mviera&quot;,age:26,city:&quot;Sevilla&quot;})
+&gt; db.users.insert({username:&quot;robot&quot;, age:32, city:&quot;Cadiz&quot;})
+&gt; db.users.insert({username:&quot;testuser&quot;, age:20, city:&quot;Malaga&quot;})
+</code></pre></li>
+
+<li><p>Almacenar los documentos en variables JavaScript y posteriormente utilizar
+dicha variable en <code>insert()</code>:</p>
+
+<pre><code>&gt; user1 = {username:&quot;mviera&quot;,age:26,city:&quot;Sevilla&quot;}
+{ &quot;username&quot; : &quot;mviera&quot;, &quot;age&quot; : 26, &quot;city&quot; : &quot;Sevilla&quot; }
+&gt; user2 = {username:&quot;robot&quot;, age:32, city:&quot;Cadiz&quot;}
+{ &quot;username&quot; : &quot;robot&quot;, &quot;age&quot; : 32, &quot;city&quot; : &quot;Cadiz&quot; }
+&gt; user3 = {username:&quot;testuser&quot;, age:20, city:&quot;Malaga&quot;}
+{ &quot;username&quot; : &quot;testuser&quot;, &quot;age&quot; : 20, &quot;city&quot; : &quot;Malaga&quot; }
+&gt; 
+&gt; 
+&gt; db.users.insert(user1)
+&gt; db.users.insert(user2)
+&gt; db.users.insert(user3)
+</code></pre></li>
+
+<li><p>Utilizando un for loop de JavaScript en la shell de Mongo para automatizar
+la tarea:</p>
+
+<pre><code>&gt; users = [user1, user2, user3]
+&gt; for (i = 0; i &lt; users.length; i++) { db.users.insert(users[i]) }
+</code></pre></li>
+</ol>
+
+<p><strong>Nota:</strong> Realmente en los tres casos hemos hecho lo mismo, pero solamente
+quería mostrar la potencia que ofrece la shell de Mongo, una shell de
+JavaScript.</p>
+
+<p>Si consultamos de nuevo las colecciones disponibles en nuestra base de datos
+<code>mydb</code>, podremos observar que MongoDB ha creado la colección <code>users</code> por
+nosotros, y de forma automática:</p>
+
+<pre><code>&gt; show collections
+system.indexes
+test
+test2
+users
+&gt; 
+</code></pre>
+
+<p>Después de esto, deberíamos ser capaces de saber cuántos documentos hay en la
+colección <code>users</code>, pero podemos cerciorarnos utilizando el método <code>count</code> en
+nuestra colección:</p>
+
+<pre><code>&gt; db.users.count()
+3
+&gt; 
+</code></pre>
+
+<p>¡Perfecto! Eso quiere decir que hasta ahora ha ido todo de maravilla. Ya solo
+nos falta poder seleccionar dichos documentos, es decir, poder recuperar dicha
+información de la base de datos. Esto lo conseguiremos con el método <code>find</code>,
+ejecutando lo siguiente:</p>
+
+<pre><code>&gt; db.users.find()
+{ &quot;_id&quot; : ObjectId(&quot;51118e261caf692fdfc89517&quot;), &quot;username&quot; : &quot;mviera&quot;, &quot;age&quot; : 26, &quot;city&quot; : &quot;Sevilla&quot; }
+{ &quot;_id&quot; : ObjectId(&quot;51118e261caf692fdfc89518&quot;), &quot;username&quot; : &quot;robot&quot;, &quot;age&quot; : 32, &quot;city&quot; : &quot;Cadiz&quot; }
+{ &quot;_id&quot; : ObjectId(&quot;51118e261caf692fdfc89519&quot;), &quot;username&quot; : &quot;testuser&quot;, &quot;age&quot; : 20, &quot;city&quot; : &quot;Malaga&quot; }
+&gt; 
+</code></pre>
+
+<p>¡Bien! Pero&hellip; seguro que os estáis preguntando por ese campo llamado <code>_id</code>&hellip;
+¿Qué significa?¿Por qué está ahí?</p>
+
+<p>En MongoDB todo documento tiene que tener un <strong>identificador único dentro de la
+colección</strong> que puede ser especificado explicitamente con el campo <code>_id</code> dentro
+del documento, y si no se especifica ninguno, Mongo creará uno automáticamente
+por nosotros sin que tengamos que preocuparnos de ello.</p>
+
+<p>De esta forma, podemos introducir un nuevo documento que sí tenga especificado
+un <code>_id</code> por nosotros:</p>
+
+<pre><code>&gt; db.users.insert({_id: 101, username:&quot;iloveyou&quot;, age: 12, likes: &quot;destroy your computer&quot;})
+&gt;
+</code></pre>
+
+<p>Y si ahora volvemos a recuperar todos los documentos de la colección <code>users</code>,
+debería aparecer el nuevo documento en la lista:</p>
+
+<pre><code>&gt; db.users.find()
+{ &quot;_id&quot; : ObjectId(&quot;51118e261caf692fdfc89517&quot;), &quot;username&quot; : &quot;mviera&quot;, &quot;age&quot; : 26, &quot;city&quot; : &quot;Sevilla&quot; }
+{ &quot;_id&quot; : ObjectId(&quot;51118e261caf692fdfc89518&quot;), &quot;username&quot; : &quot;robot&quot;, &quot;age&quot; : 32, &quot;city&quot; : &quot;Cadiz&quot; }
+{ &quot;_id&quot; : ObjectId(&quot;51118e261caf692fdfc89519&quot;), &quot;username&quot; : &quot;testuser&quot;, &quot;age&quot; : 20, &quot;city&quot; : &quot;Malaga&quot; }
+{ &quot;_id&quot; : 101, &quot;username&quot; : &quot;iloveyou&quot;, &quot;age&quot; : 12, &quot;likes&quot; : &quot;destroy your computer&quot; }
+&gt;
+</code></pre>
+
+<p>¿Recordáis lo que comentaba al principio sobre <em>schemaless</em>? Si se observa el
+listado de documentos anterior, se puede ver que los campos de los tres
+primeros documentos son <em>username</em>, <em>age</em> y <em>city</em>. Pero sin embargo, el nuevo
+documento introducido no solo no utiliza el campo <em>city</em> sino que además
+incluye uno nuevo llamado <em>likes</em>.</p>
+
+<p>Esto es debido a la flexibilidad que ofrece MongoDB en sus esquemas, es decir,
+no todos los documentos tienen que tener los mismo campos, sino que pueden
+incluirse o no ciertos campos según convenga. De hecho, podría haberse incluido
+el campo <code>city</code> con un valor <code>null</code> pero si no lo incluimos, en el futuro
+ahorraremos espacio en la base de datos.</p>
+
+<h2 id="toc_8">Retrospectiva</h2>
+
+<p>Después de todo esto, algo habrá ocurrido en nuestro directorio <em>data/</em> donde
+se alojan las bases de datos. Si listamos el contenido del directorio,
+deberíamos ver algo como lo siguiente:</p>
+
+<pre><code>mviera@mongodb:~/mongodb$ ls -lh data/
+total 209M
+drwxrwxr-x 2 mviera mviera 4.0K Feb  6 02:40 _tmp
+drwxrwxr-x 2 mviera mviera 4.0K Feb  6 03:22 journal
+-rwxrwxr-x 1 mviera mviera    0 Feb  6 03:22 mongod.lock
+-rw------- 1 mviera mviera  64M Feb  6 03:08 mydb.0
+-rw------- 1 mviera mviera 128M Feb  6 02:12 mydb.1
+-rw------- 1 mviera mviera  16M Feb  6 03:08 mydb.ns
+</code></pre>
+
+<p>Podemos observar que se han creado dos ficheros <code>mydb.0</code> y <code>mydb.1</code> que
+contienen los datos; y otro fichero llamado <code>mydb.ns</code> que contiene el
+namespace. Si no estoy equivocado, y si lo estoy, por favor corregidme, MongoDB
+creará nuevos ficheros cuando los actuales ocupen un tamaño de 2G, con el fin
+de facilitar el traslado de estos fichero a través de la red, etc.</p>
+
+<h2 id="toc_9">Apaga y vámonos</h2>
+
+<p>Por último y para terminar el post, os comentaré cómo podemos para el servidor
+Mongo de forma correcta. Es muy sencillo, solamente tenemos que cambiar a la
+base de datos llamada <code>admin</code>:</p>
+
+<pre><code>&gt; use admin
+switched to db admin
+&gt; db
+admin
+&gt; 
+</code></pre>
+
+<p>y ejecutar el método <code>shutdownServer</code> de la siguiente forma:</p>
+
+<pre><code>&gt; db.shutdownServer()
+Wed Feb  6 03:29:30 DBClientCursor::init call() failed
+Wed Feb  6 03:29:30 query failed : admin.$cmd { shutdown: 1.0 } to: 127.0.0.1:27017
+server should be down...
+</code></pre>
+
+<p>¡Y esto es todo por ahora! Espero que el post haya sido de vuestro agrado y
+agradeceros a aquellos que hayáis llegado leyendo hasta esta linea. ¡Gracias!</p>
+
+<p>Con respecto a MongoDB es tipo de base de datos nueva para mi y que me está
+gustando bastante. Estoy estudiándola y aprendiendo a través de un curso de
+10gen, la empresa que la desarrolla. El curso es totalmente gratuito, no se si
+es posible apuntarse a estas alturas, ya que lleva tres semanas, pero os
+recomiendo que lo tengáis en cuenta para próximas ediciones. Podeis encontrarlo
+en <a href="https://education.10gen.com">https://education.10gen.com</a></p>
+
+<p>¡No olvideis comentar vuestras dudas o sugerencias!</p>
+
+<p>Un saludo, Manu.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Empezando con MongoDB [14 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/empezando-con-mongodb/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

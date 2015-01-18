@@ -1,0 +1,1025 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Nosql on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/nosql/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Sat, 02 Mar 2013 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Empezando con MongoDB Part.II</title>
+      <link>http://blog.manuelviera.es/blog/empezando-con-mongodb-part-ii/</link>
+      <pubDate>Sat, 02 Mar 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/empezando-con-mongodb-part-ii/</guid>
+      <description>
+
+&lt;p&gt;En mi &lt;a href=&#34;/blog/empezando-con-mongodb/&#34;&gt;anterior post&lt;/a&gt; hablaba sobre &lt;a href=&#34;/blog/empezando-con-mongodb/&#34;&gt;cómo empezar
+con MongoDB&lt;/a&gt;, una base de datos NoSQL orientada a
+documentos; y como sigo estudiándola y me parece interesante, me gustaría
+seguir compartiendo y profundizando sobre el uso de MongoDB, así que he
+decidido escribir una segunda parte de este anterior post.&lt;/p&gt;
+
+&lt;p&gt;El objetivo de este post es bien sencillo. Cubrirá las operaciones principales
+básicas de MongoDB, también conocidas como operaciones &lt;strong&gt;CRUD&lt;/strong&gt;, que significa
+&lt;strong&gt;C&lt;/strong&gt; reate, &lt;strong&gt;R&lt;/strong&gt; ead, &lt;strong&gt;U&lt;/strong&gt; pdate y &lt;strong&gt;D&lt;/strong&gt; elete. ¡Así que empecemos con ello!&lt;/p&gt;
+
+&lt;p&gt;Antes de nada empezaremos recordando cómo iniciar nuestra base de datos
+utilizando el comando &lt;code&gt;mongod&lt;/code&gt;. Recordad que debemos especificar la ruta donde
+se almacenará la base de datos utilizando el parámetro &lt;code&gt;--dbpath&lt;/code&gt;. Dicho esto,
+podremos ejecutar una instrucción como la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mongod --dbpath test
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En este caso he utilizado un directorio llamado &lt;em&gt;test&lt;/em&gt; donde alojaré esta base
+de datos de pruebas. Apuntar que al no especificar un puerto con el parámetro
+&lt;code&gt;--port&lt;/code&gt;, la instancia de &lt;code&gt;mongod&lt;/code&gt; utilizará el puerto &lt;code&gt;27017&lt;/code&gt; por defecto.&lt;/p&gt;
+
+&lt;p&gt;Esta instrucción tiene un &amp;ldquo;inconveniente&amp;rdquo; y es que no podremos seguir
+utilizando nuestra consola actual, pues la ejecución de &lt;code&gt;mongod&lt;/code&gt; se realiza en
+primer plano, o &lt;em&gt;foreground&lt;/em&gt;. Para evitar esto podemos hacer uso del parámetro
+&lt;code&gt;--fork&lt;/code&gt; que creará un &lt;em&gt;fork&lt;/em&gt; del proceso del servidor permitiendo poder seguir
+utilizando nuestra consola. La opción &lt;code&gt;--fork&lt;/code&gt; requiere que se especifique
+además un fichero de log utilizando el parámetro &lt;code&gt;--logpath&lt;/code&gt; o &lt;code&gt;--syslog&lt;/code&gt;, así
+que la instrucción quedaría de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mongod --dbpath test --logappend --logpath test.log --fork
+forked process: 10017
+all output going to: /home/mviera/Downloads/mongodb/test.log
+child process started successfully, parent exiting
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; Además he utilizado la opción &lt;code&gt;--logappend&lt;/code&gt; para evitar que
+sobrescriba el contenido del fichero de log. En este caso seguirá concatenando
+datos al contenido actual del fichero.&lt;/p&gt;
+
+&lt;p&gt;Una vez funcionando nuestra instancia de &lt;code&gt;mongod&lt;/code&gt;, podemos conectarnos a la
+consola utilizando el comando &lt;code&gt;mongo&lt;/code&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mongo
+MongoDB shell version: 2.2.3
+connecting to: test
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; No es necesario especificar el puerto porque se está utilizando el
+puerto por defecto (&lt;code&gt;27017&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;Todo listo, así que ¡empecemos a crear documentos!&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;Introduciendo contenido&lt;/h2&gt;
+
+&lt;p&gt;Seguro que muchos ya os imagináis cómo se realiza este tipo de operación básica
+en una base de datos SQL como MySQL, PosgreSQL, SQLite, etc; pero en MongoDB se
+realiza de una forma muy diferente, por lo menos referente a cómo se realiza en
+una base de datos SQL.&lt;/p&gt;
+
+&lt;p&gt;Una inserción de datos sencilla en SQL podría ser de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;INSERT INTO users (firstName, lastName, username, age, city)
+VALUES (&#39;Manuel&#39;, &#39;Viera&#39;, &#39;mviera&#39;, 26, &#39;Sevilla&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En MongoDB es completamente diferente. En mi anterior post ya traté rápidamente
+las inserciones y si recordáis, comentaba que MongoDB está orientado a
+documentos y que estos documentos siguen el estilo JSON (JavaScript Object
+Notation).&lt;/p&gt;
+
+&lt;p&gt;Para realizar una inserción en MongoDB utilizaremos el método &lt;code&gt;insert()&lt;/code&gt; al que
+llamaremos pasándole como parámetro el documento a introducir, el cual,
+siguiendo el ejemplo anterior, sería representado en formato JSON de la
+siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;,
+  &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;,
+  &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;,
+  &amp;quot;age&amp;quot; : 26,
+  &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Recordad también que en MongoDB los documentos se almacenan en colecciones (o
+&lt;em&gt;collections&lt;/em&gt; en inglés), así que para seguir con el ejemplo introduciremos
+este documento en una colección llamada &lt;code&gt;users&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.insert({
+ firstName: &amp;quot;Manuel&amp;quot;,
+ lastName: &amp;quot;Viera&amp;quot;,
+ username: &amp;quot;mviera&amp;quot;,
+ age: 26,
+ city: &amp;quot;Sevilla&amp;quot;
+ })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Bien. ¿Qué tenemos hasta ahora? Por defecto cuando nos conectamos a una
+instancia MongoDB sin especificar una base de datos, se utilizará por defecto
+&lt;code&gt;test&lt;/code&gt;. Así que hemos creado un documento dentro de la colección &lt;code&gt;users&lt;/code&gt; en la
+base de datos &lt;code&gt;test&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; A modo de recordatorio, no es necesario crear previamente la
+colección antes de introducir documentos. MongoDB lo hará por nosotros
+automáticamente si la colección no existe.&lt;/p&gt;
+
+&lt;p&gt;¿Pero cómo recuperamos los datos introducidos?&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Recuperando los documentos&lt;/h2&gt;
+
+&lt;p&gt;Para seleccionar, buscar, encontrar documentos dentro de nuestra colección
+utilizaremos uno de los siguientes métodos:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;find()&lt;/code&gt; : que devolverá un cursor con todos los documentos recuperados de la base de datos.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;findOne()&lt;/code&gt; : que devuelve solamente un documento.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;El uso de &lt;code&gt;find()&lt;/code&gt; es muy sencillo, como podéis ver a continuación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find()
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;), &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;, &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;, &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En este caso tanto &lt;code&gt;find()&lt;/code&gt; como &lt;code&gt;findOne()&lt;/code&gt; devolverán resultados idénticos,
+pues ahora mismo sólo contamos con un documento en nuestra colección &lt;code&gt;users&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.findOne()
+{
+        &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;),
+        &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;,
+        &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;,
+        &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;,
+        &amp;quot;age&amp;quot; : 26,
+        &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot;
+}
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si os fijáis en un detalle, &lt;code&gt;findOne()&lt;/code&gt; devuelve el contenido de una forma
+mucho más legible al ojo humano que &lt;code&gt;find()&lt;/code&gt;. Esto también podemos conseguirlo
+con &lt;code&gt;find()&lt;/code&gt; si utilizamos además el método &lt;code&gt;pretty()&lt;/code&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find().pretty()
+{
+        &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;),
+        &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;,
+        &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;,
+        &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;,
+        &amp;quot;age&amp;quot; : 26,
+        &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Al igual que &lt;code&gt;pretty()&lt;/code&gt; también podemos utilizar otros métodos como &lt;code&gt;count()&lt;/code&gt;
+que nos devuelve la cantidad total de documentos devueltos:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find().count()
+1
+&amp;gt;
+
+O directamente sobre la colección `users` para saber el total de documentos de dicha colección:
+
+&amp;gt; db.users.count()
+5
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si introducimos más documentos de prueba, se aprecia que el contador total de
+documentos cambia:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.insert({firstName:&amp;quot;Paco&amp;quot;, lastName:&amp;quot;Laverdaque&amp;quot;, username: &amp;quot;laverdaque&amp;quot;, age: 40, city: &amp;quot;Madrid&amp;quot;})
+&amp;gt; db.users.insert({firstName:&amp;quot;Raul&amp;quot;, lastName:&amp;quot;Martin&amp;quot;, username: &amp;quot;rmartin&amp;quot;, age: 39, city: &amp;quot;Malaga&amp;quot;})
+&amp;gt; db.users.insert({firstName:&amp;quot;Jose&amp;quot;, lastName:&amp;quot;Castillo&amp;quot;, username: &amp;quot;lolo&amp;quot;, age: 25, city: &amp;quot;Cadiz&amp;quot;})
+&amp;gt; db.users.insert({firstName:&amp;quot;Jose Luis&amp;quot;, lastName:&amp;quot;Romero&amp;quot;, username: &amp;quot;selu&amp;quot;, age: 27, city: &amp;quot;Barcelona&amp;quot;})
+&amp;gt; 
+&amp;gt; db.users.count()
+5
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero no siempre vamos a querer recuperar todos los documentos de nuestra colección&amp;hellip;&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;¿Cómo filtrar documentos?&lt;/h3&gt;
+
+&lt;p&gt;Seguro que muchos ya estáis pensando en la cláusula &lt;code&gt;WHERE&lt;/code&gt; de las sentencias
+SQL. Por ejemplo, si quisiéramos recuperar aquellos usuarios cuya ciudad es
+Sevilla, con una sentencia SQL sería:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; SELECT * FROM users WHERE city=&amp;quot;Sevilla&amp;quot;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Sin embargo, en MongoDB es de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find({ city: &amp;quot;Sevilla&amp;quot; })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;De esta forma, pasamos como parámetro un documento JSON con la cláusula a
+cumplir, en este caso que la clave &lt;strong&gt;city&lt;/strong&gt; tenga como valor &lt;em&gt;Sevilla&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;¿Y cómo podemos concatenar cláusulas? Es decir, cómo sería si quisiéramos
+recuperar aquellos usuarios cuya ciudad es Sevilla &lt;strong&gt;y&lt;/strong&gt; además su edad sea 26:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find({ city: &amp;quot;Sevilla&amp;quot;, age: 26 })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como se puede observar, solamente se necesita agregar una segunda clave o campo
+al documento JSON que se le pasa al método &lt;code&gt;find()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; MongoDB aplica por defecto un &lt;strong&gt;AND&lt;/strong&gt; entre cláusulas, es decir,
+imaginaos que la coma (&lt;strong&gt;,&lt;/strong&gt;) es un operador &lt;strong&gt;AND&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Para utilizar un operador &lt;strong&gt;OR&lt;/strong&gt; deberemos usar el operador &lt;code&gt;$or&lt;/code&gt; de MongoDB,
+de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find({ $or: [ {city:&amp;quot;Sevilla&amp;quot;}, {city:&amp;quot;Malaga&amp;quot;} ] })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En este caso hemos recuperado aquellos usuarios cuya ciudad es Sevilla &lt;strong&gt;o&lt;/strong&gt;
+Málaga.&lt;/p&gt;
+
+&lt;p&gt;Podéis aprender más sobre operadores en
+&lt;a href=&#34;http://docs.mongodb.org/manual/reference/operators/&#34;&gt;http://docs.mongodb.org/manual/reference/operators/&lt;/a&gt;.
+Algunos de ellos son:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;$gt&lt;/code&gt;: mayor que (o &lt;em&gt;greater than&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;`$lt: menor que (o &lt;em&gt;lower than&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$gte&lt;/code&gt;: mayor o igual que (o &lt;em&gt;greather or equal than&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$lte&lt;/code&gt;: menor o igual que (o &lt;em&gt;lower or equal than&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$not&lt;/code&gt;: no (negación o &lt;em&gt;not&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$in&lt;/code&gt;: en, para buscar dentro de un array.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$nin&lt;/code&gt;: no en, para buscar algo que no se encuentre en un determinado array (o &lt;em&gt;not in&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$ne&lt;/code&gt;: no es igual a (o &lt;em&gt;not equal to&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Pero, no siempre vamos a querer recuperar todos los campos de un documento,
+quizás solo necesitemos un algunos de ellos&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;¿Cómo seleccionar ciertos campos?&lt;/h2&gt;
+
+&lt;p&gt;Al igual que en una sentencia &lt;code&gt;SELECT&lt;/code&gt;, en una base de datos SQL, podemos
+especificar qué determinados campos queremos obtener tras seleccionar los
+documentos, en MongoDB también podemos hacerlo.&lt;/p&gt;
+
+&lt;p&gt;Hasta ahora hemos estado utilizando &lt;code&gt;find()&lt;/code&gt; como una sentencia SQL &lt;code&gt;SELECT *&lt;/code&gt;,
+es decir:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;es equivalente a&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; SELECT * FROM users;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero ¿y si lo que queremos es solamente recuperar los campos &lt;em&gt;username&lt;/em&gt; y
+&lt;em&gt;age&lt;/em&gt;? En una sentencia SQL sería de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; SELECT username, age, city FROM users;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En cambio, en MongoDB sería de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find({}, {username:1, age:1})
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26 }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fdc8350e650534c68d8f&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;laverdaque&amp;quot;, &amp;quot;age&amp;quot; : 40 }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fe00350e650534c68d90&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;rmartin&amp;quot;, &amp;quot;age&amp;quot; : 39 }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fe20350e650534c68d91&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;lolo&amp;quot;, &amp;quot;age&amp;quot; : 25 }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fe80350e650534c68d92&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;selu&amp;quot;, &amp;quot;age&amp;quot; : 27 }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Sin embargo, como podéis observar, aunque no hemos especificado el campo &lt;code&gt;_id&lt;/code&gt;
+sigue apareciendo en la salida. Como ya comenté en el anterior post, MongoDB
+siempre muestra el campo &lt;code&gt;_id&lt;/code&gt; a menos que especifiquemos explicitamente que no
+queramos que lo haga. Y sería de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find( {}, { username:1, age:1, _id:0 })
+{ &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26 }
+{ &amp;quot;username&amp;quot; : &amp;quot;laverdaque&amp;quot;, &amp;quot;age&amp;quot; : 40 }
+{ &amp;quot;username&amp;quot; : &amp;quot;rmartin&amp;quot;, &amp;quot;age&amp;quot; : 39 }
+{ &amp;quot;username&amp;quot; : &amp;quot;lolo&amp;quot;, &amp;quot;age&amp;quot; : 25 }
+{ &amp;quot;username&amp;quot; : &amp;quot;selu&amp;quot;, &amp;quot;age&amp;quot; : 27 }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En resumen, si analizamos la sintaxis del método &lt;code&gt;find()&lt;/code&gt;, primero se
+especifica un documento JSON con las cláusulas del filtro que queremos aplicar
+y a continuación, si lo preferimos, podemos activar o desactivar cierto campos
+de la salida:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;1&lt;/strong&gt; : indica que queremos que muestre el campo especificado.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;0&lt;/strong&gt; : indica que no queremos que dicho campo se muestre en la salida.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;toc_4&#34;&gt;Actualizando datos de los documentos&lt;/h1&gt;
+
+&lt;p&gt;Una vez que somos capaces de introducir documentos en nuestra colección,
+recuperarlos todos o aquellos que nos interesan utilizando una &lt;em&gt;query&lt;/em&gt; es hora
+de conocer cómo podemos actualizar los datos de nuestros documentos.&lt;/p&gt;
+
+&lt;p&gt;Para ello utilizaremos el método &lt;code&gt;update()&lt;/code&gt; cuya sintaxis es la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.collection.update( &amp;lt;query&amp;gt;, &amp;lt;update&amp;gt;, options )
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;El parámetro &lt;code&gt;&amp;lt;query&amp;gt;&lt;/code&gt; hace referencia a una query como las que usabamos con el comando &lt;code&gt;find()&lt;/code&gt;, la cual nos permitirá seleccionar aquellos documentos los cuales queremos modificar. De otra forma, si no se especifica una query se estarían seleccionando todos los documentos de una colección.&lt;/li&gt;
+&lt;li&gt;El parámetro &lt;code&gt;&amp;lt;update&amp;gt;&lt;/code&gt; en el que podemos especificar un documento completo, que actualizará cada uno de los campos del documento seleccionado; o también podemos especificar solamente el campo del documento que queremos especificar, lo cual es más eficiente comparado con actualizar todos los campos del documento.&lt;/li&gt;
+&lt;li&gt;Y con respecto a las opciones podemos citar:&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;upsert&lt;/code&gt;: si se establece este parámetro a &lt;strong&gt;true&lt;/strong&gt; y no hay documento que coincida con la &lt;code&gt;&amp;lt;query&amp;gt;&lt;/code&gt; especificada, el método &lt;code&gt;update()&lt;/code&gt; insertará un nuevo documento en la colección con los valores especificados en el parámetro &lt;code&gt;&amp;lt;update&amp;gt;&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;multi&lt;/code&gt; : por defecto MongoDB solo actualiza un documento al mismo tiempo, si necesitamos actualizar más de un documento al mismo tiempo debemos establecer este parámetro a &lt;strong&gt;true&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Actualizar un documento completo&lt;/h2&gt;
+
+&lt;p&gt;Esta no es la forma más eficiente de actualizar el contenido de un documento,
+como comenté anteriormente, pues es necesario que se especifique el contenido
+completo del documento, y en caso de ser un documento muy grande puede llegar a
+ser bastante ineficiente, ya que tendra que actualizarse el valor de cada campo
+aunque no hay cambiado.&lt;/p&gt;
+
+&lt;p&gt;Imaginemos que queremos modificar un documento para cambiar solamente el valor
+del campo &lt;strong&gt;age&lt;/strong&gt; (edad). Tendríamos que realizar lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.update({ username: &amp;quot;rmartin&amp;quot; }, { &amp;quot;firstName&amp;quot; : &amp;quot;Raul&amp;quot;, &amp;quot;lastName&amp;quot; : &amp;quot;Martin&amp;quot;, &amp;quot;username&amp;quot; : &amp;quot;rmartin&amp;quot;, &amp;quot;age&amp;quot; : 40, &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot; } })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Con esta instrucción hemos cambiado el valor del campo &lt;strong&gt;age&lt;/strong&gt; de 39 a 40, incluyendo los demás campos que serán actualizados con los mismos datos.&lt;/p&gt;
+
+&lt;p&gt;También es posible hacerlo de la siguiente forma para nuestra comodidad:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; user = db.users.findOne({ username:&amp;quot;rmartin&amp;quot; })
+{
+        &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fe00350e650534c68d90&amp;quot;),
+        &amp;quot;firstName&amp;quot; : &amp;quot;Raul&amp;quot;,
+        &amp;quot;lastName&amp;quot; : &amp;quot;Martin&amp;quot;,
+        &amp;quot;username&amp;quot; : &amp;quot;rmartin&amp;quot;,
+        &amp;quot;age&amp;quot; : 39,
+        &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot;
+}
+&amp;gt; user.age 
+39
+&amp;gt; 
+&amp;gt; user.age = 40
+40
+&amp;gt; 
+&amp;gt; db.users.update({ username:&amp;quot;rmartin&amp;quot; }, user )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Recupero el documento completo referente al usuario cuyo &lt;em&gt;username&lt;/em&gt; es &lt;em&gt;rmartin&lt;/em&gt; y lo almaceno en la variable &lt;code&gt;user&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Compruebo el valor actual del campo &lt;em&gt;age&lt;/em&gt; accediendo al objeto &lt;code&gt;user&lt;/code&gt; haciendo uso del &lt;em&gt;dot notation&lt;/em&gt; (notación por punto: user.campo)&lt;/li&gt;
+&lt;li&gt;Modifico el valor del campo &lt;em&gt;age&lt;/em&gt; estableciéndolo a 40.&lt;/li&gt;
+&lt;li&gt;Utilizo el método &lt;code&gt;update()&lt;/code&gt; seleccionando de nuevo el mismo objeto que al principio (usando la misma query) e indico el nuevo documento a continuación, en este caso, almacenado en la variable &lt;code&gt;user&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Actualizando un campo concreto de un documento&lt;/h2&gt;
+
+&lt;p&gt;Sin embargo, existe una alternativa mucho más eficiente para actualizar el
+valor de ciertos campos en un documento. Para ello será necesario volver a
+hacer uso de los operadores como los anteriormente citados. Algunos de estos
+son:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;$set&lt;/code&gt;: que permite establecer un nuevo valor a un campo del documento. Si el campo no existe actualmente en el documento, será creado automáticamente. Por ejemplo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.update({ age: 26, city: &amp;quot;Sevilla&amp;quot; }, { $set: { weight: 68.9 } })
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;En este caso se ha seleccionado un usuario cuya edad sea 26 y su ciudad
+Sevilla, y se ha añadido el campo &lt;strong&gt;weight&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;$addToSet&lt;/code&gt;: para añadir elementos un array. Por ejemplo, si quisieramos añadir un nuevo campo llamado &lt;em&gt;likes&lt;/em&gt; con los gustos de un usuario:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.update({ username:&amp;quot;mviera&amp;quot; }, {$addToSet: { likes: &amp;quot;photography&amp;quot; }})
+&amp;gt; db.users.update({ username:&amp;quot;mviera&amp;quot; }, {$addToSet: { likes: &amp;quot;music&amp;quot; }})
+&amp;gt;
+&amp;gt; db.users.findOne({ username: &amp;quot;mviera&amp;quot; })
+{
+    &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;),
+    &amp;quot;age&amp;quot; : 26,
+    &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot;,
+    &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;,
+    &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;,
+    &amp;quot;likes&amp;quot; : [
+            &amp;quot;photography&amp;quot;,
+            &amp;quot;music&amp;quot;
+    ],
+    &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;,
+    &amp;quot;weight&amp;quot; : 68.9
+}
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;$inc&lt;/code&gt;: permite incrementar el valor numérico de uno de los campos del documento. Por ejemplo, si quisieramos incrementar en 5 la edad del usuario &lt;em&gt;mviera&lt;/em&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.update({ username:&amp;quot;mviera&amp;quot; }, {$inc: {age: 5}})
+&amp;gt; db.users.find({ username: &amp;quot;mviera&amp;quot; }, {username: 1, age: 1, _id:0})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;{ &amp;ldquo;age&amp;rdquo; : 31, &amp;ldquo;username&amp;rdquo; : &amp;ldquo;mviera&amp;rdquo; }&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Para más información acerca de los operadores utilzados en el método &lt;code&gt;update()&lt;/code&gt;
+podéis consultar
+&lt;a href=&#34;http://docs.mongodb.org/manual/applications/update/#update-operators&#34;&gt;http://docs.mongodb.org/manual/applications/update/#update-operators&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_7&#34;&gt;Eliminando documentos&lt;/h2&gt;
+
+&lt;p&gt;Para eliminar documentos de nuestra colección utilizaremos el método &lt;code&gt;remove()&lt;/code&gt;
+en la shell de MongoDB. Si ya sabes cómo utilizar el método &lt;code&gt;find()&lt;/code&gt; no
+supondrá ningún problema porque solamente requiere que se le especifique el
+filtro o búsqueda de los documentos que se quieren eliminar. Su sintaxis es la
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.collection.remove( &amp;lt;query&amp;gt;, &amp;lt;justOne&amp;gt; )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;De forma que si queremos eliminar de la colección todos los usuarios cuya edad
+sea mayor a 30 utilizaríamos la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.remove({ age: { $gt: 30 } })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El parámetro &lt;code&gt;justOne&lt;/code&gt; permite indicar al método &lt;code&gt;remove()&lt;/code&gt; si queremos
+eliminar solamente un documento de todos los coincidentes. En ese caso, se debe
+pasar el valor &lt;em&gt;true&lt;/em&gt; o &lt;em&gt;1&lt;/em&gt;, de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.remove({ age: { $gt: 30 } }, true )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Es posible utilizar el método &lt;code&gt;remove()&lt;/code&gt; para eliminar todos los documentos de
+una colección si no se especifica una query o si ésta está vacía, es decir,
+&lt;code&gt;db.users.remove({})&lt;/code&gt;. Pero en este caso, si queremos eliminar todos los
+documentos de una colección, es recomendable utilizar el método &lt;code&gt;drop()&lt;/code&gt;, que
+&lt;strong&gt;elimina la colección completa&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.drop()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Y eso es todo! Espero que os haya sido útil y por lo menos hayáis aprendido
+algo nuevo. Intentaré seguir escribiendo sobre MongoDB, ahora que ya conocemos
+lo básico, lo mejor está por llegar: ReplicaSets, Indexes, Shardings, etc.&lt;/p&gt;
+
+&lt;p&gt;¡No olvidéis comentar vuestras impresiones y correcciones!&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Empezando con MongoDB</title>
+      <link>http://blog.manuelviera.es/blog/empezando-con-mongodb/</link>
+      <pubDate>Wed, 06 Feb 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/empezando-con-mongodb/</guid>
+      <description>
+
+&lt;p&gt;Normalmente muchos de los que nos dedicamos a la informática, cuando escuchamos
+el término &lt;em&gt;base de datos&lt;/em&gt; o &lt;em&gt;database&lt;/em&gt; (en inglés) pensamos directamente en un
+tipo de base de datos, las bases de datos relacionales, como MySQL, PostgreSQL,
+etc; quizás porque son las más comunes y utilizadas durante mucho tiempo. Pero
+esto está cambiando.&lt;/p&gt;
+
+&lt;p&gt;Desde hace un tiempo hasta ahora han ido proliferando otro tipo de base de
+datos conocidas como &lt;em&gt;NoSQL&lt;/em&gt; y seguro que conocéis algunas como: &lt;strong&gt;Memcached&lt;/strong&gt;,
+una caché tipo clave-valor en RAM, su variante &lt;strong&gt;MemcacheDB&lt;/strong&gt; que almacena
+datos clave-valor en disco usando &lt;strong&gt;BerkeleyDB&lt;/strong&gt;; &lt;strong&gt;Redis&lt;/strong&gt;, otra base de datos
+de tipo clave-valor; o &lt;strong&gt;MongoDB&lt;/strong&gt; que a diferencia de las anteriores, está
+&lt;strong&gt;orientada a documentos&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es MongoDB?&lt;/h2&gt;
+
+&lt;p&gt;Primero, ¿Qué significa &lt;em&gt;NoSQL&lt;/em&gt;? El término &lt;em&gt;NoSQL&lt;/em&gt; se utiliza para indicar que
+dicha base de datos no utiliza el sistema relacional tan ampliamente utilizado.
+Las bases de datos &lt;em&gt;NoSQL&lt;/em&gt; no se construyen sobre &lt;em&gt;tablas&lt;/em&gt; y normalmente
+tampoco utilizan el lenguaje &lt;em&gt;SQL&lt;/em&gt; para realizar consultas.&lt;/p&gt;
+
+&lt;p&gt;Muchos sistemas &lt;em&gt;NoSQL&lt;/em&gt; utilizan una arquitectura distribuida y tolerante a
+fallos, lo que permite mantener los datos en varios servidores de forma
+redundante. De esta forma es bastante fácil escalar el sistema añadiendo más
+servidores. Normalmente este tipo de base de datos escala horizontalmente
+permitiendo administrar grandes cantidades de datos.&lt;/p&gt;
+
+&lt;p&gt;El nombre de &lt;strong&gt;MongoDB&lt;/strong&gt; proviene de &amp;ldquo;hu&lt;strong&gt;mongo&lt;/strong&gt;us&amp;rdquo;, que significa enorme en
+inglés, y es una base de datos &lt;em&gt;NoSQL&lt;/em&gt; software libre, escalable y de alto
+rendimiento escrita en C++.&lt;/p&gt;
+
+&lt;p&gt;Algunas de las características más importantes de MongoDB son:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Almacenamiento orientado a documentos (&lt;em&gt;document-oriented&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;Replicación y Alta Disponibilidad.&lt;/li&gt;
+&lt;li&gt;Soporte de índices.&lt;/li&gt;
+&lt;li&gt;Consultas, también basadas en documentos.&lt;/li&gt;
+&lt;li&gt;Auto-Sharding, permitiendo escalar horizontalmente.&lt;/li&gt;
+&lt;li&gt;GridFS, que permite almacenar ficheros de cualquier tamaño sin necesidad de complicar el entorno.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;¿Orientado a documentos?&lt;/h2&gt;
+
+&lt;p&gt;Si hubiera que destacar una de las características anteriormente citadas, en mi
+opinión, la más importante ahora mismo sería la de &lt;em&gt;orientado a documentos&lt;/em&gt; o
+&lt;em&gt;document-oriented&lt;/em&gt;, ya que se trata de un concepto fundamental para entender
+cómo funciona y cómo trabajar con MongoDB.&lt;/p&gt;
+
+&lt;p&gt;El almacenamiento de los datos en MongoDB utiliza documentos &lt;strong&gt;JSON&lt;/strong&gt;
+(JavaScript Object Notation), contando con un esquema dinámico y totalmente
+flexible. De hecho se dice que MongoDB es &lt;em&gt;schemaless&lt;/em&gt; (sin esquema).&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_2&#34;&gt;¿Pero qué es un documento JSON?&lt;/h4&gt;
+
+&lt;p&gt;De forma rápida y sencilla, un documento JSON no es más que descripción de un
+objecto en formato JSON, un formato muy rápido para el intercambio de datos y
+muy legible para el humano (&lt;em&gt;human-readable&lt;/em&gt; en inglés).&lt;/p&gt;
+
+&lt;p&gt;Un documento JSON podria tener la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;username&amp;quot;:&amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot;: 26, &amp;quot;city&amp;quot;: &amp;quot;Sevilla&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Este documento describe un usuario cuyo &amp;ldquo;&lt;em&gt;username&lt;/em&gt;&amp;rdquo; es &amp;ldquo;mviera&amp;rdquo;, con una edad
+de 26 años y cuya ciudad es &amp;ldquo;Sevilla&amp;rdquo;.&lt;/p&gt;
+
+&lt;p&gt;En JSON hay 6 tipos de datos diferentes:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Number&lt;/li&gt;
+&lt;li&gt;String&lt;/li&gt;
+&lt;li&gt;Boolean (true o false)&lt;/li&gt;
+&lt;li&gt;Array&lt;/li&gt;
+&lt;li&gt;Object&lt;/li&gt;
+&lt;li&gt;null&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Podéis aprender más sobre JSON en &lt;a href=&#34;http://json.org/json-es.html&#34;&gt;http://json.org/json-es.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;¿Cómo se instala?&lt;/h2&gt;
+
+&lt;p&gt;La instalación de MongoDB es bastante sencilla. La versión actual de MongoDB es
+&lt;strong&gt;2.2.3&lt;/strong&gt;, en el momento en que escribo este artículo.&lt;/p&gt;
+
+&lt;p&gt;Su instalación se puede llevar a cabo a través del sistema de paquetería de
+nuestra distribución, APT, Aptitude, Yum&amp;hellip; En Debian el nombre del paquete que
+contiene el servidor de MongoDB se llaman &lt;strong&gt;mongodb-server&lt;/strong&gt; y el paquete que
+contiene el cliente y otras utilidades de MongoDB se llama &lt;strong&gt;mongodb-clients&lt;/strong&gt;.
+Así que si estamos en un sistema Debian o derivado, podemos instalarlo de la
+siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~$ sudo apt-get update
+mviera@mongodb:~$ sudo apt-get install mongodb-server mongodb-clients
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;También podemos descargar los binarios desde la propia web oficial de MongoDB
+&lt;a href=&#34;http://www.mongodb.org/downloads&#34;&gt;www.mongodb.org&lt;/a&gt; o el código fuente si lo
+que queremos es compilar nuestro propio MongoDB. Hay binarios disponibles para
+OS X, Linux, Windows para plataformas de 32 y 64bits; y Solaris 64 bits.&lt;/p&gt;
+
+&lt;p&gt;Si lo que queremos es realizar un despliegue en producción, recomendaría
+instalar utilizando el sistema de paquetería del sistema con el que contaremos
+con futuras actualizaciones de seguridad, etc. Si el objetivo es aprender
+MongoDB, podemos instalarlo tanto a través del sistema de paquetería, como
+descargando los binarios desde la web de MongoDB.&lt;/p&gt;
+
+&lt;p&gt;En este caso voy a descargar los binarios de MongoDB desde la sección de
+descargas de la web oficial, ya que lo utilizaré para aprender y enseñaros
+MongoDB. Son binarios precompilados, así que no será necesario instalar ningún
+paquete adicional en nuestro sistema.&lt;/p&gt;
+
+&lt;p&gt;Para ello, descargamos el tarball que se ajuste a nuestro sistema, en este
+caso, Linux x86-64:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~$ wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-2.2.3.tgz
+mviera@mongodb:~$ tar xzf mongodb-linux-x86_64-2.2.3.tgz                                         
+mviera@mongodb:~$ ln -s mongodb-linux-x86_64-2.2.3 mongodb                   
+mviera@mongodb:~$ cd mongodb
+mviera@mongodb:~/mongodb$ 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; he creado un enlace simbólico llamado &lt;em&gt;mongodb&lt;/em&gt; para evitar tener
+acceder a un directorio con un nombre tan largo y complejo.&lt;/p&gt;
+
+&lt;p&gt;Si listamos el contenido del directorio recién descomprimido, deberíamos tener
+algo similar a los siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ tree 
+.
+|-- GNU-AGPL-3.0
+|-- README
+|-- THIRD-PARTY-NOTICES
+`-- bin
+    |-- bsondump
+    |-- mongo
+    |-- mongod
+    |-- mongodump
+    |-- mongoexport
+    |-- mongofiles
+    |-- mongoimport
+    |-- mongooplog
+    |-- mongoperf
+    |-- mongorestore
+    |-- mongos
+    |-- mongosniff
+    |-- mongostat
+    `-- mongotop
+
+1 directory, 17 files
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Entre ellos se encuentran el fichero de licencia &lt;em&gt;GNU-AGPL-3.0&lt;/em&gt;, el
+fichero&lt;em&gt;README&lt;/em&gt; y &lt;em&gt;THIRD-PARTY-NOTICES&lt;/em&gt;; y el directorio &lt;em&gt;bin/&lt;/em&gt; que contiene
+todos los binarios y utilidades necesarios para empezar con MongoDB. Aunque hay
+una buena selección de utilidades, de momento sólo vamos a utilizar &lt;strong&gt;mongod&lt;/strong&gt;
+y &lt;strong&gt;mongo&lt;/strong&gt; para familiarizarnos con MongoDB.&lt;/p&gt;
+
+&lt;p&gt;Si la instalación de MongoDB se ha realizado utilizando el sistema de
+paquetería del sistema, estas utilidades y herramientas se encontrarán en los
+directorios habituales como &lt;em&gt;/usr/bin&lt;/em&gt;. En caso de Debian, es posible consultar
+los ficheros instalados con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~$ dpkg -L mongodb-server mongodb-clients
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;Primera toma de contacto&lt;/h2&gt;
+
+&lt;p&gt;Una vez tenemos MongoDB instalado en nuestro sistema, lo primero que debemos
+hacer es iniciar la base de datos. Para ello utilizaremos &lt;em&gt;mongod&lt;/em&gt;. Si se ha
+instalado utilizando paquetería, es posible que se haya iniciado la base de
+datos automáticamente, especialmente en distribuciones basadas en Debian.&lt;/p&gt;
+
+&lt;p&gt;Antes de ejecutarlo se necesita especificar el directorio donde se alojará la
+base de datos. Por defecto, MongoDB buscará el directorio &lt;em&gt;/data/db&lt;/em&gt; y si no lo
+encuentra, se producirá un error como el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;*********************************************************************
+ ERROR: dbpath (/data/db/) does not exist.
+ Create this directory or give existing directory in --dbpath.
+ See http://dochub.mongodb.org/core/startingandstoppingmongo
+*********************************************************************
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Así que para evitar dicho error, crearemos un directorio local llamado &lt;em&gt;data&lt;/em&gt;
+en la ruta actual y especificaremos dicho directorio con el parámetro &lt;em&gt;&amp;ndash;
+dbpath&lt;/em&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ mkdir data 
+mviera@mongodb:~/mongodb$ ./bin/mongod --dbpath data
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si todo ha ido bien, deberíamos ver algo similar a la siguiente salida:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ ./bin/mongod --dbpath data/
+Wed Feb  6 01:36:44 [initandlisten] MongoDB starting : pid=1082 port=27017 dbpath=data/ 64-bit host=mongodb
+Wed Feb  6 01:36:44 [initandlisten] db version v2.2.3, pdfile version 4.5
+Wed Feb  6 01:36:44 [initandlisten] git version: f570771a5d8a3846eb7586eaffcf4c2f4a96bf08
+Wed Feb  6 01:36:44 [initandlisten] build info: Linux ip-10-2-29-40 2.6.21.7-2.ec2.v1.2.fc8xen ...
+Wed Feb  6 01:36:44 [initandlisten] options: { dbpath: &amp;quot;data/&amp;quot; }
+Wed Feb  6 01:36:44 [initandlisten] journal dir=data/journal
+Wed Feb  6 01:36:44 [initandlisten] recover : no journal files present, no recovery needed
+Wed Feb  6 01:36:44 [websvr] admin web console waiting for connections on port 28017
+Wed Feb  6 01:36:44 [initandlisten] waiting for connections on port 27017
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como se puede observar, MongoDB se encuentra funcionando en el puerto &lt;strong&gt;27017&lt;/strong&gt;
+por defecto, su directorio de almacenamiento de la base de datos se encuentra
+en &lt;strong&gt;dbpath=data/&lt;/strong&gt; y además ofrece una consola de administración en el puerto
+&lt;strong&gt;28017&lt;/strong&gt;, a través de la cual podemos visualizar el log, listar bases de
+datos, etc.&lt;/p&gt;
+
+&lt;p&gt;Si echamos un vistazo al directorio &lt;em&gt;data/&lt;/em&gt; deberíamos ver algo similar a lo
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ ls -l data/
+total 8
+drwxrwxr-x 2 mviera mviera 4096 Feb  6 01:36 journal
+-rwxrwxr-x 1 mviera mviera    5 Feb  6 01:36 mongod.lock
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Actualmente, sólo tendremos un directorio &lt;em&gt;journal/&lt;/em&gt; para recuperaciones de
+datos en caso de desastre y el fichero &lt;em&gt;mongod.lock&lt;/em&gt; que almacena el PID del
+proceso &lt;em&gt;mongod&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Interactuando con MongoDB&lt;/h2&gt;
+
+&lt;p&gt;Una vez tenemos nuestra base de datos MongoDB iniciada, el siguiente paso será
+conectar a ella utilizando la consola o &lt;em&gt;shell&lt;/em&gt;, en inglés, de Mongo. Para ello
+utilizaremos &lt;em&gt;mongo&lt;/em&gt; ejecutando la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ ./bin/mongo
+MongoDB shell version: 2.2.3
+connecting to: test
+Welcome to the MongoDB shell.
+For interactive help, type &amp;quot;help&amp;quot;.
+For more comprehensive documentation, see
+    http://docs.mongodb.org/
+Questions? Try the support group
+    http://groups.google.com/group/mongodb-user
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si todo va bien, espero que sí, deberíamos ver el prompt de MongoDB. Por
+defecto Mongo, si no se le especifica lo contrario, siempre conectará a una
+base de datos &lt;strong&gt;test&lt;/strong&gt; en la que podremos realizar todas las pruebas que
+queramos.&lt;/p&gt;
+
+&lt;p&gt;La &lt;em&gt;shell&lt;/em&gt; de Mongo es una shell interactiva de JavaScript, por lo que podremos
+hacer uso de código JavaScript en caso de que nos sea necesario. Es decir,
+podemos realizar operaciones básicas de JavaScript como las siguientes en la
+shell de Mongo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; 2 + 3
+5
+&amp;gt; 
+&amp;gt; 10 * 2
+20
+&amp;gt; 
+&amp;gt; var double = function (n1) { return n1 * n1 }
+&amp;gt; double(2)
+4
+&amp;gt; double
+function (n1) {
+    return n1 * n1;
+}
+&amp;gt; stuff = [1, 2, 3, 4]
+[ 1, 2, 3, 4 ]
+&amp;gt; for (n in stuff) { print( parseInt(n) * 2 ) }
+0
+2
+4
+6
+&amp;gt; var x = {name: &amp;quot;mviera&amp;quot;, age: 26}
+&amp;gt; x.age
+26
+&amp;gt; x.city = &amp;quot;Sevilla&amp;quot;
+Sevilla
+&amp;gt; x
+{ &amp;quot;name&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;IMPORTANTE:&lt;/strong&gt; Estas instrucciones &lt;strong&gt;NO&lt;/strong&gt; son de MongoDB, es puro JavaScript.
+&lt;strong&gt;La consola de MongoDB es una shell interactiva de JavaScript&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Familiarización con el entorno&amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;Bien. Estamos conectados a la consola de Mongo, así que nuestro siguiente paso
+será crear una base de datos. Podemos comprobar cuál es la base de datos que
+estamos usando actualmente llamando al objeto &lt;strong&gt;db&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db
+test
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Crear una base de datos es tan fácil como ejecutar lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; use mydb
+switched to db mydb
+&amp;gt; db
+mydb
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podemos observar que el valor del objeto &lt;em&gt;db&lt;/em&gt; ha cambiado a &lt;strong&gt;mydb&lt;/strong&gt;. Lo
+siguiente será crear una colección, llamado &lt;em&gt;collection&lt;/em&gt; en inglés. Las
+colecciones son los contenedores de los documentos en MongoDB. Serían las
+conocidas tablas que contienen los datos en las bases de datos relacionales.&lt;/p&gt;
+
+&lt;p&gt;Podemos crear una colección de prueba de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.createCollection(&amp;quot;test&amp;quot;)
+{ &amp;quot;ok&amp;quot; : 1 }
+&amp;gt; 
+&amp;gt; show collections
+system.indexes
+test
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero en MongoDB no es necesario crear una colección antes de introducir datos
+por primera vez, ya que Mongo comprobará previamente si existe la colección y
+si no, la creará automáticamente por nosotros.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.test2.insert({username:&amp;quot;mviera&amp;quot;})
+&amp;gt; 
+&amp;gt; show collections
+system.indexes
+test
+test2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como se puede observar, la colección &lt;strong&gt;test2&lt;/strong&gt; se ha creado automáticamente al
+crear el documento &lt;code&gt;{username:&amp;quot;mviera&amp;quot;}&lt;/code&gt; dentro de él. Con esto ya he
+introducido rápidamente la forma de introducir datos en una colección de
+MongoDB. De todas formas, la sintaxis de uso es la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.&amp;lt;nombre_coleccion&amp;gt;.verbo()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Donde &lt;code&gt;verbo()&lt;/code&gt; puede ser:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;insert&lt;/code&gt;: para insertar documentos en la colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;find&lt;/code&gt;: para buscar o seleccionar documentos dentro de la colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;count&lt;/code&gt;: para contar el total de documentos dentro de una colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;update&lt;/code&gt;: para actualizar uno o varios documentos dentro de una colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;remove&lt;/code&gt;: para eliminar documentos de la colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;drop&lt;/code&gt;: para eliminar una colección.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;toc_7&#34;&gt;Hagamos unos ejercicios&lt;/h2&gt;
+
+&lt;p&gt;Nuestra base de datos actual se llama &lt;code&gt;mydb&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db
+mydb
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y actualmente nuestra base de datos sólo contiene tres colecciones:
+&lt;code&gt;system.indexes&lt;/code&gt; (creada por MongoDB automáticamente), &lt;code&gt;test&lt;/code&gt; y &lt;code&gt;test2&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; show collections
+system.indexes
+test
+test2
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Crearemos tres documentos que describirán usuarios dentro de una colección que
+se llamará &lt;code&gt;users&lt;/code&gt;. Los datos a almacenar en los documentos serán: username,
+age (edad), y ciudad. Para ello utilizaremos el método &lt;code&gt;insert&lt;/code&gt; y podemos
+hacerlo de varias formas:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Directamente especificando el documento JSON en el método &lt;code&gt;insert()&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.insert({username:&amp;quot;mviera&amp;quot;,age:26,city:&amp;quot;Sevilla&amp;quot;})
+&amp;gt; db.users.insert({username:&amp;quot;robot&amp;quot;, age:32, city:&amp;quot;Cadiz&amp;quot;})
+&amp;gt; db.users.insert({username:&amp;quot;testuser&amp;quot;, age:20, city:&amp;quot;Malaga&amp;quot;})
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Almacenar los documentos en variables JavaScript y posteriormente utilizar
+dicha variable en &lt;code&gt;insert()&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; user1 = {username:&amp;quot;mviera&amp;quot;,age:26,city:&amp;quot;Sevilla&amp;quot;}
+{ &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+&amp;gt; user2 = {username:&amp;quot;robot&amp;quot;, age:32, city:&amp;quot;Cadiz&amp;quot;}
+{ &amp;quot;username&amp;quot; : &amp;quot;robot&amp;quot;, &amp;quot;age&amp;quot; : 32, &amp;quot;city&amp;quot; : &amp;quot;Cadiz&amp;quot; }
+&amp;gt; user3 = {username:&amp;quot;testuser&amp;quot;, age:20, city:&amp;quot;Malaga&amp;quot;}
+{ &amp;quot;username&amp;quot; : &amp;quot;testuser&amp;quot;, &amp;quot;age&amp;quot; : 20, &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot; }
+&amp;gt; 
+&amp;gt; 
+&amp;gt; db.users.insert(user1)
+&amp;gt; db.users.insert(user2)
+&amp;gt; db.users.insert(user3)
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Utilizando un for loop de JavaScript en la shell de Mongo para automatizar
+la tarea:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; users = [user1, user2, user3]
+&amp;gt; for (i = 0; i &amp;lt; users.length; i++) { db.users.insert(users[i]) }
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; Realmente en los tres casos hemos hecho lo mismo, pero solamente
+quería mostrar la potencia que ofrece la shell de Mongo, una shell de
+JavaScript.&lt;/p&gt;
+
+&lt;p&gt;Si consultamos de nuevo las colecciones disponibles en nuestra base de datos
+&lt;code&gt;mydb&lt;/code&gt;, podremos observar que MongoDB ha creado la colección &lt;code&gt;users&lt;/code&gt; por
+nosotros, y de forma automática:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; show collections
+system.indexes
+test
+test2
+users
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Después de esto, deberíamos ser capaces de saber cuántos documentos hay en la
+colección &lt;code&gt;users&lt;/code&gt;, pero podemos cerciorarnos utilizando el método &lt;code&gt;count&lt;/code&gt; en
+nuestra colección:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.count()
+3
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Perfecto! Eso quiere decir que hasta ahora ha ido todo de maravilla. Ya solo
+nos falta poder seleccionar dichos documentos, es decir, poder recuperar dicha
+información de la base de datos. Esto lo conseguiremos con el método &lt;code&gt;find&lt;/code&gt;,
+ejecutando lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find()
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89517&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89518&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;robot&amp;quot;, &amp;quot;age&amp;quot; : 32, &amp;quot;city&amp;quot; : &amp;quot;Cadiz&amp;quot; }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89519&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;testuser&amp;quot;, &amp;quot;age&amp;quot; : 20, &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot; }
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Bien! Pero&amp;hellip; seguro que os estáis preguntando por ese campo llamado &lt;code&gt;_id&lt;/code&gt;&amp;hellip;
+¿Qué significa?¿Por qué está ahí?&lt;/p&gt;
+
+&lt;p&gt;En MongoDB todo documento tiene que tener un &lt;strong&gt;identificador único dentro de la
+colección&lt;/strong&gt; que puede ser especificado explicitamente con el campo &lt;code&gt;_id&lt;/code&gt; dentro
+del documento, y si no se especifica ninguno, Mongo creará uno automáticamente
+por nosotros sin que tengamos que preocuparnos de ello.&lt;/p&gt;
+
+&lt;p&gt;De esta forma, podemos introducir un nuevo documento que sí tenga especificado
+un &lt;code&gt;_id&lt;/code&gt; por nosotros:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.insert({_id: 101, username:&amp;quot;iloveyou&amp;quot;, age: 12, likes: &amp;quot;destroy your computer&amp;quot;})
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y si ahora volvemos a recuperar todos los documentos de la colección &lt;code&gt;users&lt;/code&gt;,
+debería aparecer el nuevo documento en la lista:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find()
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89517&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89518&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;robot&amp;quot;, &amp;quot;age&amp;quot; : 32, &amp;quot;city&amp;quot; : &amp;quot;Cadiz&amp;quot; }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89519&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;testuser&amp;quot;, &amp;quot;age&amp;quot; : 20, &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot; }
+{ &amp;quot;_id&amp;quot; : 101, &amp;quot;username&amp;quot; : &amp;quot;iloveyou&amp;quot;, &amp;quot;age&amp;quot; : 12, &amp;quot;likes&amp;quot; : &amp;quot;destroy your computer&amp;quot; }
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¿Recordáis lo que comentaba al principio sobre &lt;em&gt;schemaless&lt;/em&gt;? Si se observa el
+listado de documentos anterior, se puede ver que los campos de los tres
+primeros documentos son &lt;em&gt;username&lt;/em&gt;, &lt;em&gt;age&lt;/em&gt; y &lt;em&gt;city&lt;/em&gt;. Pero sin embargo, el nuevo
+documento introducido no solo no utiliza el campo &lt;em&gt;city&lt;/em&gt; sino que además
+incluye uno nuevo llamado &lt;em&gt;likes&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Esto es debido a la flexibilidad que ofrece MongoDB en sus esquemas, es decir,
+no todos los documentos tienen que tener los mismo campos, sino que pueden
+incluirse o no ciertos campos según convenga. De hecho, podría haberse incluido
+el campo &lt;code&gt;city&lt;/code&gt; con un valor &lt;code&gt;null&lt;/code&gt; pero si no lo incluimos, en el futuro
+ahorraremos espacio en la base de datos.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_8&#34;&gt;Retrospectiva&lt;/h2&gt;
+
+&lt;p&gt;Después de todo esto, algo habrá ocurrido en nuestro directorio &lt;em&gt;data/&lt;/em&gt; donde
+se alojan las bases de datos. Si listamos el contenido del directorio,
+deberíamos ver algo como lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ ls -lh data/
+total 209M
+drwxrwxr-x 2 mviera mviera 4.0K Feb  6 02:40 _tmp
+drwxrwxr-x 2 mviera mviera 4.0K Feb  6 03:22 journal
+-rwxrwxr-x 1 mviera mviera    0 Feb  6 03:22 mongod.lock
+-rw------- 1 mviera mviera  64M Feb  6 03:08 mydb.0
+-rw------- 1 mviera mviera 128M Feb  6 02:12 mydb.1
+-rw------- 1 mviera mviera  16M Feb  6 03:08 mydb.ns
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podemos observar que se han creado dos ficheros &lt;code&gt;mydb.0&lt;/code&gt; y &lt;code&gt;mydb.1&lt;/code&gt; que
+contienen los datos; y otro fichero llamado &lt;code&gt;mydb.ns&lt;/code&gt; que contiene el
+namespace. Si no estoy equivocado, y si lo estoy, por favor corregidme, MongoDB
+creará nuevos ficheros cuando los actuales ocupen un tamaño de 2G, con el fin
+de facilitar el traslado de estos fichero a través de la red, etc.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_9&#34;&gt;Apaga y vámonos&lt;/h2&gt;
+
+&lt;p&gt;Por último y para terminar el post, os comentaré cómo podemos para el servidor
+Mongo de forma correcta. Es muy sencillo, solamente tenemos que cambiar a la
+base de datos llamada &lt;code&gt;admin&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; use admin
+switched to db admin
+&amp;gt; db
+admin
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y ejecutar el método &lt;code&gt;shutdownServer&lt;/code&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.shutdownServer()
+Wed Feb  6 03:29:30 DBClientCursor::init call() failed
+Wed Feb  6 03:29:30 query failed : admin.$cmd { shutdown: 1.0 } to: 127.0.0.1:27017
+server should be down...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Y esto es todo por ahora! Espero que el post haya sido de vuestro agrado y
+agradeceros a aquellos que hayáis llegado leyendo hasta esta linea. ¡Gracias!&lt;/p&gt;
+
+&lt;p&gt;Con respecto a MongoDB es tipo de base de datos nueva para mi y que me está
+gustando bastante. Estoy estudiándola y aprendiendo a través de un curso de
+10gen, la empresa que la desarrolla. El curso es totalmente gratuito, no se si
+es posible apuntarse a estas alturas, ya que lleva tres semanas, pero os
+recomiendo que lo tengáis en cuenta para próximas ediciones. Podeis encontrarlo
+en &lt;a href=&#34;https://education.10gen.com&#34;&gt;https://education.10gen.com&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;¡No olvideis comentar vuestras dudas o sugerencias!&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

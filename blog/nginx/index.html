@@ -1,0 +1,511 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Nginx
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2012-11-23" title="2012-11-23">November 23, 2012</time>
+            </div>
+            <h1 class="title">Nginx</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/nginx">#nginx</a>
+              
+              <a href="/tags/linux">#linux</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>Hace bastante tiempo que tengo en mente escribir un post sobre Nginx
+(pronunciado como &ldquo;engine x&rdquo;), aunque ya lo he comentado en algún otro post
+anterior, y creo que hoy va a ser el día. No por nada en especial, si no porque
+me apetece compartirlo y además es un servidor web que me gusta mucho y que, en
+ciertos aspectos, ha ido conquistando terreno de otros servidores web.</p>
+
+<h2 id="toc_0">¿Qué es Nginx?</h2>
+
+<p>Como decía, <a href="http://nginx.org/">Nginx</a> es un servidor HTTP libre, de código
+abierto, de alto rendimiento y que puede ser utilizado para actuar tanto como
+proxy HTTP reverso, como proxy IMAP/POP3. Nginx es famoso por ser muy ligero,
+ya que consume muy pocos recursos del sistema; es muy estable, y además su
+configuración es relativamente sencilla, bastante más simple a la vista que la
+configuración de Apache2.</p>
+
+<p>Su instalación es bastante sencilla también, independientemente de que lo
+hagamos mediante herramientas de paquetería o compilando del código fuente
+directamente.</p>
+
+<p>Como apunte, decir que fue escrito por <a href="http://sysoev.ru/en/">Igor Sysoev</a>, de
+origen ruso, escrito para solventar un problema llamado
+<a href="http://www.kegel.com/c10k.html">C10K</a>. Resumiendo, ser capaz de manejar 10.000
+clientes de forma simultanea.</p>
+
+<p>La primera vez que instalé Nginx, compilando desde las fuentes, fue allá por
+2008 simplemente por probarlo. No fue hasta 2009 ó 2010 cuando empecé a usarlo
+de verdad cuando trabajaba en <a href="http://yaco.es">Yaco Sistemas</a>, para realizar
+despliegues de aplicaciones web con Django. Y recuerdo que mi primer despliegue
+utilizando <a href="http://merengueproject.org/">Merengue Project</a> + Nginx + uWSGI, con
+el fin de ver si mejoraba el rendimiento y la verdad es que quedamos
+encantados. Así que vamos a instalarlo ya!</p>
+
+<h2 id="toc_1">Instalando Nginx ¿pero cómo?</h2>
+
+<p>Es posible que antes de instalar nos surjan dudas con respecto a la forma de
+instalar ya sea Nginx u otro software en nuestro sistema. Hay varias formas de
+instalar Nginx:</p>
+
+<ul>
+<li>Descargar el código fuente y seguir el proceso de instalación típico: configurar, compilar e instalar; también conocido como <strong>cmmi</strong> (<strong>c</strong>onfigure - <strong>m</strong>ake - <strong>m</strong>ake <strong>i</strong>nstall).</li>
+<li>Utilizando las herramientas de paquetería de nuestra distribución: <strong>Aptitude</strong> o <strong>APT</strong> si utilizamos una distribución basada en Debian, <strong>yum</strong> si utilizamos CentOS, RedHat, Fedora o similar; etc.</li>
+<li>Añadir el repositorio oficial de Nginx a nuestro sistema de paquetería, si hubiera alguno disponible y compatible; en caso de que no estuviese disponible el paquete en nuestra distribución.</li>
+<li>Descargar el paquete de instalación compatible con nuestro sistema de paquetería, de otra distribución e instalarlo con las herramientas habituales en nuestro sistema.</li>
+<li>Descargar un paquete de instalación (<strong>.deb</strong> o <strong>.rpm</strong>, por ejemplo) y convertirlo con <strong>alien</strong> si el paquete descargado no es compatible con nuestro sistema de paquetería.</li>
+</ul>
+
+<p>Todas estas formas permitirían instalar Nginx, pero <strong>no todas son
+aconsejables</strong>, según qué casos, me explico.</p>
+
+<p>Si se trata de una <strong>instalación en producción</strong>, y con ello me refiero a la
+instalación de Nginx en un servidor de un cliente, o en un servidor de
+producción para nuestra empresa; me decantaría sin dudar por la <strong>instalación
+mediante el sistema de paquetería</strong>. De esta forma, contaría con todas las
+posibles futuras actualizaciones de seguridad y/o correcciones del paquete de
+forma muy cómoda utilizando las herramientas de paquetería del sistema.</p>
+
+<p>Si la instalación de Nginx se va a realizar en un <strong>sistema antiguo</strong>, y en ese
+caso, si es que existe un paquete para Nginx en el sistema de paquetería, es
+probable que sea <strong>más antiguo y desactualizado</strong> que la versión actual de
+Nginx. Con lo que es muy posible que no cuente con mejoras de <strong>fallos de
+seguridad</strong>, arreglos de <strong>bugs</strong> encontrados, etc; en este caso,
+personalmente, optaría por una <strong>instalación desde las fuentes</strong>. Es cierto que
+antes de instalar desde las fuentes sopesaría mis necesidades sobre Nginx, es
+decir, si es una instalación en producción pero sólo voy a servir <strong>HTML
+estático</strong>, es muy posible que aun siendo una versión antigua de Nginx, hubiera
+optado por la <strong>instalación por PAQUETERÍa</strong>. Pero si el fin es servir una
+<strong>web más compleja</strong>, optaría por <strong>utilizar la versión estable más reciente de
+Nginx</strong> y <strong>compilar desde las fuentes</strong>.</p>
+
+<p>Con respecto a <strong>descargar un paquete de otra distribución</strong> o convertir el
+paquete con <strong>alien</strong>, <strong>no lo recomendaría</strong> a menos que fuera una situación
+extrema, que no haya otro camino, y si la distribución a la que pertenece el
+paquete es muy similar a la que estamos usando. En cualquier otro caso, no lo
+usaría nunca, ya que: <strong>no</strong> contamos con futuras <strong>actualizaciones</strong> del
+paquete, al pertenecer a otra distribución <strong>es posible que los ficheros se
+instalen</strong> en <strong>directorios no habituales en nuestra distribución</strong>, es posible
+que los <strong>scripts SysV</strong> del servicio <strong>no funcionen</strong>, etc.</p>
+
+<p>Esto sólo es mi humilde opinión de lo que haría en una situación real. Es
+imposible describir todas las posibilidades o dar unas directrices de qué hacer
+en una determinada situación, más que elegir una nosotros mismos basándonos en
+nuestro conocimiento, experiencia y muchos otros factores. En caso de dudar, si
+es posible, es aconsejable obtener una segunda opinión de un compañero o
+consultarlo con alguien con rango superior.</p>
+
+<p>Y bueno, después de esta parrafada (perdón), nos puede quedar claro, qué dos
+opciones de instalación elegiría yo, <strong>IMHO</strong> (¿qué pensais vosotros?) Así que
+veremos la instalación utilizando herramientas de paquetería y compilando desde
+el código fuente.</p>
+
+<h2 id="toc_2">Instalación por paquetería</h2>
+
+<p>La instalación por paquetería es bastante trivial si ya estamos familiarizados
+con estas herramientas. Bastaría con buscar el paquete en la base de datos de
+nuestro sistema de paquetería, ver el nombre e instalarlo.</p>
+
+<h3 id="toc_3">Debian</h3>
+
+<p>En <strong>Debian 7</strong> (wheezy) que es la que estoy usando actualmente hay varios
+paquetes de Nginx en los repositorios oficiales de Debian:</p>
+
+<ul>
+<li><code>nginx-light</code> : una versión &ldquo;light&rdquo; que sólo incluye un Nginx precompilado con unos cuantos módulos, pero no todos.</li>
+<li><code>nginx-full</code> : incluye Nginx precompilado con todos los módulos estandar incluidos.</li>
+<li><code>nginx-extras</code> : se trata de Nginx precompilado con todos los módulos estandar más una serie de módulos extras incluyendo algunos como Perl.</li>
+</ul>
+
+<p>Depende de las necesidades que tengamos instalaremos uno u otro, pero en este
+caso instalaré nginx-full, y para ello ejecutaremos la siguiente instrucción:</p>
+
+<pre><code>root@debian:~# apt-get install nginx-full
+</code></pre>
+
+<p>La instalación no tardará mucho en finalizar y tendremos instalado Nginx en
+nuestro sistema. Una de las ventajas de utilizar el sistema de paquetería de
+nuestro sistema frente a compilar nuestra propia versión de Nginx es que el
+paquete además de instalar Nginx, instala ciertas utilidades adicionales como
+pueden ser los scripts de inicio SysV y demás scripts que nos permiten
+arrancar, reiniciar o parar nuestro servidor Nginx. Para arrancar Nginx
+utilizaremos, como root, el comando <strong>service</strong>:</p>
+
+<pre><code>root@debian:~# service nginx start
+Starting nginx: nginx.
+</code></pre>
+
+<p>Si consultamos el estado utilizando el parámetro <strong>status</strong> podremos ver que
+Nginx ya se encuentra en funcionamiento:</p>
+
+<pre><code>root@debian:~# service nginx status
+nginx is running.
+</code></pre>
+
+<p>Para comprobar si realmente el puerto 80 (http/tcp) está escuchando podemos
+utilizar el comando <strong>netstat</strong> de la siguiente forma:</p>
+
+<pre><code>root@debian:~# netstat -ntp
+Active Internet connections (w/o servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 192.168.1.40:80         192.168.1.35:60110      ESTABLISHED 3262/nginx: worker
+</code></pre>
+
+<h3 id="toc_4">CentOS</h3>
+
+<p>En <strong>CentOS</strong> al parecer no hay paquete en los repositorios oficiales por
+defecto, así que hay que añadir primero el repositorio a nuestra lista de
+repositorios y luego instalarlo. Es muy fácil, sólo hay que hace lo siguiente:</p>
+
+<p>Podemos descargar el paquete <strong>RPM</strong> que instala la configuración del
+repositorio y posteriormente instalarlo con la utilida <code>rpm</code>, o instalarlo
+directamente con la utilidad <code>yum</code> pasando la URL completa hacia el fichero RPM
+de la siguiente forma:</p>
+
+<pre><code>[root@centos /]# yum install http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+</code></pre>
+
+<p>Una vez instalado, podemos consultar la configuración del repositorio de Nginx
+que se ha instalado en el fichero <code>/etc/yum.repos.d/nginx.repo</code>. Tras instalar
+la configuración del repositorio, ya solo nos queda utilizar <code>yum</code> para
+instalar Nginx:</p>
+
+<pre><code>[root@centos /]# yum install nginx
+</code></pre>
+
+<p>Ya solo nos queda arrancar nuestro Nginx utilizando la utilidad <code>service</code> al
+igual que hicimos en Debian.</p>
+
+<p><strong>IMPORTANTE:</strong> Es posible que en CentOS ya se encuentre ejecutándose una
+instancia de <code>httpd</code> (Apache2) por defecto. Antes de arrancar Nginx es
+necesario parar dicha instancia o Nginx informará con un error indicando que el
+puerto 80 (http/tcp) se encuentra ocupado.</p>
+
+<pre><code>[root@centos /]# service nginx start
+Starting nginx: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+</code></pre>
+
+<p>Si accedemos ahora utilizando nuestro navegador a <code>http://localhost:80</code> veremos
+un útil, pero poco bonito, mensaje: <strong>Welcome to nginx!</strong> El fichero de
+configuración para ambos casos se encuentra en <code>/etc/nginx/nginx.conf</code>.</p>
+
+<h2 id="toc_5">Instalando desde las fuentes</h2>
+
+<p>Antes de comenzar, deberemos disponer en nuestro sistema de ciertas utilidades
+que serán de vital importancia para poder compilar en nuestro sistema, como
+<strong>gcc</strong>, <strong>make</strong> y otras librerias de desarrollo que se necesitan instaladas
+para poder compilar Nginx:</p>
+
+<pre><code>root@debian:~# apt-get install gcc make libpcre3 libpcre3-dev zlib1g zlib1g-dev
+</code></pre>
+
+<p>Instalados los prerequisitos, procedemos entonces con la descarga de las
+fuentes de Nginx desde su sitio oficial:</p>
+
+<pre><code>root@debian:~# wget http://nginx.org/download/nginx-1.2.4.tar.gz
+</code></pre>
+
+<p>A continuación descomprimimos y procedemos con la configuración, compilación e
+instalación:</p>
+
+<pre><code>root@debian:~# tar xzf nginx-1.2.4.tar.gz 
+root@debian:~# cd nginx-1.2.4/
+root@debian:~/nginx-1.2.4# 
+root@debian:~/nginx-1.2.4# ./configure &amp;&amp; make &amp;&amp; make install
+</code></pre>
+
+<p>Por defecto, Nginx se instala en <code>/usr/local/</code> aunque podemos modificar este
+comportamiento con <code>./configure --prefix=/path/to/install/</code>. Como comentaba
+antes, esta vez no contamos con scripts de inicio SysV, así que tendremos que
+arrancar Nginx de forma manual, ejecutando directamente el binario de <code>nginx</code>:</p>
+
+<pre><code>root@debian:~# /usr/local/nginx/sbin/nginx
+</code></pre>
+
+<p>Si todo va bien, deberíamos tener inmediatamente el puerto 80 escuchando
+peticiones HTTP en nuestro sistema. Para para Nginx, también deberemos hacerlo
+de forma totalmente manual, utilizando la opción <code>-s</code> y pasándole el argumento
+<code>stop</code>; aunque también se puede hacer uso de otros argumentos como <code>quit</code>,
+<code>reopen</code> y <code>reload</code>:</p>
+
+<pre><code>root@debian:~# /usr/local/nginx/sbin/nginx -s stop
+</code></pre>
+
+<h2 id="toc_6">La configuración por defecto</h2>
+
+<p>La ubicación del fichero de configuración cambia dependiendo de la forma en que
+se haya instalado, a menos que cambiemos el comportamiento por defecto con
+<code>./configure --conf-path</code> al compilar desde las fuentes. Si Nginx ha sido
+instalado utilizando el sistema de paquetería se encontrará en
+<code>/etc/nginx/nginx.conf</code>. Sin embargo, si se ha compilado desde las fuentes y no
+se ha modificado la ruta del fichero de configuración, entonces lo más probable
+es que se encuentre en <code>/usr/local/nginx/conf/nginx.conf</code>. El contenido de este
+fichero es bastante similar en ambos casos, aunque por defecto, hay muchas
+lineas de ejemplo comentadas. Si eliminamos todos los comentarios, se puede
+apreciar que la configuración es bastante simple:</p>
+
+<pre><code>root@debian:~# grep -v &quot;#&quot; /usr/local/nginx/conf/nginx.conf |uniq
+
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+
+    keepalive_timeout  65;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+}
+</code></pre>
+
+<p>Como se puede ver, la configuración se estructura en bloques delimitados por
+llaves {} (en inglés <em>curly braces</em>) haciéndola mucho más legible que un bloque
+de configuración de Apache2, por ejemplo. Como parámetros a destacar, me
+gustaría comentar los siguientes:</p>
+
+<ul>
+<li><code>worker_processess</code> : indica el número de workers/procesos de nginx que se van a arrancar simultaneamente. Si establecemos <code>worker_processes</code> con valor 2, se ejecutarán dos procesos worker de Nginx.</li>
+<li><code>worker_connections</code> : hace referencia al número de conexiones por worker. Esto quiere decir que el número de conexiones que será capaz de servir nuestro servidor nginx corresponde a worker_processes x worker_connections. Según la configuración del ejemplo, solo aceptará 1024 conexiones simultaneas (1 (<em>worker_processes</em>) x 1024 (<em>worker_connections</em>)</li>
+<li><code>http {}</code> : bloque donde se especifica la configuración de cada servidos. Es posible configurar varios bloques <code>server {}</code> en un mismo bloque <code>http {}</code>, utilizando diferentes puertos lógicamente.</li>
+<li><code>server {}</code> : configuración para un servidor concreto, que normalmente se corresponderá con un número de puerto único.</li>
+<li><code>listen 80;</code> : puerto de escucha de Nginx. Se corresponde con la directiva <code>Listen</code> de Apache2</li>
+<li><code>server_name localhost;</code> : hostname o FQDN del servidor. Se corresponde con la directiva <code>ServerName</code> de Apache2.</li>
+<li><code>location</code> : configuración de un <code>location</code> concreto. Se corresponde con la directiva <code>Location</code> en Apache2.</li>
+<li><code>root</code> : directorio utilizado para buscar los ficheros estáticos. Se corresponde con la directiva <code>DocumentRoot</code> de Apache2.</li>
+</ul>
+
+<p>Bueno, eso es todo por hoy amigos, espero que os haya sido de utilidad para
+aquellos que no conocíais Nginx o aquellos que nunca lo habíais instalado. En
+próximos posts veremos diferentes tipos de configuración que podemos realizar
+con Nginx. Mientras tanto, podeis encontrar mucha más información en la wiki de
+Nginx en <a href="http://wiki.nginx.org/Main">http://wiki.nginx.org/Main</a></p>
+
+<p>Un saludo a todos y no dudéis en comentar! ;-)</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Nginx [10 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/nginx/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

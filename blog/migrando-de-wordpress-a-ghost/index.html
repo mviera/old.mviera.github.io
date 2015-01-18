@@ -1,0 +1,638 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Migrando de Wordpress a Ghost
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2013-12-28" title="2013-12-28">December 28, 2013</time>
+            </div>
+            <h1 class="title">Migrando de Wordpress a Ghost</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/blog">#blog</a>
+              
+              <a href="/tags/wordpress">#wordpress</a>
+              
+              <a href="/tags/ghost">#ghost</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>¡Hola!</p>
+
+<p>Hace ya bastante tiempo que no pasaba por aquí para escribir y compartir con el
+resto del mundo, pero he estado bastante liado (la excusa de siempre) y además
+decidí hace ya algún tiempo migrar mi blog de Wordpress a Ghost, que es de lo
+que vengo escribiendo hoy.</p>
+
+<p>Pero, como siempre, empecemos por el principio&hellip;</p>
+
+<h2 id="toc_0">¿Qué es Ghost?</h2>
+
+<p>Ghost es una plataforma de blogging de reciente aparición y que está teniendo
+bastante repercusión en Internet. El proyecto empezó en
+<a href="http://www.kickstarter.com/projects/johnonolan/ghost-just-a-blogging-platform">Kickstarter</a>
+donde se pedía financiación para poder llevar a cabo la creación de una
+plataforma Open Source para blogging, que ofreciese una experiencia placentera
+a la hora de escribir y que tuviera como objetivo eso, ser una plataforma bien
+diseñada para hacer una sola cosa: publicar.</p>
+
+<p>Su creador es <a href="http://john.onolan.org">John O&rsquo;Nolan</a> y es una aplicación
+<a href="http://nodejs.org/">Node.js</a> que hace uso del framework
+<a href="http://expressjs.com/">Express</a>. Ghost usa <a href="http://www.sqlite.org/">SQLite</a>
+como base de datos por defecto, lo cual indica que puede ejecutarse casi en
+cualquier sitio, sin embargo, usa <a href="http://jugglingdb.co/">JugglingDB</a> como ORM,
+que añade el soporte para el uso de otras bases de datos.</p>
+
+<p>Además Ghost está disponible desde <a href="https://npmjs.org/">NPM</a>, haciendo su
+instalación extremadamente simple y rápida en la mayoría de entornos.</p>
+
+<h2 id="toc_1">¿Por qué he migrado de Wordpress a Ghost?</h2>
+
+<p>A decir verdad Wordpress cumplía sobradamente mis necesidades como blogger
+ocasional, precisamente por eso, , porque Wordpress ya me empezaba a quedar
+grande en cuanto a consumo de recursos para un blog pequeño como es el mío.
+Realmente no usaba muchos plugins, que normalmente añaden carga y consumo de
+recursos, sino solamente algunos que necesitaba como:</p>
+
+<ul>
+<li>Akismet <a href="http://akismet.com/">http://akismet.com/</a></li>
+<li>Custom About Author: <a href="http://littlehandytips.com/plugins/custom-about-author/">http://littlehandytips.com/plugins/custom-about-author/</a></li>
+<li>Google Analytics for Wordpress: <a href="http://yoast.com/wordpress/google-analytics/">http://yoast.com/wordpress/google-analytics/</a></li>
+<li>Jetpack by Wordpress: <a href="http://wordpress.org/plugins/jetpack/">http://wordpress.org/plugins/jetpack/</a></li>
+<li>WP-Markdown</li>
+<li>WP-Cache</li>
+<li>WP-to-twitter: <a href="http://www.joedolson.com/articles/wp-to-twitter/">http://www.joedolson.com/articles/wp-to-twitter/</a></li>
+</ul>
+
+<p>Todo esto ya lo tengo de serie en Ghost, excepto Jetpack que es propio de
+Wordpress, pero que realmente solo servía para optimizar tu Wordpress, mejorar
+el sharing de los posts, y más funcionalidades que van agregando poco a poco al
+plugin con cada actualización.</p>
+
+<p>Además he de decir que estaba un poco harto ya de Wordpress y que, en mi
+opinión se ha convertido en &ldquo;un monstruo&rdquo; que está muy lejos de parecer para lo
+que se pensó en un principio. Ha pasado de ser una plataforma de blogging a ser
+un Framework PHP para crear sitios web, y que además puedes bloguear. Todo esto
+sin ánimo de ofender a nadie :-)</p>
+
+<p>Tras probar la primera versión de Ghost en mi portatil, quedé bastante
+impresionado con la simplicidad de su instalación y uso, es algo que llevaba ya
+esperando y buscando mucho tiempo. De hecho, el verano pasado estuve barajando
+la posibilidad de usar <a href="http://blog.getpelican.com/">Pelican</a> (con el que
+llegué a contactar con el creador y contribuir con él),
+<a href="http://hyde.github.io/">Hyde</a> o <a href="https://github.com/cloudhead/toto">Toto</a>, que
+son generadores de sitios estáticos, es decir, tienes tus posts escritos en
+Markdown y generas un blog o website estático a partir de ellos.</p>
+
+<p>Pero al fin me encontré con Ghost y quedé gratamente impresionado, desde el
+cual estoy ya escribiendo este post. He de decir también que el proyecto es aún
+muy reciente y algunas cosas como plugins están aún por llegar; pero en cuanto
+a themes ya se pueden encontrar algunos gratuitos y de pago en el
+<a href="http://marketplace.ghost.org/">Marketplace</a>.</p>
+
+<h2 id="toc_2">¿Lo instalamos?</h2>
+
+<p>Este blog está instalado y funcionando sobre una Debian 7 (Wheezy) en la cual
+el requisito fundamental de Ghost, que es Node.js, no se encuentra en los
+repositorios; por lo que he tenido que realizar una instalación alternativa.</p>
+
+<h3 id="toc_3">Node.js</h3>
+
+<p>Hay varias formas de instalar Node.js. Podemos descargar el código, compilar e
+instalar; el mismo proceso de siempre. Pero en este caso, me ha parecido mejor
+crear un paquete Debian (.deb), que a la larga es más fácil de desinstalar y/o
+actualizar.</p>
+
+<p>Para ello, primero instalaremos algunas dependencias necesarias en el sistema:</p>
+
+<pre><code>sudo apt-get install python g++ make checkinstall
+</code></pre>
+
+<p>A continuación, descargamos el código fuente de Node.js, descomprimimos el
+paquete y accedemos al directorio:</p>
+
+<pre><code>mkdir ~/node_js_src &amp;&amp; cd $_
+wget -N http://nodejs.org/dist/node-latest.tar.gz
+tar xzvf node-latest.tar.gz &amp;&amp; cd node-v*
+</code></pre>
+
+<p>Configuramos la compilación del paquete:</p>
+
+<pre><code>./configure
+</code></pre>
+
+<p>Pero esta vez no ejecutaremos <code>make &amp;&amp; make install</code>, sino que utilizaremos la
+utilidad <code>checkinstall</code> con la que podremos modificar los metadatos del
+paquete:</p>
+
+<pre><code>checkinstall
+</code></pre>
+
+<p><strong>Nota:</strong> Es necesario eliminar la <strong>v</strong> que aparece en la versión de Node.js
+(v0.10.24) y dejar solo los valores numéricos (0.10.24). En caso contrario, la
+compilación fallará.</p>
+
+<p>Por último, y una vez generado el paquete .deb, lo instalamos:</p>
+
+<pre><code>sudo dpkg -i node_*
+</code></pre>
+
+<h3 id="toc_4">Ghost</h3>
+
+<p>Lo primero es descargar el código fuente de Ghost, en este caso sera la versión
+<strong>latest</strong> que corresponde a la <em>v0.3.3</em>, en el momento de escribir este post:</p>
+
+<pre><code>$ curl -L https://ghost.org/zip/ghost-latest.zip -o ghost.zip
+</code></pre>
+
+<p>Descomprimimos el zip descargado y accedemos al directorio:</p>
+
+<pre><code>$ unzip -uo ghost.zip -d ghost
+$ cd /path/to/ghost
+</code></pre>
+
+<p>A continuación, para instalar Ghost y todas sus dependencias, será necesario
+ejecutar el siguiente comando:</p>
+
+<pre><code>$ npm install --production
+</code></pre>
+
+<p>Y una vez finalizada la instalación, podemos iniciar Ghost en modo desarrollo
+con la siguiente instrucción:</p>
+
+<pre><code>$ npm start
+</code></pre>
+
+<p>También podemos iniciarlo en modo producción con la siguiente instrucción:</p>
+
+<pre><code>$ npm start --production
+</code></pre>
+
+<p>Ghost estará ejecutándose en <a href="http://127.0.0.1:2368">http://127.0.0.1:2368</a></p>
+
+<p><strong>Nota:</strong>: podemos ejecutar Ghost con diferentes configuraciones, dependiendo
+si estamos en modo desarrollo o producción, para ello es recomendable ajustar
+esta configuración en el fichero <code>config.js</code>.</p>
+
+<p>Para acceder a la administración de Ghost, es necesario acceder a
+<a href="http://127.0.0.1:2368/ghost">http://127.0.0.1:2368/ghost</a> y crear el usuario administrador para poder hacer
+login.</p>
+
+<h3 id="toc_5">Nginx</h3>
+
+<p>Este paso no es necesario si lo que quieres es probar Ghost en tu portatil /
+pc. Pero sí que es recomendable si vas a pasar tu blog con Ghost a producción,
+que era mi caso. Es decir, tendremos como servidor web a Nginx escuchando en el
+puerto 80, que nos ayudará a gestionar mejor las peticiones de los usuarios,
+cacheo y compresión de los datos, etc.</p>
+
+<p>Para ello, obviamente necesitamos tener instalado Nginx en nuestro servidor.
+Tan simple como ejecutar la siguiente instrucción:</p>
+
+<pre><code>$ sudo apt-get install nginx
+</code></pre>
+
+<p>En mi caso, edité el fichero de configuración <code>/etc/nginx/nginx.conf</code> y dejé la
+configuración de la siguiente forma:</p>
+
+<pre><code>user www-data;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 768;
+}
+
+http {
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    server_names_hash_bucket_size 64;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    gzip on;
+    gzip_disable &quot;msie6&quot;;
+
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+</code></pre>
+
+<p>Hecho esto, forzamos a Nginx para que recargue la configuración:</p>
+
+<pre><code>$ sudo service nginx configtest
+$ sudo service nginx reload
+</code></pre>
+
+<p>Ya solo necesitamos configurar un VirtualHost en Nginx para servir el blog a
+través del puerto 80. En mi caso, la configuración que he utilizado ha sido la
+siguiente:</p>
+
+<pre><code>server {
+    listen 80;
+    server_name blog.example.org;
+    root /path/to/blog.example.org/;
+    index index.php;
+
+    if ($http_host != &quot;blog.example.org&quot;) {
+        rewrite ^ http://blog.example.org$request_uri permanent;
+    }
+
+    location / {
+        proxy_set_header X-Real-IP  $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Host $host;
+        proxy_pass http://127.0.0.1:2368;
+    }
+
+    location ~* \.(?:ico|css|js|gif|jpe?g|png|ttf|woff)$ {
+        access_log off;
+        expires 30d;
+        add_header Pragma public;
+        add_header Cache-Control &quot;public, mustrevalidate, proxy-revalidate&quot;;
+        proxy_pass http://127.0.0.1:2368;
+    }
+
+    location = /robots.txt { access_log off; log_not_found off; }
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+</code></pre>
+
+<p>Por último, activamos el VirtualHost y recargamos la configuración de Nginx:</p>
+
+<pre><code>$ cd /etc/nginx/sites-enabled
+$ sudo ln -s ../sites-available/blog.example.org
+$ sudo service nginx configtest
+$ sudo service nginx reload
+</code></pre>
+
+<h2 id="toc_6">¿Migramos?</h2>
+
+<p>La migración de Wordpress a Ghost lógicamente comprende más pasos que los
+listados anteriormente, que abarcan solamente el setup de Ghost inicialmente.
+Estos pasos y/o problemas durante la migración son realmente el objetivo de
+este post, así que aparecerán listados a continuación con la respectiva
+solución que he decidido aplicar para cada uno de ellos.</p>
+
+<p>He de decir que en mi caso, la migración ha supuesto pasos adicionales y la
+resolución de algunos problemas que me he ido encontrando</p>
+
+<h3 id="toc_7">#1 Extraer los datos de Wordpress</h3>
+
+<p>Bueno, una vez que tenemos Ghost funcionando, el siguiente paso para realizar
+la migración desde Wordpress es extraer todos los posts para importarlos,
+posteriormente, en Ghost. Para solucionar esto, seguí los siguientes pasos:</p>
+
+<ol>
+<li>Instalar en Wordpress un plugin llamado <strong>Ghost</strong>, que permite exportar tu blog para luego importarlo en una instalación de Ghost. Instalar este plugin es muy sencillo, desde el <em>panel de administración de Wordpress &gt; Plugins &gt; Add new</em>, buscarlo e instalarlo.</li>
+<li>Una vez instalado el plugin y desde <em>Dashboard de Wordpress &gt; Tools &gt; Export to Ghost</em>. Haciendo click en <strong>download ghost file</strong> obtendremos un fichero JSON con todos los posts de nuestro blog.</li>
+</ol>
+
+<h3 id="toc_8">#2 Importar posts en Ghost</h3>
+
+<p>Una vez tenemos todos nuestros posts en un fichero JSON, el siguiente paso
+lógico es importar esos datos en nuestra instalación Ghost. En este caso, los
+pasos a seguir son los siguientes:</p>
+
+<ol>
+<li>Acceder a la sección debug de Ghost en <a href="http://blog.example.org/ghost/debug">http://blog.example.org/ghost/debug</a></li>
+<li>Click en <em>Choose File</em> y seleccionar el fichero JSON descargado desde el plugin de Ghost en Wordpress.</li>
+<li>Click en <em>Import</em>.</li>
+</ol>
+
+<p>Si todo ha ido bien, todos los posts deberían estar visibles en Ghost.</p>
+
+<h3 id="toc_9">#3 Exportar los comentarios</h3>
+
+<p>En mi caso he tenido que exportar los comentarios que había en mis posts, ya
+que estaba usando hasta ahora el sistema de comentarios propio de Wordpress.</p>
+
+<p>Ghost no tiene un sistema de comentarios propio, así que se recomienda usar un
+servicio externo como <a href="http://disqus.com">Disqus</a>. Disqus funciona muy bien y
+se puede decir que es el servicio para alojar comentarios en websites / blogs
+por excelencia, así que decidí migrar todos los comentarios a Disqus.</p>
+
+<p>Hay varias formas de hacerlo, pero yo solo voy a describir la que yo usé, que
+es la exportación automática:</p>
+
+<ol>
+<li>Registrar un usuario en Disqus.</li>
+<li>Crear un sitio nuevo en Disqus y configurar un nombre para este sitio.</li>
+<li>En Wordpress, instalar el plugin <strong>Disqus Comment System</strong>.</li>
+<li>Acceder a la configuración del plugin y configurar el nombre del sitio creado en Disqus.</li>
+<li>En la configuración del plugin, click en <strong>Export comments to Disqus</strong>.</li>
+</ol>
+
+<p><strong>Nota:</strong> La exportación a Disqus no se inicia de forma instantanea, por lo que
+puede extenderse a varias horas.</p>
+
+<h3 id="toc_10">#4 Redirecciones permanentes en URLs</h3>
+
+<p>En mi blog en Wordpress tenía configuradas las URLs de los posts con la siguiente estructura:</p>
+
+<pre><code>/YYYY/MM/nombre-del-post
+</code></pre>
+
+<p>Por lo que se construían URLs como las siguientes:</p>
+
+<pre><code>http://blog.manuelviera.es/2011/01/configurando-los-clientes-sip/
+http://blog.manuelviera.es/2011/01/contribucion-a-trac-2/
+http://blog.manuelviera.es/2011/01/crontab/
+http://blog.manuelviera.es/2011/01/diagrama-y-componentes-de-red-con-asterisk/
+</code></pre>
+
+<p>Ghost no permite (aún) configurar URLs limpias de esta forma, sino que
+construye la URL incluyendo solamente el nombre del post. Para que Google no me
+penalice y los visitantes puedan seguir accediendo al blog desde las URLs ya
+indexadas en los buscadores, he tenido que añadir <code>rewrites</code> en el VirtualHost
+de Nginx. Algunos ejemplos de redirecciones permanentes son:</p>
+
+<pre><code>rewrite ^/2011/01/configurando-los-clientes-sip/ http://blog.manuelviera.es/configurando-los-clientes-sip/ permanent;
+rewrite ^/2011/01/contribucion-a-trac-2/ http://blog.manuelviera.es/contribucion-a-trac-2/ permanent;
+rewrite ^/2011/01/crontab/ http://blog.manuelviera.es/crontab/ permanent;
+rewrite ^/2011/01/diagrama-y-componentes-de-red-con-asterisk/ http://blog.manuelviera.es/diagrama-y-componentes-de-red-con-asterisk/ permanent;
+rewrite ^/2011/01/ficheros-de-configuracion-y-directorios-en-asterisk/ http://blog.manuelviera.es/ficheros-de-configuracion-y-directorios-en-asterisk/ permanent;
+</code></pre>
+
+<h3 id="toc_11">#5 Remapear URLs en los comentarios de Disqus</h3>
+
+<p>Una vez exportados todos los comentarios a Disqus me di cuenta que había un
+problema, y es que, lógicamente, Disqus almacena la URL donde se creó el
+comentario.</p>
+
+<p>Esto supone un problema y es que, aunque las redirecciones estén hechas y los
+comentarios exportados, si la URL que tiene Disqus almacenada para un
+comentario, no concuerda con la URL del post que se está visualizando, el
+comentario no se ve al final de ese post.</p>
+
+<p>Para solucionar esto tuve que remapear todas las URLs, que Disqus tenía
+almacenadas, por las nuevas. Para ello hay que seguir los siguienes pasos:</p>
+
+<ol>
+<li>Acceder al panel de administración de Disqus.</li>
+<li>Click en pestaña <em>Discussions &gt; Tools &gt; Upload a URL map</em>.</li>
+<li>Componer un fichero CSV que contenga un listado de todas las URLs antiguas y nuevas, separadas por comas entre sí (URL antigua,URL nueva).</li>
+</ol>
+
+<h3 id="toc_12">#6 Arreglar imágenes en los posts</h3>
+
+<p>En mi caso he tenido problemas con las imágenes ya que la exportación de los
+artículos no contemplaba la exportación de esta imágenes. Se recomienda hacer
+uso de un servicio externo de almacenamiento de imágenes pero en mi caso he
+querido alojar las imágenes en mi propio servidor, bajo un dominio diferente
+(static.blog.manuelviera.es).</p>
+
+<p>Para arreglar este problema seguí los siguientes pasos:</p>
+
+<ol>
+<li><p>Crear un directorio nuevo dentro del código de Ghost.</p>
+
+<pre><code>$ sudo mkdir /path/to/ghost/content/static/
+</code></pre></li>
+
+<li><p>Crear un nuevo VirtualHost en Nginx con el siguiente contenido:</p>
+
+<pre><code>server {
+    listen 80;
+    server_name static.blog.example.org;
+    root /path/to/blog.example.org/content/static/;
+    index index.php;
+}
+</code></pre></li>
+
+<li><p>Mover todas las imágenes especificadas a dicha ruta en el servidor.</p></li>
+
+<li><p>Modificar la URL a la que apunta cada imagen en cada post hacia la nueva ubicación.</p></li>
+</ol>
+
+<p>¡Al fin! Pues esta ha sido mi experiencia migrando mi blog personal desde
+Wordpress a Ghost, espero no haberme dejado nada, pero si detectáis que algo no
+funciona como debe, por favor, reportádmelo! :-)</p>
+
+<p>Espero que os sea de ayuda, ¡no os olvidéis de comentar! Para cualquier duda
+estoy a vuestra disposición :-D</p>
+
+<p>Un saludo y ¡felices fiestas!
+Manu.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Migrando de Wordpress a Ghost [10 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/migrando-de-wordpress-a-ghost/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

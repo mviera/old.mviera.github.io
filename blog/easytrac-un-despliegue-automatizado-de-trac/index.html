@@ -1,0 +1,400 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        EasyTrac, un despliegue automatizado de Trac
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2011-02-01" title="2011-02-01">February 01, 2011</time>
+            </div>
+            <h1 class="title">EasyTrac, un despliegue automatizado de Trac</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/trac">#trac</a>
+              
+              <a href="/tags/yaco">#yaco</a>
+              
+            </div>
+        </header>
+
+        <section>
+            <p>Como ya comenté en posts anteriores, en <a href="http://www.yaco.es"
+target="_blank">Yaco Sistemas</a> trabajamos a diario con Trac, todas nuestras
+tareas están en Trac, incluyendo documentación de proyectos, etc; en <a
+href="http://www.yaco.es" target="_blank">Yaco Sistemas</a> no eres nadie si no
+creas una wiki ;-)</p>
+
+<h2>Eso está muy bien, ¿pero qué es easyTrac?</h2>
+EasyTrac es un instalador basado en <a href="http://www.buildout.org/"
+target="_blank">zc.buildout</a> que despliega un entorno de Trac de forma
+automatizada incluyendo dependencias necesarias.
+
+Este instalador no solo puede ser utilizado para desarrollo sino que también
+podría utilizarse en un sistema de producción ya que los proyectos de Trac se
+despliegan bajo <a href="http://wiki.nginx.org/Main" target="_blank">Nginx</a>
+y <a href="http://projects.unbit.it/uwsgi/" target="_blank">uWSGI</a>, con lo
+que tendremos un sistema bastante rápido, estable y liviano en nuestro sistema.
+
+Si es cierto que para poder compilar Nginx y uWSGI, es necesario que se
+encuentren ciertas librerias de desarrollo en el sistema, por lo que deberemos
+tener instalados los siguientes paquetes en nuestro sistema:
+<ul>
+    <li>libpcre3-dev</li>
+    <li>libssl-dev</li>
+    <li>libxml2-dev</li>
+    <li>libxslt-dev</li>
+    <li>libsqlite3-dev</li>
+    <li>libzzip-dev</li>
+    <li>libapr1-dev</li>
+    <li>libaprutil1-dev</li>
+    <li>python-dev</li>
+</ul>
+
+<h2>Me parece correcto... ¿pero de dónde me lo descargo?</h2>
+
+<p>Puedes descargarlo de forma comprimida tanto en formato <a
+href="http://github.com/mviera/easyTrac/zipball/master">zip</a> como en formato
+<a href="http://github.com/mviera/easyTrac/tarball/master">tar.gz</a>.</p>
+
+<p>O si lo prefieres, puedes hacer un clone con Git de mi repositorio en <a
+href="https://github.com/mviera">Github</a> ejecutando lo siguiente:</p>
+
+<pre><code>$ git clone git://github.com/mviera/easyTrac
+</code></pre>
+
+<h2>Vale, ya lo tengo ¿y ahora cómo lo instalo?</h2>
+EasyTrac se puede instalar tanto como root como con cualquier usuario sin
+privilegios, ya que la instalación no interferirá para nada en nuestro sistema.
+Personalmente, prefiero instalar con un usuario sin privilegios.
+
+El instalador de easyTrac funciona sin tener que hacer ninguna modificación en
+la configuración, pero si quieres personalizar la configuración, puedes editar
+el fichero <strong>buildout.cfg </strong>y modificar alguno de los siguientes
+parámetros:
+<ul>
+    <li><strong>nginx-http-port</strong>: puerto utilizado por Nginx para escuchar las peticiones vía http.</li>
+    <li><strong>nginx-https-port</strong>: puerto a través del cual Nginx escuchará las peticiones vía https (en caso de que quieras usar https).</li>
+    <li><strong>supervisor-http-port</strong>: puerto utilizado por Supervisor.</li>
+    <li><strong>host</strong>: IP del host o FQDN (Fully Qualified Domain Name)</li>
+    <li><strong>socket-directory</strong>: directorio donde se almacenarán los sockets.</li>
+    <li><strong>pid-directory</strong>: directorio donde se alojarán los ficheros pid.</li>
+    <li><strong>log-directory</strong>: directorio de logs.</li>
+    <li><strong>trac-projects-directory</strong>: directorio donde se crearán los proyectos de Trac. Por defecto este directorio es <tt>&lt;installdir&gt;/opt/trac/</tt>.</li>
+    <li><strong>svn-repository-directory</strong>: directorio donde se crearán los repositorios de código SVN. Por defecto, este directorio es <tt>&lt;installdir&gt;/opt/svn/</tt>.</li>
+</ul>
+
+Una vez instaladas las anteriores dependencias, y configurados los parámetros de configuración, en caso de que quisieras personalizarlos, podemos seguir con la instalación, así que ejecutaremos lo siguiente:
+
+    $ python bootstrap.py
+
+Con esto prepararemos el entorno y una vez hecho, podremos lanzar la instalación ejecutando lo siguiente:
+
+    $ ./bin/buildout
+
+Comenzará el proceso de compilado de Nginx y uWSGI; y la instalación de los
+módulos de Python necesarios. Además, easyTrac compila Subversion e instala los
+bindings necesarios para que Trac pueda enlazarse con repositorios de código
+SVN.
+
+<h2>He ido a por un café y al volver ya estaba instalado ¿ahora qué hago?</h2>
+
+<p>EasyTrac incluye la instalación de <a href="http://supervisord.org/index.html"
+target="_blank">Supervisor</a>. Pero ¿qué es Supervisor? Es un sistema de
+control de procesos que nos va a permitir arrancar, parar y reiniciar cada uno
+de nuestros servicios. En easyTrac tendremos dos servicios:
+<strong>Nginx</strong> y <strong>uWSGI</strong>.</p>
+
+<p>La sintaxis de uso de Supervisor es la siguiente:</p>
+
+<pre><code>$ ./bin/supervisorctl
+</code></pre>
+
+<p>Por lo tanto si quisiéramos iniciar el servicio Nginx, ejecutaríamos lo siguiente:</p>
+
+<pre><code>$ ./bin/supervisorctl start nginx
+</code></pre>
+
+<p>En caso de querer pararlo, ejecutaremos:</p>
+
+<pre><code>$ ./bin/supervisorctl stop nginx
+</code></pre>
+
+<p>Y si quisiéramos reiniciarlo:</p>
+
+<pre><code>$ ./bin/supervisorctl restart nginx
+</code></pre>
+
+<p>Supervisor incluye una palabra especial llamada <strong>all</strong> que hace
+referencia a todos los servicios configurados en supervisor. Con ella podremos
+controlar todos los servicios al mismo tiempo. Por ejemplo, si quisiéramos
+reiniciar todos los servicios, ejecutaríamos lo siguiente:</p>
+
+<pre><code>$ ./bin/supervisorct restart all
+</code></pre>
+
+<p>Pero esto no es todo, es que además Supervisor, por si fuera poco, incluye una
+interfaz web desde la que podemos controlar nuestros servicios. Podremos
+acceder a ella accediendo a <a href="http://localhost:9000">http://localhost:9000</a></p>
+
+<p>Por defecto, el usuario es <strong>admin</strong> y la contraseña es
+<strong>admin.</strong> (nótese el punto al final de admin). Es posible cambiar
+estos datos editando la parte <code>[supervisor]</code> en el fichero
+<strong>buildout.cfg</strong> y volveremos a ejecutar la instrucción
+<code>./bin/buildout</code></p>
+
+<p>Ya tenemos nuestro entorno listo y accederemos a él a través de</p>
+
+<pre><code>http://localhost:8080
+</code></pre>
+
+<h2>¡Qué bien! ¿y ahora cómo creo un Trac?</h2>
+
+<p>Tranquilos, la creación de un proyecto Trac es muy sencilla. Utilizaremos el
+binario <strong>trac-admin</strong> creado por el instalador, y que se
+encuentra en el directorio <code>bin/</code>.</p>
+
+<p>Crearemos un proyecto llamado <strong>demo</strong>, por lo que ejecutaremos lo siguiente:</p>
+
+<pre><code>$ ./bin/trac-admin opt/trac/demo initenv demo sqlite:db/trac.db
+</code></pre>
+
+<p>Y ya que estamos, vamos a crear un repositorio SVN con el mismo nombre. Para ello utilizaremos el binario llamado <strong>svnadmin</strong> que podremos encontrar también en el directorio <code>bin/</code>.</p>
+
+<pre><code>$ ./bin/svnadmin create opt/svn/demo
+</code></pre>
+
+<h2>Fiuf! ahora solo falta que pudiera hacer backups de mis Tracs</h2>
+
+<p>Aunque no es una solución feténica, easyTrac cuenta con un comando
+<strong>backup</strong> con el que podremos comprimir nuestros proyectos y
+guardarlos en otra localización. Para ello, simplemente ejecutaremos la
+siguiente instrucción:</p>
+
+<pre><code>$ ./bin/backup
+</code></pre>
+
+<p>y todos los proyectos Trac serán comprimidos y guardados en un directorio
+llamado <code>backups/</code>.</p>
+
+<h2>Vale, tengo backups, quiero restaurarlos ¿cómo lo hago?</h2>
+
+<p>Tan simple como ejecutar lo siguiente:</p>
+
+<pre><code>$ ./bin/restore backups/backup-file.tar.gz
+</code></pre>
+
+<p>y todos los tracs serán restaurados automáticamente en el directorio, por
+defecto, <code>opt/trac/</code>.</p>
+
+<h2>No me convence. Quiero desinstalarlo.</h2>
+
+<p>Solamente es necesario parar todos los servicios:</p>
+
+<pre><code>$ ./bin/supervisorctl shutdown
+</code></pre>
+
+<p>y borrar el directorio de instalación:</p>
+
+<pre><code>$ rm -rf easyTrac
+</code></pre>
+
+<p>And that&rsquo;s all folks!!! ;-)</p>
+
+<p>Un saludo!</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="EasyTrac, un despliegue automatizado de Trac [5 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/easytrac-un-despliegue-automatizado-de-trac/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

@@ -1,0 +1,349 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Entendiendo umask
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2012-06-01" title="2012-06-01">June 01, 2012</time>
+            </div>
+            <h1 class="title">Entendiendo umask</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/linux">#linux</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>Ahora mismo estoy preparándome para obtener la certificación
+<a href="http://www.lpi.org/content/exam-101-objective-changes-july-2-2012">LPIC-1</a> y
+uno de los objetivos del tema que estoy estudiando es conocer y saber utilizar
+<strong>umask</strong>, pero me ha parecido que la documentación no es muy clara, al menos
+en el libro <a href="http://www.amazon.com/LPIC-1-Professional-
+Institute-Certification-Examenes/dp/8441527830">LPIC-1: Linux Professional Institute Certification: Guia de
+estudio: Examenes 101 y 102</a>, que es el que estoy leyendo.</p>
+
+<p>He buscado en otros libros de GNU/Linux y administración de sistemas que tengo,
+y tampoco me ha dejado satisfecho. Así que he decidido escribir este post con
+lo que se acerca de <strong>umask</strong> y aportar mi humilde granito de arena.</p>
+
+<h2 id="toc_0">¿Qué es umask?</h2>
+
+<p><strong>umask</strong> o <strong>u</strong>ser <strong>mask</strong>, la máscara de usuario usada para establecer los
+permisos a un fichero o directorio recién creado.</p>
+
+<p>Hagamos una prueba, crearé un fichero nuevo y veremos qué permisos tiene:</p>
+
+<pre><code>mviera@leonopteryx:~$ ls -l file.txt
+-rw-r--r-- 1 mviera users 0 jun  1 15:01 file.txt
+</code></pre>
+
+<p>Podemos observar que el fichero ha sido creado con permisos <strong>0644</strong>, es decir,
+lectura y escritura para el propietario y lectura para el grupo y para el resto
+de usuarios.</p>
+
+<p>Ahora crearé un directorio y mostraré los permisos como en el ejemplo anterior:</p>
+
+<pre><code>mviera@leonopteryx:~$ ls -l |grep umask
+drwxr-xr-x  2 mviera users       4096 jun  1 15:04 umask-test/
+</code></pre>
+
+<p>Se puede apreciar que los permisos para los directorios son diferentes, en este
+caso <strong>0755</strong>, o lo que es lo mismo, lectura, escritura y ejecución para el
+propietario; y lectura y ejecución para el grupo y para el resto de usuarios.</p>
+
+<p>Es posible que ahora mismo nos surjan varias preguntas, ¿por qué estos permisos
+y no otros?¿Dónde está definido este comportamiento? La respuesta, <strong>umask</strong>.</p>
+
+<h2 id="toc_1">Conociendo más a umask</h2>
+
+<p>Antes de seguir, lo primero que debemos saber es el valor de umask configurado
+en nuestro sistema. Normalmente su valor suele ser 022. Podemos averiguarlo
+ejecutando el comando <code>umask</code>:</p>
+
+<pre><code>mviera@leonopteryx:~$ umask
+022
+</code></pre>
+
+<p>El valor devuelto se encuentra en formato octal, es decir, como cuando se
+definen los permisos de un fichero con <code>chmod 755 file</code>.</p>
+
+<p>Es posible modificar el valor ejecutando <code>umask</code> y especificando el nuevo valor
+a continuación, como en el siguiente ejemplo:</p>
+
+<pre><code>mviera@leonopteryx:~$ umask 002
+mviera@leonopteryx:~$ umask
+002
+</code></pre>
+
+<p>Por tanto, si creamos ahora un fichero, veremos que los permisos iniciales
+serán diferentes a los del ejemplo anterior:</p>
+
+<pre><code>mviera@leonopteryx:~$ touch file2.txt
+mviera@leonopteryx:~$ ls -l file2.txt
+-rw-rw-r-- 1 mviera users 0 jun  1 18:03 file2.txt
+</code></pre>
+
+<p>Hay que tener en cuenta que si modificamos el valor de umask desde la consola,
+este cambio solo estará vigente en la sesión actual. Es decir, si abrimos una
+nueva consola el valor de umask se habrá restablecido al valor por defecto (que
+suele ser 022).</p>
+
+<p>Para modificar el valor de umask de forma permanente será necesario incluir
+dicha configuración en <code>/etc/profile</code> o <code>/etc/bash.bashrc</code> afectando el cambio
+a todo el sistema; o en los ficheros <code>~/.profile</code> o <code>~/.bashrc</code> si se quiere
+aplicar el cambio para un usuario en concreto.</p>
+
+<p>Pero&hellip;</p>
+
+<h2 id="toc_2">Cómo funciona umask</h2>
+
+<p>Los ficheros y directorios tienen definidos por defecto unos permisos base, 666
+para los ficheros y 777 para los directorios.</p>
+
+<p>El valor de umask es un valor octal que representa los bits a eliminar de los
+permisos base, así que para determinar el permiso inicial que obtendrá un
+fichero o directorio habrá que restar el valor de umask al permiso base.</p>
+
+<p>Por eso, cuando creamos un fichero, el permiso inicial de éste será 644
+(-rw-r&ndash;r&ndash;), valor resultante de realizar la operación 666 - 022. Al igual que
+cuando creamos un directorio, el permiso inicial será 755 (drwxr-xr-x),
+resultado de 777 - 022.</p>
+
+<p>Pero ojo! no se trata de una operación decimal, es decir, no es una resta de un
+número con otro, es una <strong>diferencia a nivel de bits</strong>.</p>
+
+<p><strong>umask</strong> realiza la <strong>diferencia a nivel de bits</strong> utilizando el operador
+<strong>AND</strong>. Para aclararlo, veamos un ejemplo con los permisos de un fichero:</p>
+
+<ol>
+<li><p>Los permisos base para un fichero son 666 y el valor de umask, por defecto,
+es 022. Estos son valores en <strong>formato octal</strong>, pero el kernel opera a nivel de
+bits, es decir, en binario. Así que traduciremos estos valores a binario:</p>
+
+<pre><code>666 = 110 110 110
+022 = 000 010 010
+</code></pre></li>
+
+<li><p>Para hacer la diferencia con el operador <strong>AND</strong> tendremos que invertir el
+valor de 022 con <strong>Not</strong>, quedando el siguiente valor:</p>
+
+<pre><code>Not 022 = 111 101 101
+</code></pre></li>
+
+<li><p>Aplicamos el operador <strong>AND</strong> entre ambos valores:</p>
+
+<pre><code>    666 = 110 110 110
+Not 022 = 111 101 101  AND
+--------------------------
+          110 100 100
+</code></pre></li>
+
+<li><p>El valor resultante es <code>111 100 100</code> que si lo volvemos a traducir a octal
+resulta ser 644.</p></li>
+</ol>
+
+<p>Espero que os sirva de ayuda, a mi me ha servido para afianzar conocimientos
+:-)</p>
+
+<p>Un saludo, Manu.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Entendiendo umask [4 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/entendiendo-umask/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

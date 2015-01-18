@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Nginx on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/nginx/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Sun, 06 Jan 2013 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Nginx como proxy HTTP</title>
+      <link>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</link>
+      <pubDate>Sun, 06 Jan 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</guid>
+      <description>
+
+&lt;p&gt;De regalo de Reyes os traigo un post bastante sencillo sobre Nginx. Se trata de
+configurar Nginx para que funcione como un proxy HTTP, pero antes de nada&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es un proxy?&lt;/h2&gt;
+
+&lt;p&gt;Un proxy no es más que un &lt;strong&gt;intermediario&lt;/strong&gt;, que es el significado que tiene la
+palabra &lt;em&gt;proxy&lt;/em&gt; en inglés, en la comunicación que se realiza entre dos puntos.
+Por ejemplo, entre un cliente, que puede ser un navegador web, petición Ajax,
+etc; y un servidor.  Hay muchos tipos o aplicaciones distintas para un proxy
+como pueden ser proxy inverso (reverse proxy), proxy transparente, proxy cache;
+y todas ellas se pueden combinar en una misma configuración. Por ejemplo
+podríamos configurar un proxy HTTP inverso con cache para acelerar el tiempo de
+respuesta de éste a medida que se va utilizando. En este caso vamos a
+configurar un proxy HTTP inverso, pero&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;¿Que nos ofrece un proxy HTTP inverso?&lt;/h2&gt;
+
+&lt;p&gt;Antes de nada, nuestro proxy, como su propio nombre indica, va a estar
+orientado al servicio HTTP o HTTPS (HTTP Secure), es decir, sólo va a trabajar
+con peticiones HTTP. Aunque Nginx como tal, también podría actuar como IMAP
+Proxy, un proxy para el protocolo IMAP (Internet Message Access Protocol) de
+correo, pero no va a ser este el caso. Como proxy inverso nos va a permitir:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Añadir &lt;strong&gt;seguridad&lt;/strong&gt;, protegiendo al resto de servidores web del ataque directo de los usuarios.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Reescribir&lt;/strong&gt; las &lt;strong&gt;URLs&lt;/strong&gt; según nuestras necesidades.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Securizar&lt;/strong&gt; el acceso a nuestras aplicaciones web con &lt;strong&gt;HTTPS&lt;/strong&gt;, es decir, podremos enrutar la petición HTTP hacia HTTPS y securizar la comunicación entre los dos puntos.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Imaginemos que en nuestra red corporativa o doméstica, tenemos varios
+servidores web en nuestra DMZ publicando diferentes aplicaciones web, pero
+queremos controlar la publicación de cada una de éstas al exterior. En ese
+caso, podríamos redirigir todo el tráfico HTTP entrante desde el firewall hacia
+el proxy HTTP y controlar la publicación de las aplicaciones web al exterior.
+Como he comentado anteriormente, podríamos añadir HTTPS obligatoriamente al
+acceder a una aplicación web, añadir autenticación básica (usuario y
+contraseña), etc.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Configuración&lt;/h2&gt;
+
+&lt;p&gt;Vamos a suponer que Nginx ya se encuentra instalado en nuestro sistema. Si no
+fuera el caso, es posible consultar mi anterior articulo sobre la &lt;a href=&#34;/blog/nginx/&#34;&gt;instalación
+de Nginx&lt;/a&gt;. La configuración que
+obtengo, eliminando los comentarios, tras haber instalado Nginx desde los
+&lt;strong&gt;repositorios de Debian 7&lt;/strong&gt; (Wheezy) es la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@nginx:/# grep -v &amp;quot;#&amp;quot; /etc/nginx/nginx.conf |uniq
+user www-data;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 768;
+}
+
+http {
+
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  types_hash_max_size 2048;
+
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log;
+
+  gzip on;
+  gzip_disable &amp;quot;msie6&amp;quot;;
+
+  include /etc/nginx/conf.d/*.conf;
+  include /etc/nginx/sites-enabled/*;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;NOTA: la configuración suele ser diferente dependiendo del método de
+instalación: utilizando los repositorios de la distribución o compilando desde
+las fuentes.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;¿Qué significa ésta configuración?&lt;/h3&gt;
+
+&lt;p&gt;Podemos apreciar varias &lt;strong&gt;directivas&lt;/strong&gt; que son &lt;strong&gt;globales&lt;/strong&gt;: &lt;code&gt;user&lt;/code&gt;,
+&lt;code&gt;worker_processes&lt;/code&gt; y &lt;code&gt;pid&lt;/code&gt;; y varios bloques como &lt;code&gt;events&lt;/code&gt;, que configura el
+número de conexiones para cada worker (recordad, número de conexiones totales =
+worker_processes * worker_connections) y el bloque &lt;code&gt;http&lt;/code&gt; que define algunas
+directivas como:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;keepalive_timeout&lt;/code&gt; : tiempo que se va a mantener una conexión viva.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;include&lt;/code&gt; : permite incluir ficheros que contienen más configuración como en este caso los tipos MIME y los ficheros de configuración en el directorio sites-enabled.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;access_log&lt;/code&gt; : define el fichero de acceso donde se registrarán las conexiones al proxy http.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;error_log&lt;/code&gt; :  igual que access_log pero solo registrará los intentos fallidos de conexión.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;gzip&lt;/code&gt; : permite comprimir los datos enviados con gzip, consumiendo menos ancho de banda.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Es posible que dentro del bloque &lt;code&gt;http&lt;/code&gt; podamos encontrar otro bloque
+llamado &lt;code&gt;server&lt;/code&gt; y que contenga algo como lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen       80;
+    server_name  localhost;
+
+    location / {
+        root   html;
+        index  index.html index.htm;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   html;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Es necesario eliminar este bloque de configuración en el fichero de
+configuración principal nginx.conf ya que el bloque &lt;code&gt;server&lt;/code&gt; lo definiremos
+para cada uno de los sitios a publicar, dentro del directorio &lt;code&gt;sites-
+available&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;sites-available y sites-enabled&lt;/h2&gt;
+
+&lt;p&gt;Normalmente, y sobretodo si se instala Nginx utilizando los repositorios del
+sistema, durante la instalación se crean dos directorios llamados &lt;code&gt;sites-
+available&lt;/code&gt; y &lt;code&gt;sites-enabled&lt;/code&gt;, pero ¿para qué función tienen y para qué se
+usan? Muy fácil.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;sites-available&lt;/code&gt; : se utiliza para almacenar la configuración de cada sitio o aplicación web. Siguiendo las buenas prácticas, se debe crear un fichero de configuración por cada sitio, para evitar tener la configuración de todos los sitios en un solo fichero.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sites-enabled&lt;/code&gt; : directorio que utiliza Nginx para saber qué sitios están activados. El contenido de este directorio deben ser enlaces simbólicos que apuntan a los ficheros de configuración del directorio &lt;code&gt;sites-available&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota&lt;/strong&gt;: la creación de los directorios &lt;code&gt;sites-available&lt;/code&gt; y &lt;code&gt;sites-enabled&lt;/code&gt;
+son una práctica muy común realizada por la paquetería del sistema, es decir,
+es una acción que realiza el paquete descargado de los repositorios durante la
+instalación. Pero es muy probable que dichos directorios no aparezcan si se
+instala Nginx desde las fuentes. En ese caso, solamente habría que crear dichos
+directorios e incluir el futuro contenido de estos mediante la
+directiva &lt;code&gt;include&lt;/code&gt; en la configuración principal de Nginx.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Publicando un sitio web&lt;/h2&gt;
+
+&lt;p&gt;Ya estamos casi a punto. Sólo nos falta configurar una redirección en el
+directorio &lt;code&gt;sites-available&lt;/code&gt; y enlazarla con un enlace simbólico en &lt;code&gt;sites-
+enabled&lt;/code&gt;, así que vamos a ello!&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Creamos el fichero de configuración test.manuelviera.es.conf en el
+directorio &lt;code&gt;/etc/nginx/sites-available/&lt;/code&gt; con una configuración como la
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen 80;
+    server_name     test.manuelviera.es;
+    location / {
+        proxy_pass http://192.168.1.200:8080;
+        proxy_set_header  X-Real-IP  $remote_addr;
+        proxy_set_header  Host  $http_host;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota&lt;/strong&gt;: creo que es buena práctica establecer como nombre de fichero el
+mismo que el dominio que estamos publicando, es decir, el valor de la
+directiva &lt;code&gt;server_name&lt;/code&gt;. De esta forma, le indicando nuestro Nginx que
+cuando reciba una petición del dominio &amp;ldquo;test.manuelviera.es&amp;rdquo; por el puerto
+80, debe redirigir la petición HTTP al host 192.168.1.200 al puerto 8080,
+que es donde se encuentra nuestra aplicación web desplegada. El ingrediente
+estrella en esta configuración es el uso del módulo &lt;code&gt;proxy_pass&lt;/code&gt; incluido
+en el Core de Nginx, y es la directiva que nos permite pasar la petición
+que nos llega hacia otro destino, en este caso, el servidor web donde se
+aloja nuestra supuesta aplicación. Como podéis observar, también hemos
+hecho uso de otra directiva llamada &lt;code&gt;proxy_set_header&lt;/code&gt; que nos permite
+añadir o modificar cabeceras, en este caso hemos editado dos cabeceras:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;X-Real-IP&lt;/code&gt; : contiene la IP del cliente que inicia la petición, y se ha establecido el valor de la variable $remote_addr con la idea de que al servidor destino le llegue la IP del cliente y no la del proxy HTTP. Si no se hubiese modificado esta cabecera (header) la IP que recibiría el servidor web objetivo siempre sería la del proxy HTTP.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Host&lt;/code&gt; : Al igual que la anterior cabecera, establecemos el valor con el contenido de la variable $http_host, es decir, el nombre de host que especificó el cliente.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Una vez configurado nuestra primera redirección, sólo nos falta activarla,
+es decir, crear un enlace simbólico hacia esta en el directorio
+sites-enabled:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@nginx:~# cd /etc/nginx/sites-enabled/
+root@nginx:/etc/nginx/sites-enabled# ln -s ../sites-available/test.manuelviera.es.conf
+root@nginx:/etc/nginx/sites-enabled# ls -l
+total 0
+
+
+lrwxrwxrwx 1 root root 43 Jan  6 12:05 test.manuelviera.es.conf -&amp;gt; ../sites-available/test.manuelviera.es.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Una vez enlazada el fichero de configuración, debemos obligar a Nginx a
+recargar la configuración con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@nginx:~# service nginx reload
+Reloading nginx configuration: nginx.
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;¡Perfecto! Pero aún nos queda el último paso, y no por ello menos importante&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Comprobar el funcionamiento del proxy HTTP&lt;/h2&gt;
+
+&lt;p&gt;Siempre debemos comprobar que lo que hemos hecho realmente funciona, ya que de
+no ser así, es como si no hubiésemos hecho nada y daremos mala imagen como
+profesionales. Si lo que tenemos es un entorno de prueba, que aún no se
+encuentra implantado en producción, una prueba muy sencilla sería utilizar el
+fichero &lt;code&gt;/etc/hosts&lt;/code&gt; añadiendo la IP de nuestro proxy HTTP y el dominio
+especificado en la directiva &lt;code&gt;server_name&lt;/code&gt;, de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo sh -c &amp;quot;echo 192.168.1.200 test.manuelviera.es &amp;gt;&amp;gt; /etc/hosts&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota&lt;/strong&gt;: en mi caso, el proxy HTTP se encuentra en la IP 192.168.1.200. Si
+todo ha ido bien, nuestro proxy HTTP, tras realizar la petición, deber habernos
+redirigido al host especificado en la directiva &lt;code&gt;proxy_pass&lt;/code&gt; :-) Otra prueba
+sencilla para comprobar que el proxy HTTP funciona es especificar un sitio
+externo como terra.es, google.es, etc; en la directiva &lt;code&gt;proxy_pass&lt;/code&gt;, si aún no
+se dispone de un servidor web interno que sirva una aplicación web.&lt;/p&gt;
+
+&lt;p&gt;Y esto ha sido todo amigos! Espero que os sea de utilidad y Feliz día de Reyes!&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Nginx</title>
+      <link>http://blog.manuelviera.es/blog/nginx/</link>
+      <pubDate>Fri, 23 Nov 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/nginx/</guid>
+      <description>
+
+&lt;p&gt;Hace bastante tiempo que tengo en mente escribir un post sobre Nginx
+(pronunciado como &amp;ldquo;engine x&amp;rdquo;), aunque ya lo he comentado en algún otro post
+anterior, y creo que hoy va a ser el día. No por nada en especial, si no porque
+me apetece compartirlo y además es un servidor web que me gusta mucho y que, en
+ciertos aspectos, ha ido conquistando terreno de otros servidores web.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es Nginx?&lt;/h2&gt;
+
+&lt;p&gt;Como decía, &lt;a href=&#34;http://nginx.org/&#34;&gt;Nginx&lt;/a&gt; es un servidor HTTP libre, de código
+abierto, de alto rendimiento y que puede ser utilizado para actuar tanto como
+proxy HTTP reverso, como proxy IMAP/POP3. Nginx es famoso por ser muy ligero,
+ya que consume muy pocos recursos del sistema; es muy estable, y además su
+configuración es relativamente sencilla, bastante más simple a la vista que la
+configuración de Apache2.&lt;/p&gt;
+
+&lt;p&gt;Su instalación es bastante sencilla también, independientemente de que lo
+hagamos mediante herramientas de paquetería o compilando del código fuente
+directamente.&lt;/p&gt;
+
+&lt;p&gt;Como apunte, decir que fue escrito por &lt;a href=&#34;http://sysoev.ru/en/&#34;&gt;Igor Sysoev&lt;/a&gt;, de
+origen ruso, escrito para solventar un problema llamado
+&lt;a href=&#34;http://www.kegel.com/c10k.html&#34;&gt;C10K&lt;/a&gt;. Resumiendo, ser capaz de manejar 10.000
+clientes de forma simultanea.&lt;/p&gt;
+
+&lt;p&gt;La primera vez que instalé Nginx, compilando desde las fuentes, fue allá por
+2008 simplemente por probarlo. No fue hasta 2009 ó 2010 cuando empecé a usarlo
+de verdad cuando trabajaba en &lt;a href=&#34;http://yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;, para realizar
+despliegues de aplicaciones web con Django. Y recuerdo que mi primer despliegue
+utilizando &lt;a href=&#34;http://merengueproject.org/&#34;&gt;Merengue Project&lt;/a&gt; + Nginx + uWSGI, con
+el fin de ver si mejoraba el rendimiento y la verdad es que quedamos
+encantados. Así que vamos a instalarlo ya!&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Instalando Nginx ¿pero cómo?&lt;/h2&gt;
+
+&lt;p&gt;Es posible que antes de instalar nos surjan dudas con respecto a la forma de
+instalar ya sea Nginx u otro software en nuestro sistema. Hay varias formas de
+instalar Nginx:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Descargar el código fuente y seguir el proceso de instalación típico: configurar, compilar e instalar; también conocido como &lt;strong&gt;cmmi&lt;/strong&gt; (&lt;strong&gt;c&lt;/strong&gt;onfigure - &lt;strong&gt;m&lt;/strong&gt;ake - &lt;strong&gt;m&lt;/strong&gt;ake &lt;strong&gt;i&lt;/strong&gt;nstall).&lt;/li&gt;
+&lt;li&gt;Utilizando las herramientas de paquetería de nuestra distribución: &lt;strong&gt;Aptitude&lt;/strong&gt; o &lt;strong&gt;APT&lt;/strong&gt; si utilizamos una distribución basada en Debian, &lt;strong&gt;yum&lt;/strong&gt; si utilizamos CentOS, RedHat, Fedora o similar; etc.&lt;/li&gt;
+&lt;li&gt;Añadir el repositorio oficial de Nginx a nuestro sistema de paquetería, si hubiera alguno disponible y compatible; en caso de que no estuviese disponible el paquete en nuestra distribución.&lt;/li&gt;
+&lt;li&gt;Descargar el paquete de instalación compatible con nuestro sistema de paquetería, de otra distribución e instalarlo con las herramientas habituales en nuestro sistema.&lt;/li&gt;
+&lt;li&gt;Descargar un paquete de instalación (&lt;strong&gt;.deb&lt;/strong&gt; o &lt;strong&gt;.rpm&lt;/strong&gt;, por ejemplo) y convertirlo con &lt;strong&gt;alien&lt;/strong&gt; si el paquete descargado no es compatible con nuestro sistema de paquetería.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Todas estas formas permitirían instalar Nginx, pero &lt;strong&gt;no todas son
+aconsejables&lt;/strong&gt;, según qué casos, me explico.&lt;/p&gt;
+
+&lt;p&gt;Si se trata de una &lt;strong&gt;instalación en producción&lt;/strong&gt;, y con ello me refiero a la
+instalación de Nginx en un servidor de un cliente, o en un servidor de
+producción para nuestra empresa; me decantaría sin dudar por la &lt;strong&gt;instalación
+mediante el sistema de paquetería&lt;/strong&gt;. De esta forma, contaría con todas las
+posibles futuras actualizaciones de seguridad y/o correcciones del paquete de
+forma muy cómoda utilizando las herramientas de paquetería del sistema.&lt;/p&gt;
+
+&lt;p&gt;Si la instalación de Nginx se va a realizar en un &lt;strong&gt;sistema antiguo&lt;/strong&gt;, y en ese
+caso, si es que existe un paquete para Nginx en el sistema de paquetería, es
+probable que sea &lt;strong&gt;más antiguo y desactualizado&lt;/strong&gt; que la versión actual de
+Nginx. Con lo que es muy posible que no cuente con mejoras de &lt;strong&gt;fallos de
+seguridad&lt;/strong&gt;, arreglos de &lt;strong&gt;bugs&lt;/strong&gt; encontrados, etc; en este caso,
+personalmente, optaría por una &lt;strong&gt;instalación desde las fuentes&lt;/strong&gt;. Es cierto que
+antes de instalar desde las fuentes sopesaría mis necesidades sobre Nginx, es
+decir, si es una instalación en producción pero sólo voy a servir &lt;strong&gt;HTML
+estático&lt;/strong&gt;, es muy posible que aun siendo una versión antigua de Nginx, hubiera
+optado por la &lt;strong&gt;instalación por PAQUETERÍa&lt;/strong&gt;. Pero si el fin es servir una
+&lt;strong&gt;web más compleja&lt;/strong&gt;, optaría por &lt;strong&gt;utilizar la versión estable más reciente de
+Nginx&lt;/strong&gt; y &lt;strong&gt;compilar desde las fuentes&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Con respecto a &lt;strong&gt;descargar un paquete de otra distribución&lt;/strong&gt; o convertir el
+paquete con &lt;strong&gt;alien&lt;/strong&gt;, &lt;strong&gt;no lo recomendaría&lt;/strong&gt; a menos que fuera una situación
+extrema, que no haya otro camino, y si la distribución a la que pertenece el
+paquete es muy similar a la que estamos usando. En cualquier otro caso, no lo
+usaría nunca, ya que: &lt;strong&gt;no&lt;/strong&gt; contamos con futuras &lt;strong&gt;actualizaciones&lt;/strong&gt; del
+paquete, al pertenecer a otra distribución &lt;strong&gt;es posible que los ficheros se
+instalen&lt;/strong&gt; en &lt;strong&gt;directorios no habituales en nuestra distribución&lt;/strong&gt;, es posible
+que los &lt;strong&gt;scripts SysV&lt;/strong&gt; del servicio &lt;strong&gt;no funcionen&lt;/strong&gt;, etc.&lt;/p&gt;
+
+&lt;p&gt;Esto sólo es mi humilde opinión de lo que haría en una situación real. Es
+imposible describir todas las posibilidades o dar unas directrices de qué hacer
+en una determinada situación, más que elegir una nosotros mismos basándonos en
+nuestro conocimiento, experiencia y muchos otros factores. En caso de dudar, si
+es posible, es aconsejable obtener una segunda opinión de un compañero o
+consultarlo con alguien con rango superior.&lt;/p&gt;
+
+&lt;p&gt;Y bueno, después de esta parrafada (perdón), nos puede quedar claro, qué dos
+opciones de instalación elegiría yo, &lt;strong&gt;IMHO&lt;/strong&gt; (¿qué pensais vosotros?) Así que
+veremos la instalación utilizando herramientas de paquetería y compilando desde
+el código fuente.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Instalación por paquetería&lt;/h2&gt;
+
+&lt;p&gt;La instalación por paquetería es bastante trivial si ya estamos familiarizados
+con estas herramientas. Bastaría con buscar el paquete en la base de datos de
+nuestro sistema de paquetería, ver el nombre e instalarlo.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Debian&lt;/h3&gt;
+
+&lt;p&gt;En &lt;strong&gt;Debian 7&lt;/strong&gt; (wheezy) que es la que estoy usando actualmente hay varios
+paquetes de Nginx en los repositorios oficiales de Debian:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;nginx-light&lt;/code&gt; : una versión &amp;ldquo;light&amp;rdquo; que sólo incluye un Nginx precompilado con unos cuantos módulos, pero no todos.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nginx-full&lt;/code&gt; : incluye Nginx precompilado con todos los módulos estandar incluidos.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nginx-extras&lt;/code&gt; : se trata de Nginx precompilado con todos los módulos estandar más una serie de módulos extras incluyendo algunos como Perl.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Depende de las necesidades que tengamos instalaremos uno u otro, pero en este
+caso instalaré nginx-full, y para ello ejecutaremos la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# apt-get install nginx-full
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;La instalación no tardará mucho en finalizar y tendremos instalado Nginx en
+nuestro sistema. Una de las ventajas de utilizar el sistema de paquetería de
+nuestro sistema frente a compilar nuestra propia versión de Nginx es que el
+paquete además de instalar Nginx, instala ciertas utilidades adicionales como
+pueden ser los scripts de inicio SysV y demás scripts que nos permiten
+arrancar, reiniciar o parar nuestro servidor Nginx. Para arrancar Nginx
+utilizaremos, como root, el comando &lt;strong&gt;service&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# service nginx start
+Starting nginx: nginx.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si consultamos el estado utilizando el parámetro &lt;strong&gt;status&lt;/strong&gt; podremos ver que
+Nginx ya se encuentra en funcionamiento:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# service nginx status
+nginx is running.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Para comprobar si realmente el puerto 80 (http/tcp) está escuchando podemos
+utilizar el comando &lt;strong&gt;netstat&lt;/strong&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# netstat -ntp
+Active Internet connections (w/o servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 192.168.1.40:80         192.168.1.35:60110      ESTABLISHED 3262/nginx: worker
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;CentOS&lt;/h3&gt;
+
+&lt;p&gt;En &lt;strong&gt;CentOS&lt;/strong&gt; al parecer no hay paquete en los repositorios oficiales por
+defecto, así que hay que añadir primero el repositorio a nuestra lista de
+repositorios y luego instalarlo. Es muy fácil, sólo hay que hace lo siguiente:&lt;/p&gt;
+
+&lt;p&gt;Podemos descargar el paquete &lt;strong&gt;RPM&lt;/strong&gt; que instala la configuración del
+repositorio y posteriormente instalarlo con la utilida &lt;code&gt;rpm&lt;/code&gt;, o instalarlo
+directamente con la utilidad &lt;code&gt;yum&lt;/code&gt; pasando la URL completa hacia el fichero RPM
+de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@centos /]# yum install http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez instalado, podemos consultar la configuración del repositorio de Nginx
+que se ha instalado en el fichero &lt;code&gt;/etc/yum.repos.d/nginx.repo&lt;/code&gt;. Tras instalar
+la configuración del repositorio, ya solo nos queda utilizar &lt;code&gt;yum&lt;/code&gt; para
+instalar Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@centos /]# yum install nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ya solo nos queda arrancar nuestro Nginx utilizando la utilidad &lt;code&gt;service&lt;/code&gt; al
+igual que hicimos en Debian.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;IMPORTANTE:&lt;/strong&gt; Es posible que en CentOS ya se encuentre ejecutándose una
+instancia de &lt;code&gt;httpd&lt;/code&gt; (Apache2) por defecto. Antes de arrancar Nginx es
+necesario parar dicha instancia o Nginx informará con un error indicando que el
+puerto 80 (http/tcp) se encuentra ocupado.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@centos /]# service nginx start
+Starting nginx: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si accedemos ahora utilizando nuestro navegador a &lt;code&gt;http://localhost:80&lt;/code&gt; veremos
+un útil, pero poco bonito, mensaje: &lt;strong&gt;Welcome to nginx!&lt;/strong&gt; El fichero de
+configuración para ambos casos se encuentra en &lt;code&gt;/etc/nginx/nginx.conf&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Instalando desde las fuentes&lt;/h2&gt;
+
+&lt;p&gt;Antes de comenzar, deberemos disponer en nuestro sistema de ciertas utilidades
+que serán de vital importancia para poder compilar en nuestro sistema, como
+&lt;strong&gt;gcc&lt;/strong&gt;, &lt;strong&gt;make&lt;/strong&gt; y otras librerias de desarrollo que se necesitan instaladas
+para poder compilar Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# apt-get install gcc make libpcre3 libpcre3-dev zlib1g zlib1g-dev
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Instalados los prerequisitos, procedemos entonces con la descarga de las
+fuentes de Nginx desde su sitio oficial:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# wget http://nginx.org/download/nginx-1.2.4.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A continuación descomprimimos y procedemos con la configuración, compilación e
+instalación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# tar xzf nginx-1.2.4.tar.gz 
+root@debian:~# cd nginx-1.2.4/
+root@debian:~/nginx-1.2.4# 
+root@debian:~/nginx-1.2.4# ./configure &amp;amp;&amp;amp; make &amp;amp;&amp;amp; make install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por defecto, Nginx se instala en &lt;code&gt;/usr/local/&lt;/code&gt; aunque podemos modificar este
+comportamiento con &lt;code&gt;./configure --prefix=/path/to/install/&lt;/code&gt;. Como comentaba
+antes, esta vez no contamos con scripts de inicio SysV, así que tendremos que
+arrancar Nginx de forma manual, ejecutando directamente el binario de &lt;code&gt;nginx&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# /usr/local/nginx/sbin/nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si todo va bien, deberíamos tener inmediatamente el puerto 80 escuchando
+peticiones HTTP en nuestro sistema. Para para Nginx, también deberemos hacerlo
+de forma totalmente manual, utilizando la opción &lt;code&gt;-s&lt;/code&gt; y pasándole el argumento
+&lt;code&gt;stop&lt;/code&gt;; aunque también se puede hacer uso de otros argumentos como &lt;code&gt;quit&lt;/code&gt;,
+&lt;code&gt;reopen&lt;/code&gt; y &lt;code&gt;reload&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# /usr/local/nginx/sbin/nginx -s stop
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;La configuración por defecto&lt;/h2&gt;
+
+&lt;p&gt;La ubicación del fichero de configuración cambia dependiendo de la forma en que
+se haya instalado, a menos que cambiemos el comportamiento por defecto con
+&lt;code&gt;./configure --conf-path&lt;/code&gt; al compilar desde las fuentes. Si Nginx ha sido
+instalado utilizando el sistema de paquetería se encontrará en
+&lt;code&gt;/etc/nginx/nginx.conf&lt;/code&gt;. Sin embargo, si se ha compilado desde las fuentes y no
+se ha modificado la ruta del fichero de configuración, entonces lo más probable
+es que se encuentre en &lt;code&gt;/usr/local/nginx/conf/nginx.conf&lt;/code&gt;. El contenido de este
+fichero es bastante similar en ambos casos, aunque por defecto, hay muchas
+lineas de ejemplo comentadas. Si eliminamos todos los comentarios, se puede
+apreciar que la configuración es bastante simple:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# grep -v &amp;quot;#&amp;quot; /usr/local/nginx/conf/nginx.conf |uniq
+
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+
+    keepalive_timeout  65;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como se puede ver, la configuración se estructura en bloques delimitados por
+llaves {} (en inglés &lt;em&gt;curly braces&lt;/em&gt;) haciéndola mucho más legible que un bloque
+de configuración de Apache2, por ejemplo. Como parámetros a destacar, me
+gustaría comentar los siguientes:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;worker_processess&lt;/code&gt; : indica el número de workers/procesos de nginx que se van a arrancar simultaneamente. Si establecemos &lt;code&gt;worker_processes&lt;/code&gt; con valor 2, se ejecutarán dos procesos worker de Nginx.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;worker_connections&lt;/code&gt; : hace referencia al número de conexiones por worker. Esto quiere decir que el número de conexiones que será capaz de servir nuestro servidor nginx corresponde a worker_processes x worker_connections. Según la configuración del ejemplo, solo aceptará 1024 conexiones simultaneas (1 (&lt;em&gt;worker_processes&lt;/em&gt;) x 1024 (&lt;em&gt;worker_connections&lt;/em&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;http {}&lt;/code&gt; : bloque donde se especifica la configuración de cada servidos. Es posible configurar varios bloques &lt;code&gt;server {}&lt;/code&gt; en un mismo bloque &lt;code&gt;http {}&lt;/code&gt;, utilizando diferentes puertos lógicamente.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;server {}&lt;/code&gt; : configuración para un servidor concreto, que normalmente se corresponderá con un número de puerto único.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;listen 80;&lt;/code&gt; : puerto de escucha de Nginx. Se corresponde con la directiva &lt;code&gt;Listen&lt;/code&gt; de Apache2&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;server_name localhost;&lt;/code&gt; : hostname o FQDN del servidor. Se corresponde con la directiva &lt;code&gt;ServerName&lt;/code&gt; de Apache2.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;location&lt;/code&gt; : configuración de un &lt;code&gt;location&lt;/code&gt; concreto. Se corresponde con la directiva &lt;code&gt;Location&lt;/code&gt; en Apache2.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;root&lt;/code&gt; : directorio utilizado para buscar los ficheros estáticos. Se corresponde con la directiva &lt;code&gt;DocumentRoot&lt;/code&gt; de Apache2.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Bueno, eso es todo por hoy amigos, espero que os haya sido de utilidad para
+aquellos que no conocíais Nginx o aquellos que nunca lo habíais instalado. En
+próximos posts veremos diferentes tipos de configuración que podemos realizar
+con Nginx. Mientras tanto, podeis encontrar mucha más información en la wiki de
+Nginx en &lt;a href=&#34;http://wiki.nginx.org/Main&#34;&gt;http://wiki.nginx.org/Main&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Un saludo a todos y no dudéis en comentar! ;-)&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

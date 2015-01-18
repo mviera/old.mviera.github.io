@@ -1,0 +1,491 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Añadir nuevas fuentes en Linux
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2012-08-27" title="2012-08-27">August 27, 2012</time>
+            </div>
+            <h1 class="title">Añadir nuevas fuentes en Linux</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/linux">#linux</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>Añadir nuevas fuentes a mi sistema Linux siempre ha sido una incógnita, al
+menos para mí. Supongo que es algo por lo que no me he preocupado demasiado o
+que quizás no me haya hecho falta saberlo, hasta ahora. El objetivo de este
+post, añadir nuevas fuentes a nuestro sistema GNU/Linux, está relacionado
+directamente con nuestro servidor X, es decir, nuestro servidor gráfico. Creo
+que este siempre ha sido un punto problemático en GNU/Linux ya que agregar una
+tipografía nueva a nuestro sistema no es tan sencillo como hacerlo, por
+ejemplo, en otro sistema operativo como Microsoft Windows, que básicamente
+consiste en copiar los ficheros de las fuentes en un directorio. Pero empecemos
+por el principio&hellip;</p>
+
+<h2 id="toc_0">¿Cuál es mi servidor gráfico o servidor X?</h2>
+
+<p>Existen varios servidores gráficos disponibles para GNU/Linux, pero
+generalmente, en las distribuciones actuales, nos encontraremos principalmente
+con <strong>XFree86 4.x</strong> y <strong>X.org-X11</strong>, sobre todo con este último. Para
+cerciorarnos sobre cuál es nuestro servidor X podemos ejecutar la siguiente
+instrucción en una consola:</p>
+
+<pre><code>root@debian:~# X -version
+X.Org X Server 1.7.7
+Release Date: 2010-05-04
+X Protocol Version 11, Revision 0
+Build Operating System: Linux 3.0.0-1-amd64 x86_64 Debian
+Current Operating System: Linux debian 2.6.32-5-amd64 #1 SMP Wed Jan 12 03:40:32 UTC 2011 x86_64
+Kernel command line: BOOT_IMAGE=/vmlinuz-2.6.32-5-amd64 root=/dev/mapper/debian-root ro quiet
+Build Date: 29 October 2011  06:58:14PM
+xorg-server 2:1.7.7-14 (Julien Cristau ) 
+Current version of pixman: 0.16.4
+        Before reporting problems, check http://wiki.x.org
+        to make sure that you have the latest version.
+root@debian:~#
+</code></pre>
+
+<p>Como podeis observar, en mi caso estoy utilizando la versión 1.7.7 de Xorg en
+un sistema Debian 6.0, una versión de Xorg algo antigua ya, aunque todo lo que
+se explica en el post será aplicable a versiones más recientes.</p>
+
+<h2 id="toc_1">Pero, ¿Qué tipos y formatos de fuentes hay?</h2>
+
+<p>Cuando hablamos de tipografías, o de fuentes, normalmente no sabemos con qué
+tipo de fuentes y formatos estamos tratando, quizás por prisa o bien, porque
+tampoco nos hace falta saberlo para trabajar con ellas; pero básicamente, con
+respecto a tecnologías, hay dos tipos:</p>
+
+<ul>
+<li>Fuentes de mapa de bits: que son fuentes muy simples y bastante fáciles de manipular y visualizar. El problema es que hay que optimizar dicha fuente para que pueda visualizarse correctamente en diferentes resoluciones o dispositivos de visualización, como la pantalla o impresa en un papel. Debido a esto, una misma fuente puede constar de varios ficheros, para poderla representar en varios tamaños o dispositivos de visualización.</li>
+<li>Fuentes escalables, que es el tipo de fuente más utilizado en la actualidad, ya que cada carácter se representa con una serie de curvas y lineas dentro de una matriz; evitando tener que producir varios ficheros para una misma fuente. Uno de los inconvenientes del escalado es que consume más CPU, pero esto ya no supone un problema con las CPUs utilizadas hoy en día.</li>
+</ul>
+
+<p>En cuanto a los formatos de fuentes, básicamente vamos a encontrar
+<strong><a href="http://es.wikipedia.org/wiki/TrueType">TrueType</a></strong>, desarrollado
+inicialmente por <strong><a href="http://es.wikipedia.org/wiki/Apple_Computer">Apple
+Computers</a></strong> (.ttf); y
+<strong>PostScript Type1</strong>, o
+<strong><a href="http://en.wikipedia.org/wiki/PostScript_fonts#Type_1">Type1</a></strong> (.pfa, .pfb),
+desarrollado por <strong>Adobe</strong>. Bueno, pues ya sabemos un poco más acerca de las
+fuentes. Ahora dejémonos de teoría y vayamos al tema que concierne a este post.</p>
+
+<h2 id="toc_2">Conseguir nuevas fuentes</h2>
+
+<p>Es posible conseguir fuentes desde varios sitios, por ejemplo, desde el sistema
+de paquetería de nuestra distribución. En mi caso uso Debian, así que si busco
+el término <strong>xfonts</strong> con APT (Advanced Packaging Tools) seguro que encuentro
+algún que otro paquete con nuevas fuentes para mi distribución:</p>
+
+<pre><code>$ apt-cache search xfonts
+</code></pre>
+
+<p>Un paquete con una fuente, que a mi personalmente me gusta mucho para la
+terminal, se llama <strong>xfonts-terminus</strong>. Así que para instalarla ejecutamos la
+siguiente instrucción:</p>
+
+<pre><code>$ sudo apt-get install xfonts-terminus
+</code></pre>
+
+<p>Pero esto no tiene ningún misterio para nosotros, ya que el paquete con las
+nuevas fuentes se instalará en el directorio correspondiente de nuestro
+sistema, y las tendremos disponibles sin tener nosotros que hacer nada. El
+problema de instalar fuentes, en GNU/Linux, es cuando nos encontramos una
+fuente que nos gusta en Internet. Hay muchos sitios en Internet desde donde se
+pueden descargar fuentes como <a href="http://www.fontsquirrel.com/">Font Squirrel</a> o
+<a href="http://www.1001freefonts.com/">1001 Free Fonts</a>. Desde esta última me he
+descargado una fuente llamada <a href="http://www.1001freefonts.com/font/VideoPhreak.zip">Video
+Phreak</a>, que tiene una pinta
+muy retro y me ha gustado.</p>
+
+<h2 id="toc_3">Preparando un directorio con fuentes</h2>
+
+<p>Si echamos un vistazo al fichero de configuración de nuestro servidor X,
+<strong>/etc/X11/xorg.conf</strong> si estamos usando Xorg-X11 o <strong>/etc/X11/XF86Config</strong> si
+estamos usando XFree86 4.x; podemos ver la sección llamada <strong>Files</strong>, que
+tendrá una forma similar a la siguiente:</p>
+
+<pre><code>Section &quot;Files&quot;
+        ModulePath   &quot;/usr/lib/xorg/modules&quot;
+        FontPath     &quot;/usr/share/fonts/X11/misc&quot;
+        FontPath     &quot;/usr/share/fonts/X11/cyrillic&quot;
+        FontPath     &quot;/usr/share/fonts/X11/100dpi/:unscaled&quot;
+        FontPath     &quot;/usr/share/fonts/X11/75dpi/:unscaled&quot;
+        FontPath     &quot;/usr/share/fonts/X11/Type1&quot;
+        FontPath     &quot;/usr/share/fonts/X11/100dpi&quot;
+        FontPath     &quot;/usr/share/fonts/X11/75dpi&quot;
+        FontPath     &quot;/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType&quot;
+        FontPath     &quot;built-ins&quot;
+EndSection
+</code></pre>
+
+<p>Cada linea <strong>FontPath</strong> indica una ruta al servidor X donde encontrar ficheros
+de fuentes. El orden establecido para los directorios de fuentes es influyente,
+es decir, el servidor X empieza a buscar en orden empezando por el primero
+hasta encontrar la fuente en uno de los directorios listados. De esta forma, si
+hay directorios con fuentes del mismo nombre, el servidor X utilizará la
+primera que encuentre según el orden establecido. Para hacer bien las cosas, no
+vamos a copiar nuestras fuentes en ninguno de esos directorios, ya que ahí se
+encuentran las fuentes básicas del servidor X. Crearemos nuestro propio
+directorio de fuentes. Siguiendo un poco el estándar
+<a href="http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard">FHS</a> es posible
+crear un directorio en <strong>/opt</strong> o utilizar <strong>/usr/local</strong>. A mi personalmente
+me gusta más la opción de <strong>/usr/local</strong>. Dicho esto, procedemos a crear el
+directorio <strong>fonts</strong> en <strong>/usr/local</strong>:</p>
+
+<pre><code>$ sudo mkdir /usr/local/fonts
+</code></pre>
+
+<p>Ya tengo descargada mi fuente <a href="http://www.1001freefonts.com/font/VideoPhreak.zip">Video
+Phreak</a> en mi directorio de
+descargas, asi que voy a descomprimir el paquete zip:</p>
+
+<pre><code>$ unzip VideoPhreak.zip 
+Archive:  VideoPhreak.zip
+  inflating: VideoPhreak.ttf
+</code></pre>
+
+<p>Como podemos ver, se trata de una fuete TrueType (.ttf). La moveremos a un
+directorio llamado <strong>truetype</strong> dentro de <strong>/usr/local/fonts/</strong>, por mantener
+separadas las fuentes por tipos, asi que ejecutaremos lo siguiente:</p>
+
+<pre><code>$ sudo mkdir /usr/local/fonts/truetype
+$ sudo cp VideoPhreak.ttf /usr/local/fonts/truetype
+</code></pre>
+
+<p>El siguiente paso será crear <strong>los ficheros de resumen</strong> que describen las
+fuentes que vamos a instalar. Estos ficheros se llaman <strong>fonts.dir</strong> y
+<strong>fonts.scale</strong> y pueden tener un contenido como el siguiente:</p>
+
+<pre><code>10x20-ISO8859-1.pcf.gz -misc-fixed-medium-r-normal--20-200-75-75-c-100-iso8859-1
+</code></pre>
+
+<p>Esta linea por sí sola ya da miedo. Pero tranquilos porque no vamos a tener que
+escribir esta linea manualmente. Para automatizar la creación de estos ficheros
+existen dos comandos: <strong>mkfontdir</strong> y <strong>mkfontscale</strong>. Asi que el siguiente
+paso será movernos al directorio <strong>/usr/local/fonts/truetype</strong> y ejecutar cada
+uno de estos comandos, para generar los ficheros <strong>fonts.scale</strong> y
+<strong>fonts.dir</strong>:</p>
+
+<pre><code>$ sudo cd /usr/local/fonts/truetype
+$ sudo mkfontscale
+$ sudo mkfontdir
+</code></pre>
+
+<p>Estos dos comandos no generan ninguna salida, asi que si todo ha ido bien,
+deberemos tener los dos ficheros anteriormente comentados. En mi caso se han
+generado con el siguiente contenido:</p>
+
+<pre><code>$ cat fonts.dir 
+1
+VideoPhreak.ttf -macromedia-videophreak-medium-r-normal--0-0-0-0-p-0-iso10646-1
+$ cat fonts.scale 
+1
+VideoPhreak.ttf -macromedia-videophreak-medium-r-normal--0-0-0-0-p-0-iso10646-1
+</code></pre>
+
+<p>¡Ya tenemos nuestro directorio de fuentes preparado!</p>
+
+<h2 id="toc_4">Añadir el directorio de fuentes al listado de fuentes de X</h2>
+
+<p>El siguiente paso será añadir la ruta <strong>/usr/local/fonts/truetype</strong> en la
+sección <strong>Files</strong> del fichero de configuración de nuestro servidor X, en mi
+caso es el fichero <strong>/etc/X11/xorg.conf</strong>. Para ello añadiremos la siguiente
+linea al final de la sección <strong>Files</strong>:</p>
+
+<pre><code>        FontPath     &quot;/usr/local/fonts/truetype&quot;
+</code></pre>
+
+<h2 id="toc_5">Aplicar la configuración</h2>
+
+<p>Ya está todo hecho, así que el último paso es recargar la configuración. Es
+posible hacerlo de dos maneras: la menos elegante sería parar el servidor X y
+volverlo a ejecutar, pero eso implica que tendríamos que dejar de utilizar el
+entorno gráfico por unos momentos y por tanto, obligando el cierre de todos los
+programas de los que estemos haciendo uso en ese momento o incluso más,
+desconectar a usuarios que esté conectados remotamente a sesiones gráficas de
+nuestro servidor X. La forma más elegante consiste en utilizar el comando
+<strong>xset</strong>. Si no está instalado en el sistema es posible conseguirlo instalando
+el paquete <strong>x11-xserver-utils</strong>, al menos en Debian.</p>
+
+<pre><code>$ sudo apt-get install x11-xserver-utils
+</code></pre>
+
+<p>El comando <strong>xset</strong> nos permitirá añadir nuestro directorio de fuentes mientras
+se ejecuta el servidor X, no es necesario parar su ejecución en ningún momento;
+ejecutando la siguiente instrucción:</p>
+
+<pre><code>$ sudo xset fp+ /usr/local/fonts/truetype
+</code></pre>
+
+<p>Esta instrucción añade el directorio indicado al final de la lista de
+directorios que hemos visto antes. Es posible añadirla al principio de la lista
+cambiando <strong>fp+</strong> por <strong>+fp</strong>. Y por último tendremos que indicar al servidor X
+que vuelva a examinar todos los directorios de fuentes, con la siguiente
+instrucción:</p>
+
+<pre><code>$ sudo xset fp rehash
+</code></pre>
+
+<h2 id="toc_6">Comprobar el resultado</h2>
+
+<p>El resultado de todo esto es que deberiamos tener a nuestra disposición la
+nueva fuente instalado. Hay una utilidad llamada <strong>xfontsel</strong> que viene en el
+paquete <strong>x11-utils</strong>, y que seguramente ya tendréis instalado. <strong>xfontsel</strong> es
+una aplicación bastante arcaica y tosca, pero bueno, puede servir para ver si
+la instalación ha sido satisfactoria.</p>
+
+<p>Aun así, es posible que no podais visualizar la nueva fuente instalada en el
+sistema. Esto es debido a que muchas aplicaciones no reconocen el formato de
+las fuentes o simplemente no las encuentran. Las fuentes básicas tampoco
+incluyen antialiasing, es decir, el suavizado de fuentes, etc.</p>
+
+<p>Para solucionar esto, contamos con el sistema Xft.</p>
+
+<h2 id="toc_7">¿Qué es el sistema Xft?</h2>
+
+<p>El sistema Xft es una biblioteca de código abierto para el renderizado de
+fuentes TrueType y Type1. Xft es un sistema en el lado del cliente, es decir,
+que accede a las fuentes instaladas en el sistema local y además permite el
+suavizado de fuentes o antialiasing, además de otras funcionalidades. Por
+suerte, los directorios de fuentes son compartidos, o mejor dicho, son los
+mismos que los del servidor X. Lo único que tenemos que hacer es añadir nuestro
+directorio de fuentes particular al fichero de configuración de fuentes Xft,
+que se encuentra en <strong>/etc/fonts/fonts.conf</strong> (al menos en Debian). Se trata de
+un fichero XML, así que deberemos buscar un bloque de configuración como el
+siguiente:</p>
+
+<pre><code>&lt;!-- Font directory list --&gt;
+
+        &lt;dir&gt;/usr/share/fonts&lt;/dir&gt;
+        &lt;dir&gt;/usr/X11R6/lib/X11/fonts&lt;/dir&gt; &lt;dir&gt;/usr/local/share/fonts&lt;/dir&gt;
+        &lt;dir&gt;~/.fonts&lt;/dir&gt;
+</code></pre>
+
+<p>Como podeis observar, hay menos directorios listados que en el fichero
+<strong>/etc/X11/xorg.conf</strong> y es debido a que el sistema Xft permite añadir el
+directorio padre que contiene todas las fuentes. En nuestro caso, sólo bastará
+con añadir a la lista el directorio <strong>/usr/local/fonts</strong>, de la siguiente
+forma:</p>
+
+<pre><code>        &lt;dir&gt;/usr/local/fonts&lt;/dir&gt;
+</code></pre>
+
+<p>Una vez hecho esto, tendremos que indicar al sistema Xft que vuelva a recorrer
+todos los directorios para crear la lista de fuentes. Así que ejecutaremos el
+comando <strong>fc-cache</strong> con privilegios de superusuario o <strong>root</strong>:</p>
+
+<pre><code>$ sudo fc-cache
+</code></pre>
+
+<p>Tras la ejecución del comando, deberíamos tener disponible la fuente en todos
+nuestros programas tipo Gimp, editores de texto, etc.</p>
+
+<p>Espero que os sirva de ayuda o simplemente para aprender algo nuevo, como me ha
+pasado a mi :-)</p>
+
+<p>Un saludo!</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Añadir nuevas fuentes en Linux [9 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/anadir-nuevas-fuentes-en-linux/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

@@ -1,0 +1,318 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Diagrama y componentes de red con Asterisk
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2011-01-19" title="2011-01-19">January 19, 2011</time>
+            </div>
+            <h1 class="title">Diagrama y componentes de red con Asterisk</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/asterisk">#asterisk</a>
+              
+              <a href="/tags/voip">#voip</a>
+              
+            </div>
+        </header>
+
+        <section>
+            <p>Qué ganas tenía de encontrar un rato para seguir posteando :-) Mi idea es
+enseñaros una configuración básica en Asterisk y para ello he hecho un diagrama
+de red, concretamente el que tengo ahora mismo en casa y con el que estoy
+realizando todas las pruebas en Asterisk.</p>
+
+<p style="text-align: left;"><a href="/images/blog/asterisk-network-diagram.png"><img class="aligncenter size-full
+wp-image-170" title="Asterisk network diagram"
+src="/images/blog/asterisk-network-diagram1.png" alt="" width="835" height="388"
+/></a>Si os fijais bien, es una red doméstica de lo más normal, solo que hay
+tres nuevos elementos: la centralita Asterisk(PBX), el teléfono digital,
+softphones y la pasarela o gateway VoIP.</p>
+
+<h2>Centralita Asterisk (PBX)</h2>
+
+<p>En mi caso es una máquina virtual Debian sobre <a
+href="http://www.linux-kvm.org/" target="_blank">KVM</a> configurada con una
+interfaz de red en bridge, esto quiere decir que dicha máquina virtual está
+presente en la red como si de una máquina física se tratase, es por eso por lo
+que tiene la IP 192.168.1.111.</p>
+
+<p>¿Por qué he instalado Asterisk en una máquina virtual? Básicamente para contar
+con las <a href="http://es.wikipedia.org/wiki/Virtualizaci%C3%B3n#Ventajas_de_la_Virtualizaci.C3.B3n"
+target="_blank"> ventajas de los sistemas virtualizados</a>. Resumiendo un poco,
+puedo clonar la máquina virtual y tener varios sistemas Asterisk idénticos en
+cuestión de minutos, además de evitar interferir en mi sistema anfitrión. La
+única complicación de esta decisión fue configurar KVM con una interfaz bridge,
+pero eso ya es otro tema y quizás le dedice un post ;-)</p>
+
+<p><h2>Teléfono digital</h2> Un teléfono digital no tiene muchas diferencias con
+respecto a un teléfono analógico de toda la vida. La diferencia más importante
+es que en el teléfono analógico solamente tenemos un puerto RJ11 y con un
+teléfono digital contamos con uno o varios puertos Ethernet (RJ45), un conector
+para la electricidad, y un puerto RJ11 (opcional) para conectar un headset o
+similar.</p>
+
+<p>Básicamente un teléfono digital o teléfono IP es un dispositivo más en nuestra
+red por lo que necesitará una IP en nuestro rango para comunicarse. En mi caso,
+la IP se asigna de forma dinámica.</p>
+
+<p>El teléfono que estoy usando es un <a
+href="http://www.grandstream.com/products/gxp_series/gxp280/gxp280.html"
+target="_blank">GRANDSTREAM GXP280</a>.</p>
+
+<p><h2>Softphone</h2> Un Softphone no es más que un software que simula a un
+teléfono. De esta forma, podremos utilizar un ordenador como un terminal VoIP.
+Algunos de los softphones más utilizados y conocidos son Ekiga, Zoiper y
+X-Lite. Aunque ya hablaremos más sobre ellos y cómo configurarlos en futuros
+posts ;-) <h2>Gateway VoIP</h2> La pasarela VoIP es algo opcional, no es
+necesario, la función que realiza es la de poder reutilizar nuestro teléfono
+analógico que todos (o casi) tenemos en casa. En resumidas cuentas, se encarga
+de convertir la señal analógica en digital y viceversa.</p>
+
+<p>Yo estoy utilizando un <a
+href="http://www.cisco.com/en/US/products/ps10027/index.html"
+target="_blank">Linksys Voice Gateway with router SPA3102-EU</a>.</p>
+
+<p><a href="/images/blog/SPA3102-EU.jpg"><img class="aligncenter size-full
+wp-image-187" title="Linksys Voice Gateway SPA3102-EU" src="/images/blog/SPA3102-EU.jpg" alt="" width="350" height="350" /></a></p>
+
+<p>Como podeis observar en la imagen, el SPA3102 cuenta con los siguientes puertos:
+<ul>
+    <li>1 x FXO (RJ11)</li>
+    <li>1 x FXS (RJ11)</li>
+    <li>1 x LAN (RJ45)</li>
+    <li>1 x WAN (RJ45)</li>
+</ul></p>
+
+<p>La pasarela está conectada tanto a mi red Ethernet a través de puerto
+&ldquo;Internet&rdquo; (azul) y a mi red telefónica básica (el puerto verde a la
+izquierda).</p>
+
+<p>Una vez configurado y registrado el gateway en Asterisk podremos realizar y
+recibir llamadas a través de la linea analógica a la que está conectado. Además
+conectaremos nuestro teléfono analógico y podremos asignarle una extensión.
+Gracias a esta pasarela VoIP podremos realizar llamadas internas entre
+teléfonos digitales y analógico, además de realizar llamadas a números
+externos.  <h3>¿Qué es FXO y FXS?</h3> Yo tampoco lo sabía hasta que empecé a
+estudiar Asterisk, pero la verdad es que estamos hartos de verlo diariamente.
+FXO y FXS son solamente los nombres técnicos de los puertos usados en telefonía
+analógica.</p>
+
+<p><a href="http://es.wikipedia.org/wiki/FXS" target="_blank">FXS</a> (Foreign
+Exchange Station) es la interfaz de abonado externo, es decir, el &ldquo;enchufe de
+la pared&rdquo; donde conectamos el teléfono, a través del cual recibimos el tono de
+marcado, corriente y tensión de llamada. Es decir, este tipo de interfaz provee
+electricidad al teléfono por el puerto FXO, por eso cuando se va la
+electricidad en casa podemos seguir utilizar el teléfono.</p>
+
+<p><a href="http://es.wikipedia.org/wiki/FXO" target="_blank">FXO</a> (Foreign
+Exchange Office) es el puerto que recibe la linea analógica, es decir, el
+puerto que hay en el teléfono, fax o centralita analógica.</p>
+
+<p>Si nos paramos a observar, el SPA3102 tiene los dos tipos de puertos. El puerto
+FXS sería el que tiene el icono del teléfono, donde conectamos el teléfono
+analógico, por el que se le da tono, electricidad, etc; y el puerto FXO donde
+conectamos el cable que viene &ldquo;de la pared&rdquo; (FXS).</p>
+
+<p>En el siguiente post comenzaremos a jugar con los ficheros de configuración de
+Asterisk, que ya toca! Que nerrrvios! ¿no? :-)</p>
+
+<p>Un saludo.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Diagrama y componentes de red con Asterisk [4 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/diagrama-y-componentes-de-red-con-asterisk/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

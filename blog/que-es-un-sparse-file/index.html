@@ -1,0 +1,454 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Qué es un sparse file
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2013-01-17" title="2013-01-17">January 17, 2013</time>
+            </div>
+            <h1 class="title">Qué es un sparse file</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/linux">#linux</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>Hoy me he encontrado con el término <em>sparse file</em> y realmente no lo conocía,
+aunque puede que os pase como a mi, que después de que os diga qué es, muchos
+de vosotros ya sabíais de su existencia e incluso es muy probable que hayáis
+trabajado con este tipo de ficheros. Pero&hellip;</p>
+
+<h2 id="toc_0">¿Qué es un <em>sparse file</em>?</h2>
+
+<p>Un <em>sparse file</em> es un tipo de fichero el cual se crea con un tamaño específico
+pero no se reserva dicho espacio en el sistema de ficheros inicialmente. Su
+tamaño irá creciendo a medida que vaya siendo necesario. Por ejemplo, podríamos
+crear un fichero cuyo tamaño máximo sea 2G pero que inicialmente en nuestro
+sistema de ficheros ocupe 0 bytes.</p>
+
+<p>Es muy probable que ya es sea más familiar este tipo de ficheros, sobre todo
+aquellos que hayáis trabajado con virtualización, por ejemplo con KVM
+utilizando virt-manager, cuando al crear un volumen de almacenamiento para una máquina virtual ofrece la opción de alojar la totalidad del volumen en el pool de almacenamiento, o que el tamaño del volumen vaya creciendo dinámicamente.</p>
+
+<p>Para temas de virtualización <strong>no</strong> es aconsejable utilizar este tipo de
+ficheros porque pueden generar problemas de rendimiento e integridad de los
+datos. De todas formas, son bastante útiles para realizar pruebas.</p>
+
+<h2 id="toc_1">¿Qué ventajas me aporta?</h2>
+
+<p>Como ventajas puntualizaría la rapidez con la que son creados, que como he
+comentado anteriormente, para realizar pruebas son perfectos, ya que
+inicialmente &ldquo;no ocupan&rdquo; espacio en el sistema.</p>
+
+<p>Además utilizar un <em>sparse file</em> nos permitirá crear un fichero de gran tamaño
+aunque en ese momento no dispongamos de tal espacio en nuestro sistema de
+ficheros.</p>
+
+<h2 id="toc_2">Pero no es oro todo lo que reluce&hellip;</h2>
+
+<p>Este tipo de fichero es soportado en la mayoría de los sistemas de ficheros
+modernos en Unix, incluso en NTFS; pero al parecer no es posible, y lo he
+comprobado, en HFS+ de Apple.</p>
+
+<p>A parte de los problemas de rendimiento e integridad con los datos comentados
+anteriormente, es posible que obtengamos resultados inesperados cuando tratemos
+de copiar este tipo de ficheros, pues si la utilidad que hemos usado para
+copiarlo no soporta este tipo de ficheros, será copiado con el tamaño completo.
+Afortunadamente <em>cp</em>, por defecto, y <em>rsync</em> con la opción <strong>-S</strong> /
+<strong>&ndash;sparse</strong>, soportan este tipo de ficheros.</p>
+
+<h2 id="toc_3">¿Y cómo creo un <em>sparse file</em>?</h2>
+
+<p>La creación de un <em>sparse file</em> es muy sencillo, es posible hacerlo con el
+comando <em>dd</em> que muchos ya conoceréis al haber creado ficheros llenos de ceros
+de la siguiente forma:</p>
+
+<pre><code>$ dd if=/dev/zero of=file.img bs=1M count=1G
+</code></pre>
+
+<p>Esta instrucción creará un fichero lleno de ceros ocupando 1G de espacio en
+vuestro sistema de ficheros.</p>
+
+<p>Pero para crear un <em>sparse file</em> será necesario ejecutar la siguiente
+instrucción, similar a la anterior:</p>
+
+<pre><code>$ dd if=/dev/zero of=file.img bs=1M count=0 seek=1024
+0+0 registros leídos
+0+0 registros escritos
+0 bytes (0 B) copiados, 1,802e-05 s, 0,0 kB/s
+</code></pre>
+
+<p>El truco se encuentra en el operador <strong>seek</strong>. En este caso tendremos un
+fichero que inicialmente ocupa 0 bytes pero con un tamaño de 1G en potencia.</p>
+
+<pre><code>$ du -hs file.img 
+0   file.img
+</code></pre>
+
+<p>Sin embargo, podemos ver su tamaño real con la opción <strong>&ndash;apparent-size</strong> de
+la siguiente forma:</p>
+
+<pre><code>$ du -h --apparent-size file.img
+1,0G    file.img
+</code></pre>
+
+<h2 id="toc_4">¿Pero cómo compruebo que su tamaño crece dinámicamente?</h2>
+
+<p>Es muy sencillo, crearemos ficheros dentro de este y veremos cómo aumenta de
+tamaño dinámicamente hasta un total de 1G. Para ello seguiremos los siguiente
+pasos:</p>
+
+<ol>
+<li><p>Crearemos un sistema de ficheros en <em>file.img</em>, lo cual nos va a permitir
+alojar ficheros dentro de él convirtiéndolo en un volumen de almacenamiento:</p>
+
+<pre><code>$ mkfs.ext4 -q file.img  
+file.img no es un dispositivo especial de bloques.
+¿Continuar de todas formas? (s,n) s
+</code></pre></li>
+
+<li><p>Montamos el fichero como si de un dispositivo de almacenamiento se
+tratase, utilizando el comando <em>mount</em>, de la siguiente forma:</p>
+
+<pre><code>$ mkdir mnt
+$ sudo mount -t auto file.img mnt
+</code></pre>
+
+<p>Si listamos los puntos de montaje actuales en nuestro sistema, deberíamos
+ver el fichero <em>file.img</em> montado en el directorio local <em>mnt</em>:</p>
+
+<pre><code>$ mount |grep file.img
+/tmp/file.img on /tmp/mnt type ext4 (rw)
+</code></pre></li>
+
+<li><p>Creamos varios ficheros temporales dentro del punto de montaje:</p>
+
+<pre><code>$ for i in {1..10};do mktemp --tmpdir=mnt; done
+</code></pre>
+
+<p><strong>Nota:</strong> aprovecho para enseñar el comando <em>mktemp</em> crea un fichero
+temporal del tipo <em>tmp.XXXXXXXX</em> en el directorio actual. Con la opción
+<em>&ndash;tmpdir</em> es posible indicar el directorio destino donde se creará el
+fichero temporal.</p></li>
+
+<li><p>Comprobamos que el tamaño del fichero ha crecido con respecto al estado
+anterior:</p>
+
+<pre><code>$ du -h file.img 
+49M    file.img
+</code></pre>
+
+<p>Y obviamente el tamaño total sigue siendo 1G:</p>
+
+<pre><code>$ du -h --apparent-size file.img 
+1,0G    file.img
+</code></pre></li>
+</ol>
+
+<h2 id="toc_5">Dónde está el límite</h2>
+
+<p>Lo único que nos falta comprobar es dónde está el limite. En el ejemplo
+utilizado es 1G, así que intentaremos crear un fichero de un tamaño mayor que
+el total del <em>sparse file</em>.</p>
+
+<p>Teniendo montado el fichero en el directorio <em>mnt</em>, crearemos un fichero de 2G
+dentro de este, ejecutando lo siguiente:</p>
+
+<pre><code>$ dd if=/dev/zero of=file bs=1M count=2048
+dd: escribiendo «file»: No queda espacio en el dispositivo
+924+0 registros leídos
+923+0 registros escritos
+968290304 bytes (968 MB) copiados, 4,71871 s, 205 MB/s
+</code></pre>
+
+<p>Como podemos observar, nos ha avisado de que no queda espacio libre en el
+dispositivo y si comprobamos el tamaño actual del fichero obtendremos lo
+siguiente:</p>
+
+<pre><code>$ du -h file.img 
+973M    file.img
+</code></pre>
+
+<p><strong>Nota:</strong> Hay un resto de espacio de 27M que es posible que sea debido a la
+reserva del 5% de espacio para el usuario root. Siempre hay una reserva de
+espacio para el usuario root, por defecto del 5%, de forma que este pueda
+acceder al dispositivo cuando haya alcanzado su límite de espacio. Si
+eliminamos dicha reserva, <strong>para nada recomendable en producción</strong> pero en este
+caso estamos probando en un fichero local, podremos comprobar que si volvemos a
+crear el fichero de 2G dentro del <em>sparse file</em>, el espacio llega a ocuparse
+completamente:</p>
+
+<pre><code>$ tune2fs -m 0 file.img 
+tune2fs 1.41.14 (22-Dec-2010)
+Setting reserved blocks percentage to 0% (0 blocks)
+
+$ dd if=/dev/zero of=file bs=1M count=2048
+dd: escribiendo «file»: No queda espacio en el dispositivo
+965+0 registros leídos
+964+0 registros escritos
+1011208192 bytes (1,0 GB) copiados, 3,27181 s, 309 MB/s
+
+$ du -h file.img  
+1,0G    file.img
+</code></pre>
+
+<h2 id="toc_6">Actualización: ¿Y si queremos aumentar el límite?</h2>
+
+<p>Ayer se me debió pasar esta cuestión mientras me centraba en escribir, pero sí,
+es posible aumentar el tamaño del <em>sparse file</em>, ¿pero cómo?</p>
+
+<p>Pues muy sencillo, solo tenemos que volver a utilizar el comando <em>dd</em> indicando
+un tamaño mayor en el parámetro <em>seek</em>, como indico a continuación:</p>
+
+<pre><code>$ dd if=/dev/zero of=file.img bs=1M count=0 seek=2048
+0+0 registros leídos
+0+0 registros escritos
+0 bytes (0 B) copiados, 1,6064e-05 s, 0,0 kB/s
+</code></pre>
+
+<p>Si comprobamos ahora el tamaño del fichero, podremos observar que su tamaño
+total a aumentado en 1G:</p>
+
+<pre><code>$ du -h --apparent-size file.img 
+2,0G    file.img
+</code></pre>
+
+<p>Pero aun no hemos terminado, sólo nos falta <strong>redimensionar</strong> el sistema de
+ficheros incluido en él, y esto lo haremos haciendo uso del comando
+<em>resize2fs</em>, pero primero realizaremos un chequeo del sistema de ficheros:</p>
+
+<pre><code>e2fsck -f file.img 
+e2fsck 1.41.14 (22-Dec-2010)
+Paso 1: Verificando nodos-i, bloques y tamaños
+Paso 2: Verificando la estructura de directorios
+Paso 3: Revisando la conectividad de directorios
+Paso 4: Revisando las cuentas de referencia
+Paso 5: Revisando el resumen de información de grupos
+file.img: 22/65536 ficheros (0.0% no contiguos), 259513/262144 bloques
+
+$ resize2fs file.img 
+resize2fs 1.41.14 (22-Dec-2010)
+Resizing the filesystem on file.img to 524288 (4k) blocks.
+El sistema de ficheros en file.img tiene ahora 524288 bloques.
+</code></pre>
+
+<p>Por último, si comprobamos el total de espacio disponible dentro del <em>sparse
+file</em> podremos observar que a aumentado a 2G:</p>
+
+<pre><code>$ df -h mnt 
+S.ficheros     Tamaño Usado  Disp Uso% Montado en
+/dev/loop0       2,0G  998M  998M  51% /tmp/mnt
+</code></pre>
+
+<p>Como decía el maestro <a href="http://es.wikipedia.org/wiki/Juan_Tamariz">Juan
+Tamariz</a>:</p>
+
+<blockquote>
+<p>Chianananaaaaaaaa&hellip; La magia no tiene trucos, por la razón de que todos sabemos que sí que los tiene.</p>
+</blockquote>
+
+<p>Espero que os haya parecido interesante! No dudéis en comentar!</p>
+
+<p>Un saludo, Manu.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Qué es un sparse file [7 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/que-es-un-sparse-file/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

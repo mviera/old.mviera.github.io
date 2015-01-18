@@ -1,0 +1,445 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Nginx como proxy HTTP
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2013-01-06" title="2013-01-06">January 06, 2013</time>
+            </div>
+            <h1 class="title">Nginx como proxy HTTP</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/nginx">#nginx</a>
+              
+              <a href="/tags/linux">#linux</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>De regalo de Reyes os traigo un post bastante sencillo sobre Nginx. Se trata de
+configurar Nginx para que funcione como un proxy HTTP, pero antes de nada&hellip;</p>
+
+<h2 id="toc_0">¿Qué es un proxy?</h2>
+
+<p>Un proxy no es más que un <strong>intermediario</strong>, que es el significado que tiene la
+palabra <em>proxy</em> en inglés, en la comunicación que se realiza entre dos puntos.
+Por ejemplo, entre un cliente, que puede ser un navegador web, petición Ajax,
+etc; y un servidor.  Hay muchos tipos o aplicaciones distintas para un proxy
+como pueden ser proxy inverso (reverse proxy), proxy transparente, proxy cache;
+y todas ellas se pueden combinar en una misma configuración. Por ejemplo
+podríamos configurar un proxy HTTP inverso con cache para acelerar el tiempo de
+respuesta de éste a medida que se va utilizando. En este caso vamos a
+configurar un proxy HTTP inverso, pero&hellip;</p>
+
+<h2 id="toc_1">¿Que nos ofrece un proxy HTTP inverso?</h2>
+
+<p>Antes de nada, nuestro proxy, como su propio nombre indica, va a estar
+orientado al servicio HTTP o HTTPS (HTTP Secure), es decir, sólo va a trabajar
+con peticiones HTTP. Aunque Nginx como tal, también podría actuar como IMAP
+Proxy, un proxy para el protocolo IMAP (Internet Message Access Protocol) de
+correo, pero no va a ser este el caso. Como proxy inverso nos va a permitir:</p>
+
+<ul>
+<li>Añadir <strong>seguridad</strong>, protegiendo al resto de servidores web del ataque directo de los usuarios.</li>
+<li><strong>Reescribir</strong> las <strong>URLs</strong> según nuestras necesidades.</li>
+<li><strong>Securizar</strong> el acceso a nuestras aplicaciones web con <strong>HTTPS</strong>, es decir, podremos enrutar la petición HTTP hacia HTTPS y securizar la comunicación entre los dos puntos.</li>
+</ul>
+
+<p>Imaginemos que en nuestra red corporativa o doméstica, tenemos varios
+servidores web en nuestra DMZ publicando diferentes aplicaciones web, pero
+queremos controlar la publicación de cada una de éstas al exterior. En ese
+caso, podríamos redirigir todo el tráfico HTTP entrante desde el firewall hacia
+el proxy HTTP y controlar la publicación de las aplicaciones web al exterior.
+Como he comentado anteriormente, podríamos añadir HTTPS obligatoriamente al
+acceder a una aplicación web, añadir autenticación básica (usuario y
+contraseña), etc.</p>
+
+<h2 id="toc_2">Configuración</h2>
+
+<p>Vamos a suponer que Nginx ya se encuentra instalado en nuestro sistema. Si no
+fuera el caso, es posible consultar mi anterior articulo sobre la <a href="/blog/nginx/">instalación
+de Nginx</a>. La configuración que
+obtengo, eliminando los comentarios, tras haber instalado Nginx desde los
+<strong>repositorios de Debian 7</strong> (Wheezy) es la siguiente:</p>
+
+<pre><code>root@nginx:/# grep -v &quot;#&quot; /etc/nginx/nginx.conf |uniq
+user www-data;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 768;
+}
+
+http {
+
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  types_hash_max_size 2048;
+
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log;
+
+  gzip on;
+  gzip_disable &quot;msie6&quot;;
+
+  include /etc/nginx/conf.d/*.conf;
+  include /etc/nginx/sites-enabled/*;
+}
+</code></pre>
+
+<p>NOTA: la configuración suele ser diferente dependiendo del método de
+instalación: utilizando los repositorios de la distribución o compilando desde
+las fuentes.</p>
+
+<h3 id="toc_3">¿Qué significa ésta configuración?</h3>
+
+<p>Podemos apreciar varias <strong>directivas</strong> que son <strong>globales</strong>: <code>user</code>,
+<code>worker_processes</code> y <code>pid</code>; y varios bloques como <code>events</code>, que configura el
+número de conexiones para cada worker (recordad, número de conexiones totales =
+worker_processes * worker_connections) y el bloque <code>http</code> que define algunas
+directivas como:</p>
+
+<ul>
+<li><code>keepalive_timeout</code> : tiempo que se va a mantener una conexión viva.</li>
+<li><code>include</code> : permite incluir ficheros que contienen más configuración como en este caso los tipos MIME y los ficheros de configuración en el directorio sites-enabled.</li>
+<li><code>access_log</code> : define el fichero de acceso donde se registrarán las conexiones al proxy http.</li>
+<li><code>error_log</code> :  igual que access_log pero solo registrará los intentos fallidos de conexión.</li>
+<li><code>gzip</code> : permite comprimir los datos enviados con gzip, consumiendo menos ancho de banda.</li>
+</ul>
+
+<p>Es posible que dentro del bloque <code>http</code> podamos encontrar otro bloque
+llamado <code>server</code> y que contenga algo como lo siguiente:</p>
+
+<pre><code>server {
+    listen       80;
+    server_name  localhost;
+
+    location / {
+        root   html;
+        index  index.html index.htm;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   html;
+    }
+}
+</code></pre>
+
+<p>Es necesario eliminar este bloque de configuración en el fichero de
+configuración principal nginx.conf ya que el bloque <code>server</code> lo definiremos
+para cada uno de los sitios a publicar, dentro del directorio <code>sites-
+available</code>.</p>
+
+<h2 id="toc_4">sites-available y sites-enabled</h2>
+
+<p>Normalmente, y sobretodo si se instala Nginx utilizando los repositorios del
+sistema, durante la instalación se crean dos directorios llamados <code>sites-
+available</code> y <code>sites-enabled</code>, pero ¿para qué función tienen y para qué se
+usan? Muy fácil.</p>
+
+<ul>
+<li><code>sites-available</code> : se utiliza para almacenar la configuración de cada sitio o aplicación web. Siguiendo las buenas prácticas, se debe crear un fichero de configuración por cada sitio, para evitar tener la configuración de todos los sitios en un solo fichero.</li>
+<li><code>sites-enabled</code> : directorio que utiliza Nginx para saber qué sitios están activados. El contenido de este directorio deben ser enlaces simbólicos que apuntan a los ficheros de configuración del directorio <code>sites-available</code>.</li>
+</ul>
+
+<p><strong>Nota</strong>: la creación de los directorios <code>sites-available</code> y <code>sites-enabled</code>
+son una práctica muy común realizada por la paquetería del sistema, es decir,
+es una acción que realiza el paquete descargado de los repositorios durante la
+instalación. Pero es muy probable que dichos directorios no aparezcan si se
+instala Nginx desde las fuentes. En ese caso, solamente habría que crear dichos
+directorios e incluir el futuro contenido de estos mediante la
+directiva <code>include</code> en la configuración principal de Nginx.</p>
+
+<h2 id="toc_5">Publicando un sitio web</h2>
+
+<p>Ya estamos casi a punto. Sólo nos falta configurar una redirección en el
+directorio <code>sites-available</code> y enlazarla con un enlace simbólico en <code>sites-
+enabled</code>, así que vamos a ello!</p>
+
+<ol>
+<li><p>Creamos el fichero de configuración test.manuelviera.es.conf en el
+directorio <code>/etc/nginx/sites-available/</code> con una configuración como la
+siguiente:</p>
+
+<pre><code>server {
+    listen 80;
+    server_name     test.manuelviera.es;
+    location / {
+        proxy_pass http://192.168.1.200:8080;
+        proxy_set_header  X-Real-IP  $remote_addr;
+        proxy_set_header  Host  $http_host;
+    }
+}
+</code></pre>
+
+<p><strong>Nota</strong>: creo que es buena práctica establecer como nombre de fichero el
+mismo que el dominio que estamos publicando, es decir, el valor de la
+directiva <code>server_name</code>. De esta forma, le indicando nuestro Nginx que
+cuando reciba una petición del dominio &ldquo;test.manuelviera.es&rdquo; por el puerto
+80, debe redirigir la petición HTTP al host 192.168.1.200 al puerto 8080,
+que es donde se encuentra nuestra aplicación web desplegada. El ingrediente
+estrella en esta configuración es el uso del módulo <code>proxy_pass</code> incluido
+en el Core de Nginx, y es la directiva que nos permite pasar la petición
+que nos llega hacia otro destino, en este caso, el servidor web donde se
+aloja nuestra supuesta aplicación. Como podéis observar, también hemos
+hecho uso de otra directiva llamada <code>proxy_set_header</code> que nos permite
+añadir o modificar cabeceras, en este caso hemos editado dos cabeceras:</p>
+
+<ul>
+<li><code>X-Real-IP</code> : contiene la IP del cliente que inicia la petición, y se ha establecido el valor de la variable $remote_addr con la idea de que al servidor destino le llegue la IP del cliente y no la del proxy HTTP. Si no se hubiese modificado esta cabecera (header) la IP que recibiría el servidor web objetivo siempre sería la del proxy HTTP.</li>
+<li><code>Host</code> : Al igual que la anterior cabecera, establecemos el valor con el contenido de la variable $http_host, es decir, el nombre de host que especificó el cliente.</li>
+</ul></li>
+
+<li><p>Una vez configurado nuestra primera redirección, sólo nos falta activarla,
+es decir, crear un enlace simbólico hacia esta en el directorio
+sites-enabled:</p>
+
+<pre><code>root@nginx:~# cd /etc/nginx/sites-enabled/
+root@nginx:/etc/nginx/sites-enabled# ln -s ../sites-available/test.manuelviera.es.conf
+root@nginx:/etc/nginx/sites-enabled# ls -l
+total 0
+
+
+lrwxrwxrwx 1 root root 43 Jan  6 12:05 test.manuelviera.es.conf -&gt; ../sites-available/test.manuelviera.es.conf
+</code></pre></li>
+
+<li><p>Una vez enlazada el fichero de configuración, debemos obligar a Nginx a
+recargar la configuración con la siguiente instrucción:</p>
+
+<pre><code>root@nginx:~# service nginx reload
+Reloading nginx configuration: nginx.
+</code></pre></li>
+</ol>
+
+<p>¡Perfecto! Pero aún nos queda el último paso, y no por ello menos importante&hellip;</p>
+
+<h2 id="toc_6">Comprobar el funcionamiento del proxy HTTP</h2>
+
+<p>Siempre debemos comprobar que lo que hemos hecho realmente funciona, ya que de
+no ser así, es como si no hubiésemos hecho nada y daremos mala imagen como
+profesionales. Si lo que tenemos es un entorno de prueba, que aún no se
+encuentra implantado en producción, una prueba muy sencilla sería utilizar el
+fichero <code>/etc/hosts</code> añadiendo la IP de nuestro proxy HTTP y el dominio
+especificado en la directiva <code>server_name</code>, de la siguiente forma:</p>
+
+<pre><code>$ sudo sh -c &quot;echo 192.168.1.200 test.manuelviera.es &gt;&gt; /etc/hosts&quot;
+</code></pre>
+
+<p><strong>Nota</strong>: en mi caso, el proxy HTTP se encuentra en la IP 192.168.1.200. Si
+todo ha ido bien, nuestro proxy HTTP, tras realizar la petición, deber habernos
+redirigido al host especificado en la directiva <code>proxy_pass</code> :-) Otra prueba
+sencilla para comprobar que el proxy HTTP funciona es especificar un sitio
+externo como terra.es, google.es, etc; en la directiva <code>proxy_pass</code>, si aún no
+se dispone de un servidor web interno que sirva una aplicación web.</p>
+
+<p>Y esto ha sido todo amigos! Espero que os sea de utilidad y Feliz día de Reyes!</p>
+
+<p>Un saludo.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Nginx como proxy HTTP [7 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/nginx-como-proxy-http/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

@@ -1,0 +1,411 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Instalar Solr en Jetty
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2013-04-29" title="2013-04-29">April 29, 2013</time>
+            </div>
+            <h1 class="title">Instalar Solr en Jetty</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/solr">#solr</a>
+              
+              <a href="/tags/jetty">#jetty</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>Hace ya más de un mes que no pasaba por aquí más que para ver las estadísticas
+del blog; así que ya es hora de que me siente a escribir algo y compartir con
+el resto de internet.</p>
+
+<p>Hoy vengo hablando, o escribiendo, sobre cómo instalar / montar una instancia
+de Solr sobre Jetty, porque esta semana pasada me surgió la necesidad de montar
+una instancia y hemos tenido que pelear un poco para hacerlo, así que he
+decidido crear una receta muy simple para tenerlo funcionando rápidamente y
+siguiendo unos pasos muy sencillos. Pero empecemos por el principio&hellip;</p>
+
+<h2 id="toc_0">¿Qué es Solr?</h2>
+
+<p><a href="http://lucene.apache.org/solr/">Solr</a> es la plataforma de búsqueda de código
+abierto del proyecto Apache Lucene. Es una plataforma de búsqueda muy popular y
+rápida; está escrita en Java y se ejecuta de forma independiente dentro de un
+servidor de aplicaciones como pueder ser <a href="http://tomcat.apache.org/">Tomcat</a> o
+<a href="http://www.eclipse.org/jetty/">Jetty</a>. Podéis encontrar mucha más información
+de Sorl en su <a href="http://lucene.apache.org/solr/">página oficial</a>.</p>
+
+<h2 id="toc_1">Preparativos</h2>
+
+<p>Antes de empezar con la instalación de Solr necesitamos tener instalados varios
+paquetes en nuestro sistema. En mi caso, y a la hora de escribir este post,
+estoy utilizando una distribución Ubuntu; y muchos pensaréis que es tan fácil
+como hacer un <code>apt-get install solr-jetty solr-common</code> pero mi necesidad surgió
+en una distribución Debian Squeeze, y no contaba con Solr en mi sistema de
+paquetería. De todas formas, este post tiene como fin poder instalar un Solr
+sin necesidad de utilizar el sistema de paquetería de nuestra distribución y
+poder utilizar una versión más nueva de Solr que la empaquetada en esta. Así
+que necesitaremos:</p>
+
+<h3 id="toc_2">Java</h3>
+
+<p>Necesitaremos la máquina virtual de Java para poder ejecutar Solr dentro de
+nuestro contenedor de aplicaciones Jetty. Podemos buscar el paquete referente a
+<strong>openjdk</strong> en nuestra distribución. En mi caso, tengo instalado varios
+paquetes referentes a <strong>openjdk-7</strong>:</p>
+
+<pre><code>$ dpkg -l |grep openjdk |awk '{print $2}'
+openjdk-7-jre:amd64
+openjdk-7-jre-headless:amd64
+openjdk-7-jre-lib
+</code></pre>
+
+<p>Para comprobar que tenemos <strong>java</strong> correctamente instalado y
+conocer la versión que vamos a utilizar podemos ejecutar la siguiente
+instrucción:</p>
+
+<pre><code>$ java -version
+java version &quot;1.7.0_21&quot;
+Java(TM) SE Runtime Environment (build 1.7.0_21-b11)
+Java HotSpot(TM) 64-Bit Server VM (build 23.21-b01, mixed mode)
+</code></pre>
+
+<h3 id="toc_3">Jetty</h3>
+
+<p>Instalaremos el servidor de aplicaciones Jetty utilizando nuestro sistema de
+paquetería igual que hemos hecho con Java. Así que en distribuciones basadas en
+Debian utilizaremos la siguiente instrucción para su instalación:</p>
+
+<pre><code>$ sudo apt-get install jetty libjetty-extra
+</code></pre>
+
+<h3 id="toc_4">Solr</h3>
+
+<p>Como he comentado antes, en este caso no vamos a instalar Solr desde el sistema
+de paquetería, pues yo no tuve esa posibilidad y mi intención es compartir la
+forma de hacerlo de que exista un paquete en los repositorios, como era mi
+caso.</p>
+
+<h4 id="toc_5">Descargar y descomprimir Solr</h4>
+
+<p>Descargaremos y descomprimiremos la última versión disponible de Solr en este
+momento, la versión 4.2.1:</p>
+
+<pre><code>$ cd /opt
+$ sudo wget http://apache.rediris.es/lucene/solr/4.2.1/solr-4.2.1.tgz
+$ tar xzf solr-4.2.1.tgz &amp;amp;&amp;amp; mv solr-4.2.1 solr
+</code></pre>
+
+<p>Crearemos el directorio <code>/usr/share/solr</code> y descomprimiremos dentro de él el
+contenido de <code>dist/solr-4.2.1.war</code>:</p>
+
+<pre><code>$ sudo mkdir /usr/share/solr
+$ cd /usr/share/solr
+$ sudo unzip /opt/solr/dist/solr-4.2.1.war
+</code></pre>
+
+<p>Esta última instrucción descomprime los ficheros web de Solr en el directorio
+<code>/usr/share/solr</code> teniendo este el siguiente contenido:</p>
+
+<pre><code>$ ls
+admin.html  css  favicon.ico  img  js  META-INF  mgc  solr.xml  tpl  WEB-INF
+</code></pre>
+
+<h4 id="toc_6">Añadiendo Solr a Jetty</h4>
+
+<p>Para instalar Solr como aplicación dentro de Jetty, crearemos un enlace
+simbólico de <code>/usr/share/solr</code> en <code>/usr/share/jetty/webapps</code>:</p>
+
+<pre><code>$ sudo ln -s /usr/share/solr /usr/share/jetty/webbaps/solr
+</code></pre>
+
+<p><strong>NOTA:</strong> <code>/usr/share/jetty</code> es el directorio donde se encuentra instalado
+Jetty en nuestra distribución. Puedes consultarlo ejecutando: <code>dpkg -L jetty</code>.</p>
+
+<p>Esto quiere decir que nuestra instancia de Solr va a ser accesible en
+<a href="http://localhost:8080/solr">http://localhost:8080/solr</a></p>
+
+<h4 id="toc_7">Configurando Jetty</h4>
+
+<p>Editaremos el fichero <code>/etc/default/jetty</code> a través del cual podremos modificar
+el comportamiento de éste sin necesidad de modificar sus ficheros de
+configuración XML.</p>
+
+<p>En mi caso he incluido las siguientes lineas:</p>
+
+<pre><code>NO_START=0
+VERBOSE=yes
+JETTY_PORT=8080
+JETTY_HOST=0.0.0.0
+JAVA_OPTIONS=&quot;-Dsolr.solr.home=/usr/share/solr $JAVA_OPTIONS&quot;
+JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+</code></pre>
+
+<ul>
+<li><strong>NO_START=0</strong>: permite que Jetty se ejecute. Si el valor es 1, Jetty no podrá ejecutarse.</li>
+<li><strong>VERBOSE=yes</strong>: indica a Jetty que queremos que nos muestra mucha más información durante su ejecución. Muy recomendable sobre todo cuando se intenta depurar un error.</li>
+<li><strong>JETTY_PORT=8080</strong>: puerto en el que escuchará Jetty. En este caso se utiliza el puerto por defecto, pero se puede establecer cualquier otro siempre y cuand o no se encuentra ya en uso en el sistema.</li>
+<li><strong>JETTY_HOST=0.0.0.0</strong>: indica a Jetty que escuche en todas las interfaces de red y no solo en localhost. Aunque es recomendable que escuche solo en localhost, sobre todo si se encuentra instalada en el mismo servidor donde se encuentra la aplicación.</li>
+<li><strong>JAVA_OPTIONS</strong>: opciones y parámetros que se pueden pasar a la máquina virtual de Java.</li>
+<li><strong>JAVA_HOME</strong>: indica el directorio HOME de la máquina virtual de Java. Es posible descubrirlo ejecutando <code>dpkg -L openjdk-7-jre</code>.</li>
+</ul>
+
+<h4 id="toc_8">Añadiendo Cores a Solr</h4>
+
+<p>Es necesario configurar al menos un <strong>Core</strong> en Solr para que podamos hacer uso
+de él, así que editaremos el fichero <code>/usr/share/solr/solr.xml</code>:</p>
+
+<pre><code>$ sudo vim /usr/share/solr/solr.xml
+</code></pre>
+
+<p>y añadiremos algo como lo siguiente:</p>
+
+<pre><code>&lt;solr persistent=&quot;true&quot;&gt;
+    &lt;cores adminPath=&quot;/admin/cores&quot;&gt;
+    &lt;core name=&quot;mysitename&quot; instanceDir=&quot;mysitename&quot; dataDir=&quot;/var/lib/solr/mysitename/data&quot; /&gt;
+    &lt;/cores&gt;
+&lt;/solr&gt;
+</code></pre>
+
+<p>Esto añade un <strong>Core</strong> llamado <strong>mysitename</strong>. Ahora crearemos el directorio
+del <strong>Core</strong> que acabamos de configurar:</p>
+
+<pre><code>$ sudo mkdir -p /var/lib/solr/mysitename/data
+</code></pre>
+
+<p>Y establecemos <strong>jetty</strong> como propietario y grupo a los directorios
+<code>/var/lib/solr</code> <code>/usr/share/solr</code>:</p>
+
+<pre><code>$ sudo chown -R jetty:jetty /var/lib/solr/
+$ sudo chown -R jetty:jetty /usr/share/solr
+</code></pre>
+
+<h4 id="toc_9">Configurando el Core</h4>
+
+<p>Tal y como hemos hecho antes, tenemos que crear el directorio que alojará la
+configuración para el Core <strong>mysitename</strong>:</p>
+
+<pre><code>$ sudo mkdir -p /usr/share/solr/mysitename
+</code></pre>
+
+<p>Y si aún no tenemos una configuración disponible, podemos copiar la
+configuración de ejemplo que viene incluida con Solr y que se encuentra en el
+directorio <code>example</code>:</p>
+
+<pre><code>$ sudo cp -r /opt/solr/example/solr/collection1/conf/ /usr/share/solr/mysitename/
+</code></pre>
+
+<h4 id="toc_10">Reiniciar Jetty</h4>
+
+<p>Por último y para terminar solo nos quedaría reiniciar el servido Jetty:</p>
+
+<pre><code>$ sudo service jetty restart
+</code></pre>
+
+<p>Si todo va bien, Solr debería estar accesible en <a href="http://localhost:8080/solr">http://localhost:8080/solr</a></p>
+
+<p>Y esto es todo! Espero que os sirva de ayuda, a mi seguro que me va a ser muy
+útil cuando tenga que montar un Solr de nuevo.</p>
+
+<p>Un saludo, Manu.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Instalar Solr en Jetty [5 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/instalar-solr-en-jetty/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

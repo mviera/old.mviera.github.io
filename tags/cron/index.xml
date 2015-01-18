@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Cron on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/cron/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Thu, 27 Jan 2011 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Crontab</title>
+      <link>http://blog.manuelviera.es/blog/crontab/</link>
+      <pubDate>Thu, 27 Jan 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/crontab/</guid>
+      <description>&lt;p&gt;Hoy trabajando en &lt;a href=&#34;http://www.yaco.es&#34; target=&#34;_blank&#34;&gt;Yaco
+Sistemas&lt;/a&gt; he aprendido algo nuevo sobre cron. Seguramente muchos de los que
+os moveis entre GNU/Linux y similares, conoceréis el demonio cron.&lt;/p&gt;
+
+&lt;p&gt;Cron es un planificador de tareas que nos permite ejecutar una tarea en un
+momento determinado en el tiempo. La sintaxis para configurar una tarea cron es
+la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;.---------------- minuto (0 - 59)
+|  .------------- hora (0 - 23)
+|  |  .---------- día del mes (1 - 31)
+|  |  |  .------- mes (1 - 12)
+|  |  |  |  .---- día de la semana (0 - 6) (Domingo=0)
+|  |  |  |  |
+*  *  *  *  *  comando para ser ejecutado
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;De esta forma, imaginad que queremos apagar nuestro ordenador los sábados a las
+21:30h, configuraríamos una tarea cron de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;30 21 * * 6 /sbin/shutdown -h now
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podemos planificar tareas para un usuario utilizando el comando &lt;strong&gt;crontab&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;crontab -l&lt;/strong&gt; Lista las tareas cron para el usuario actual.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;crontab -e&lt;/strong&gt; Permite configurar una tarea cron para el usuario actual. Se abrirá el editor de texto configurado por defecto en el sistema.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;crontab -r&lt;/strong&gt; Elimina las tareas cron configuradas en el usuario actual.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;crontab -v&lt;/strong&gt; Muestra la última vez que se editó crontab del usuario actual.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;La verdad es que no parece una sintaxis muy complicada pero a mi,
+personalmente, siempre se me olvida.&lt;/p&gt;
+
+&lt;p&gt;Como os decía al principio, hoy he descubierto los &lt;strong&gt;horarios
+predefinidos&lt;/strong&gt; en crontab gracias a &lt;a href=&#34;http://www.ant30.es/&#34;
+target=&#34;_blank&#34;&gt;ant30&lt;/a&gt;. Estos horarios predefinidos son unos valores que se
+pueden usar para sustituir la sintaxis de las expresiones anteriores. Estos
+valores predefinidos son:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;@yearly&lt;/strong&gt; Se ejecuta una vez al año. Equivalente a &lt;code&gt;0 0 1 1 *&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;@annually&lt;/strong&gt; (igual que @yearly). Equivalente a &lt;code&gt;0 0 1 1 *&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;@monthly&lt;/strong&gt; Se ejecuta una vez al mes. Equivalente a &lt;code&gt;0 0 1 * *&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;@weekly&lt;/strong&gt; Se ejecuta una vez a la semana. Equivalente a &lt;code&gt;0 0 * * 0&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;@daily&lt;/strong&gt; Se ejecuta una vez al día. Equivalente a &lt;code&gt;0 0 * * *&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;@midnight &lt;/strong&gt;(igual que @daily). Equivalente a &lt;code&gt;0 0 * * *&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;@hourly&lt;/strong&gt; Se ejecuta una vez cada hora. Equivalente a &lt;code&gt;0 * * * *&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;@reboot&lt;/strong&gt; Se ejecuta en el arranque y al reiniciar.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;El que yo he utilizado hoy ha sido &lt;strong&gt;@reboot&lt;/strong&gt; que me permite
+ejecutar un comando cuando arranca el sistema. En mi caso quería que cada vez
+que se arranque el sistema, se iniciara un servicio desplegado con el usuario
+en cuestión. Gracias a &lt;strong&gt;@reboot&lt;/strong&gt; no tengo que crear un script en
+&lt;code&gt;/etc/init.d/&lt;/code&gt; y activarlo en el arranque ;-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

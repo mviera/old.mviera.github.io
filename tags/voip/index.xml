@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Voip on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/voip/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Sat, 22 Jan 2011 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Configurando los clientes SIP</title>
+      <link>http://blog.manuelviera.es/blog/configurando-los-clientes-sip/</link>
+      <pubDate>Sat, 22 Jan 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/configurando-los-clientes-sip/</guid>
+      <description>&lt;p style=&#34;text-align: left;&#34;&gt;Bueno, vamos a empezar por el principio. Deberemos
+tener presente el diagrama de red que presenté en el &lt;a
+href=&#34;/blog/diagrama-y-componentes-de-red-con-asterisk/&#34;
+target=&#34;_blank&#34;&gt;anterior post&lt;/a&gt; y por eso lo incluyo también en este.&lt;/p&gt;
+
+&lt;p style=&#34;text-align: center;&#34;&gt;&lt;a
+href=&#34;/images/blog/asterisk-network-diagram1.png&#34;&gt;&lt;img class=&#34;size-full
+wp-image-267 aligncenter&#34; title=&#34;Asterisk Network Diagram&#34;
+src=&#34;/images/blog/asterisk-network-diagram1.png&#34; alt=&#34;&#34; width=&#34;668&#34;
+height=&#34;310&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;p style=&#34;text-align: left;&#34;&gt;Para poder utilizar el canal SIP lo primero que
+tenemos que hacer es configurar las cuentas SIP, utilizadas por nuestros
+dispositivos VoIP(softphones, tfnos digital y analógico y gateway) para
+registrarse en nuestra centralita Asterisk. Pero&amp;hellip;&lt;/p&gt; &lt;p style=&#34;text-align:
+left;&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;h1&gt;¿Qué es SIP?&lt;/h2&gt;
+Session Initiation Protocol o Protocolo de Inicio de Sesión. Es un protocolo
+desarrollador por el grupo MMUSIC del IETF con el fin de ser el estandar para
+la iniciación, modificación y finalización de sesiones interactivas de usuario
+donde interviene audio, video, mensajería instantanea, juegos en linea y
+realidad virtual. SIP es uno de los protocolos de señalización para voz sobre
+IP, junto con otros como &lt;a href=&#34;http://es.wikipedia.org/wiki/H.323&#34;
+target=&#34;_blank&#34;&gt;H.323&lt;/a&gt; e &lt;a href=&#34;http://es.wikipedia.org/wiki/IAX2&#34;
+target=&#34;_blank&#34;&gt;IAX2&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;sip.conf&lt;/h2&gt;
+El fichero de configuración del canal sip se encuentra en
+&lt;strong&gt;/etc/asterisk/sip.conf&lt;/strong&gt; y por tanto será donde configuremos las
+cuentas SIP. Su formato es similar al de los ficheros .ini; por lo que se
+encuentra dividido en secciones conocidas en Asterisk como
+&lt;strong&gt;contextos&lt;/strong&gt;. En el fichero sip.conf hay un contexto predefinido,
+se llama &lt;strong&gt;[general]&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;En el contexto &lt;strong&gt;[general]&lt;/strong&gt; definiremos parámetros que se
+aplicarán en todos los contextos posteriores. Algunos de los parámetros
+generales del canal SIP son:&lt;/p&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;&lt;strong&gt;port&lt;/strong&gt;: es el puerto que utilizará Asterisk para escuchar conexiones SIP entrantes. El puerto SIP por defecto es el 5060.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;binaddr&lt;/strong&gt;: interfaz de red que utilizará Asterisk para atender las conexiones SIP entrantes. El valor por defecto es 0.0.0.0, es decir, escucha en todas las interfaces de red disponibles.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;context&lt;/strong&gt;: contexto que se aplica a las llamadas entrantes. Se aplica cuando una cuenta SIP no tiene definido un contexto.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;videosupport&lt;/strong&gt;: soporte de video en SIP. Permite los valores &#39;yes&#39; o &#39;no&#39;.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;language&lt;/strong&gt;: lenguaje utilizado por defecto para todos los clientes SIP.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;allow&lt;/strong&gt;: especificamos los códecs de sonido que vamos a utilizar. Permite valores como &#39;all&#39;, &#39;alaw&#39;, &#39;ulaw&#39;, &#39;gsm&#39;, etc.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;disallow&lt;/strong&gt;: códecs de audio que no vamos a permitir. Cuando vamos a restringir los códecs de audio, lo mejor es siempre prohibirlos todos (disallow=all) y luego permitir aquellos que queramos.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;nat&lt;/strong&gt;: habilitamos o deshabilitamos el soporte de nat para la extensión.&lt;/li&gt;
+&lt;/ul&gt;
+Un ejemplo para el contexto &lt;strong&gt;[general]&lt;/strong&gt; en
+/etc/asterisk/sip.conf podría ser la siguiente:
+
+    [general]
+    port=5060
+    bindaddr=0.0.0.0
+    context=normal
+    videosupport=no
+    language=es
+    disallow=all
+    allow=alaw,gsm
+
+&lt;h2&gt;Definiendo los clientes SIP&lt;/h2&gt;
+Como he comentado anteriormente, antes de que un cliente SIP pueda enviar o recibir llamadas a través de Asterisk, debe ser declarado y configurado en el fichero &lt;strong&gt;/etc/asterisk/sip.conf&lt;/strong&gt;. Cada cliente SIP se configurará como si de otro contexto / sección se tratase, y podemos especificar varios parámetros. Hasta ahora los que he utilizado han sido los siguientes:
+&lt;ul&gt;
+    &lt;li&gt;&lt;strong&gt;type&lt;/strong&gt;: define la clase de conexión que tendrá el cliente. Hay tres tipos de clientes SIP:
+&lt;ol&gt;
+    &lt;li&gt;peer: solo puede recibir llamadas.&lt;/li&gt;
+    &lt;li&gt;user: solo puede realizar llamadas.&lt;/li&gt;
+    &lt;li&gt;friend: puede recibir y realizar llamadas.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;callerid&lt;/strong&gt;: es el identificador del cliente, es decir, el nombre que aparecerá cuando se realice una llamada.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;username&lt;/strong&gt;: usuario con el que nos conectaremos al servidor Asterisk.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;secret&lt;/strong&gt;: contraseña con la que se realizará la autenticación en Asterisk junto con el username.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;context&lt;/strong&gt;: contexto asociado al cliente en el dialplan de Asterisk, es decir, contexto que se aplicará en el fichero &lt;strong&gt;extensions.conf&lt;/strong&gt; del cual hablaremos más adelante.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;dtmfmode&lt;/strong&gt;: &lt;a href=&#34;http://es.wikipedia.org/wiki/Marcaci%C3%B3n_por_tonos&#34; target=&#34;_blank&#34;&gt;Dual-Tone Multi-Frequecy (DTMF)&lt;/a&gt; se refiere a la marcación por tonos. Normalmente le especifico que use el estandar &lt;a href=&#34;http://www.ietf.org/rfc/rfc2833.txt&#34; target=&#34;_blank&#34;&gt;rfc2833&lt;/a&gt;.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;qualify&lt;/strong&gt;: si se establece a &#39;yes&#39; podremos monitorizar la extensión. Esta configuración no es muy recomendable cuando tenemos muchas extensiones.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Bien! Ya tenemos lo suficiente como para empezar a registrar cada uno de los
+clientes SIP :-) De esta forma, para registrar el teléfono digital cuya
+extensión es 1001 tendremos que añadir la siguiente configuración al fichero
+/etc/asterisk/sip.conf:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[1001]
+callerid=digital
+username=1001
+secret=1001
+type=friend
+host=dynamic
+context=normal
+qualify=yes
+pickupgroup=1
+limitonpeers=yes
+call-limit=4
+dtmfmode=rfc2833
+nat=yes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como una breve anotación tengo que decir que en la cabecera de la sección, en
+este caso [1001], podemos poner cualquier cadena, creo que sin espacios, pero
+yo opto por poner el número de la extensión, me es más cómodo al leer la
+configuración.&lt;/p&gt;
+
+&lt;p&gt;Una que hemos configurado un cliente, los demás son coser y cantar. Vamos a
+registrar un nuevo cliente SIP, por ejemplo, mi portatil cuyo username es
+mviera y su extensión será 1003. La configuración en sip.conf sería la
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[1003]
+callerid=mviera
+username=1003
+secret=1003
+type=friend
+host=dynamic
+context=normal
+qualify=yes
+pickupgroup=1
+limitonpeers=yes
+call-limit=4
+dtmfmode=rfc2833
+nat=yes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Fácil ¿no? Pero ¿no os resulta esta última configuración un poco redundante?
+Algunos ya se habrán dado cuenta. En realidad esta última configuración es
+igual que la anterior, solamente cambian los parámetros callerid, username y
+secret. ¿Cierto?&lt;/p&gt;
+
+&lt;p&gt;Para ello, Asterisk en su últimas versiones permite el uso de
+&lt;strong&gt;máscaras&lt;/strong&gt;. Esta funcionalidad nos permite crear una sección
+&amp;ldquo;padre&amp;rdquo; donde configuraremos todos los parámetros comunes. De esta forma
+podremos &amp;ldquo;heredar&amp;rdquo; parte de la configuración, pudiendo sobreescribir o incluir
+nuevos parámetros que nos sean necesarios. Utilizaremos &lt;code&gt;(!)&lt;/code&gt; junto
+al nombre de la sección, para especificar que una sección actuará como una
+máscara. Ejemplo: &lt;code&gt;&lt;a href=&#34;!&#34;&gt;nombre_seccion&lt;/a&gt;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Ya que sabemos sobre la existencia de las máscaras en Asterisk, vamos a
+modificar la configuración actual en /etc/asterisk/sip.conf. Crearemos una
+sección [normal] con los parámetros comunes y las extensiones 1001 y 1003
+&amp;ldquo;heredarán&amp;rdquo; de esta sección.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[normal](!)
+type=friend
+host=dynamic
+context=normal
+qualify=yes
+pickupgroup=1
+limitonpeers=yes
+call-limit=4
+dtmfmode=rfc2833
+nat=yes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Para especificar que una sección &amp;ldquo;hereda&amp;rdquo; de otra que actúa como máscara
+especificaremos el nombre de la máscara a continuación del nombre de la
+sección, es decir, de la siguiente forma:
+&lt;code&gt;&lt;a href=&#34;nombre_mascara&#34;&gt;nombre_seccion&lt;/a&gt;&lt;/code&gt;. Por lo que la configuración de
+las extensiones 1001 y 1003 se reduciría a lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[1001](normal)
+callerid=digital
+username=1001
+secret=1001
+
+[1003](normal)
+callerid=mviera
+username=1003
+secret=1003
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¿Guay no? Ahora solo nos queda reiniciar el servicio Asterisk&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# /etc/init.d/asterisk restart
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Nota: &lt;/strong&gt;cuidado al reiniciar
+el servicio Asterisk cuando modifiquemos la configuración. Si utilizamos
+&lt;strong&gt;restart&lt;/strong&gt; todas &lt;strong&gt;las llamadas activas se
+cortarán&lt;/strong&gt;. Asi que mejor utilizad &lt;strong&gt;reload&lt;/strong&gt; ;-)&lt;/p&gt;
+
+&lt;p&gt;Ojo! Todavía no podemos hacer llamadas. Hasta ahora solo hemos configurado los
+clientes que podrán conectarse a Asterisk, lo próximo será configurar el plan
+de marcado o dialplan. Pero esto ya es tema para otro post ;-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Diagrama y componentes de red con Asterisk</title>
+      <link>http://blog.manuelviera.es/blog/diagrama-y-componentes-de-red-con-asterisk/</link>
+      <pubDate>Wed, 19 Jan 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/diagrama-y-componentes-de-red-con-asterisk/</guid>
+      <description>&lt;p&gt;Qué ganas tenía de encontrar un rato para seguir posteando :-) Mi idea es
+enseñaros una configuración básica en Asterisk y para ello he hecho un diagrama
+de red, concretamente el que tengo ahora mismo en casa y con el que estoy
+realizando todas las pruebas en Asterisk.&lt;/p&gt;
+
+&lt;p style=&#34;text-align: left;&#34;&gt;&lt;a href=&#34;/images/blog/asterisk-network-diagram.png&#34;&gt;&lt;img class=&#34;aligncenter size-full
+wp-image-170&#34; title=&#34;Asterisk network diagram&#34;
+src=&#34;/images/blog/asterisk-network-diagram1.png&#34; alt=&#34;&#34; width=&#34;835&#34; height=&#34;388&#34;
+/&gt;&lt;/a&gt;Si os fijais bien, es una red doméstica de lo más normal, solo que hay
+tres nuevos elementos: la centralita Asterisk(PBX), el teléfono digital,
+softphones y la pasarela o gateway VoIP.&lt;/p&gt;
+
+&lt;h2&gt;Centralita Asterisk (PBX)&lt;/h2&gt;
+
+&lt;p&gt;En mi caso es una máquina virtual Debian sobre &lt;a
+href=&#34;http://www.linux-kvm.org/&#34; target=&#34;_blank&#34;&gt;KVM&lt;/a&gt; configurada con una
+interfaz de red en bridge, esto quiere decir que dicha máquina virtual está
+presente en la red como si de una máquina física se tratase, es por eso por lo
+que tiene la IP 192.168.1.111.&lt;/p&gt;
+
+&lt;p&gt;¿Por qué he instalado Asterisk en una máquina virtual? Básicamente para contar
+con las &lt;a href=&#34;http://es.wikipedia.org/wiki/Virtualizaci%C3%B3n#Ventajas_de_la_Virtualizaci.C3.B3n&#34;
+target=&#34;_blank&#34;&gt; ventajas de los sistemas virtualizados&lt;/a&gt;. Resumiendo un poco,
+puedo clonar la máquina virtual y tener varios sistemas Asterisk idénticos en
+cuestión de minutos, además de evitar interferir en mi sistema anfitrión. La
+única complicación de esta decisión fue configurar KVM con una interfaz bridge,
+pero eso ya es otro tema y quizás le dedice un post ;-)&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Teléfono digital&lt;/h2&gt; Un teléfono digital no tiene muchas diferencias con
+respecto a un teléfono analógico de toda la vida. La diferencia más importante
+es que en el teléfono analógico solamente tenemos un puerto RJ11 y con un
+teléfono digital contamos con uno o varios puertos Ethernet (RJ45), un conector
+para la electricidad, y un puerto RJ11 (opcional) para conectar un headset o
+similar.&lt;/p&gt;
+
+&lt;p&gt;Básicamente un teléfono digital o teléfono IP es un dispositivo más en nuestra
+red por lo que necesitará una IP en nuestro rango para comunicarse. En mi caso,
+la IP se asigna de forma dinámica.&lt;/p&gt;
+
+&lt;p&gt;El teléfono que estoy usando es un &lt;a
+href=&#34;http://www.grandstream.com/products/gxp_series/gxp280/gxp280.html&#34;
+target=&#34;_blank&#34;&gt;GRANDSTREAM GXP280&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Softphone&lt;/h2&gt; Un Softphone no es más que un software que simula a un
+teléfono. De esta forma, podremos utilizar un ordenador como un terminal VoIP.
+Algunos de los softphones más utilizados y conocidos son Ekiga, Zoiper y
+X-Lite. Aunque ya hablaremos más sobre ellos y cómo configurarlos en futuros
+posts ;-) &lt;h2&gt;Gateway VoIP&lt;/h2&gt; La pasarela VoIP es algo opcional, no es
+necesario, la función que realiza es la de poder reutilizar nuestro teléfono
+analógico que todos (o casi) tenemos en casa. En resumidas cuentas, se encarga
+de convertir la señal analógica en digital y viceversa.&lt;/p&gt;
+
+&lt;p&gt;Yo estoy utilizando un &lt;a
+href=&#34;http://www.cisco.com/en/US/products/ps10027/index.html&#34;
+target=&#34;_blank&#34;&gt;Linksys Voice Gateway with router SPA3102-EU&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;/images/blog/SPA3102-EU.jpg&#34;&gt;&lt;img class=&#34;aligncenter size-full
+wp-image-187&#34; title=&#34;Linksys Voice Gateway SPA3102-EU&#34; src=&#34;/images/blog/SPA3102-EU.jpg&#34; alt=&#34;&#34; width=&#34;350&#34; height=&#34;350&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Como podeis observar en la imagen, el SPA3102 cuenta con los siguientes puertos:
+&lt;ul&gt;
+    &lt;li&gt;1 x FXO (RJ11)&lt;/li&gt;
+    &lt;li&gt;1 x FXS (RJ11)&lt;/li&gt;
+    &lt;li&gt;1 x LAN (RJ45)&lt;/li&gt;
+    &lt;li&gt;1 x WAN (RJ45)&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;La pasarela está conectada tanto a mi red Ethernet a través de puerto
+&amp;ldquo;Internet&amp;rdquo; (azul) y a mi red telefónica básica (el puerto verde a la
+izquierda).&lt;/p&gt;
+
+&lt;p&gt;Una vez configurado y registrado el gateway en Asterisk podremos realizar y
+recibir llamadas a través de la linea analógica a la que está conectado. Además
+conectaremos nuestro teléfono analógico y podremos asignarle una extensión.
+Gracias a esta pasarela VoIP podremos realizar llamadas internas entre
+teléfonos digitales y analógico, además de realizar llamadas a números
+externos.  &lt;h3&gt;¿Qué es FXO y FXS?&lt;/h3&gt; Yo tampoco lo sabía hasta que empecé a
+estudiar Asterisk, pero la verdad es que estamos hartos de verlo diariamente.
+FXO y FXS son solamente los nombres técnicos de los puertos usados en telefonía
+analógica.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://es.wikipedia.org/wiki/FXS&#34; target=&#34;_blank&#34;&gt;FXS&lt;/a&gt; (Foreign
+Exchange Station) es la interfaz de abonado externo, es decir, el &amp;ldquo;enchufe de
+la pared&amp;rdquo; donde conectamos el teléfono, a través del cual recibimos el tono de
+marcado, corriente y tensión de llamada. Es decir, este tipo de interfaz provee
+electricidad al teléfono por el puerto FXO, por eso cuando se va la
+electricidad en casa podemos seguir utilizar el teléfono.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://es.wikipedia.org/wiki/FXO&#34; target=&#34;_blank&#34;&gt;FXO&lt;/a&gt; (Foreign
+Exchange Office) es el puerto que recibe la linea analógica, es decir, el
+puerto que hay en el teléfono, fax o centralita analógica.&lt;/p&gt;
+
+&lt;p&gt;Si nos paramos a observar, el SPA3102 tiene los dos tipos de puertos. El puerto
+FXS sería el que tiene el icono del teléfono, donde conectamos el teléfono
+analógico, por el que se le da tono, electricidad, etc; y el puerto FXO donde
+conectamos el cable que viene &amp;ldquo;de la pared&amp;rdquo; (FXS).&lt;/p&gt;
+
+&lt;p&gt;En el siguiente post comenzaremos a jugar con los ficheros de configuración de
+Asterisk, que ya toca! Que nerrrvios! ¿no? :-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

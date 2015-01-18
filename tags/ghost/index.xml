@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Ghost on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/ghost/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Sat, 28 Dec 2013 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Migrando de Wordpress a Ghost</title>
+      <link>http://blog.manuelviera.es/blog/migrando-de-wordpress-a-ghost/</link>
+      <pubDate>Sat, 28 Dec 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/migrando-de-wordpress-a-ghost/</guid>
+      <description>
+
+&lt;p&gt;¡Hola!&lt;/p&gt;
+
+&lt;p&gt;Hace ya bastante tiempo que no pasaba por aquí para escribir y compartir con el
+resto del mundo, pero he estado bastante liado (la excusa de siempre) y además
+decidí hace ya algún tiempo migrar mi blog de Wordpress a Ghost, que es de lo
+que vengo escribiendo hoy.&lt;/p&gt;
+
+&lt;p&gt;Pero, como siempre, empecemos por el principio&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es Ghost?&lt;/h2&gt;
+
+&lt;p&gt;Ghost es una plataforma de blogging de reciente aparición y que está teniendo
+bastante repercusión en Internet. El proyecto empezó en
+&lt;a href=&#34;http://www.kickstarter.com/projects/johnonolan/ghost-just-a-blogging-platform&#34;&gt;Kickstarter&lt;/a&gt;
+donde se pedía financiación para poder llevar a cabo la creación de una
+plataforma Open Source para blogging, que ofreciese una experiencia placentera
+a la hora de escribir y que tuviera como objetivo eso, ser una plataforma bien
+diseñada para hacer una sola cosa: publicar.&lt;/p&gt;
+
+&lt;p&gt;Su creador es &lt;a href=&#34;http://john.onolan.org&#34;&gt;John O&amp;rsquo;Nolan&lt;/a&gt; y es una aplicación
+&lt;a href=&#34;http://nodejs.org/&#34;&gt;Node.js&lt;/a&gt; que hace uso del framework
+&lt;a href=&#34;http://expressjs.com/&#34;&gt;Express&lt;/a&gt;. Ghost usa &lt;a href=&#34;http://www.sqlite.org/&#34;&gt;SQLite&lt;/a&gt;
+como base de datos por defecto, lo cual indica que puede ejecutarse casi en
+cualquier sitio, sin embargo, usa &lt;a href=&#34;http://jugglingdb.co/&#34;&gt;JugglingDB&lt;/a&gt; como ORM,
+que añade el soporte para el uso de otras bases de datos.&lt;/p&gt;
+
+&lt;p&gt;Además Ghost está disponible desde &lt;a href=&#34;https://npmjs.org/&#34;&gt;NPM&lt;/a&gt;, haciendo su
+instalación extremadamente simple y rápida en la mayoría de entornos.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;¿Por qué he migrado de Wordpress a Ghost?&lt;/h2&gt;
+
+&lt;p&gt;A decir verdad Wordpress cumplía sobradamente mis necesidades como blogger
+ocasional, precisamente por eso, , porque Wordpress ya me empezaba a quedar
+grande en cuanto a consumo de recursos para un blog pequeño como es el mío.
+Realmente no usaba muchos plugins, que normalmente añaden carga y consumo de
+recursos, sino solamente algunos que necesitaba como:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Akismet &lt;a href=&#34;http://akismet.com/&#34;&gt;http://akismet.com/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Custom About Author: &lt;a href=&#34;http://littlehandytips.com/plugins/custom-about-author/&#34;&gt;http://littlehandytips.com/plugins/custom-about-author/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Google Analytics for Wordpress: &lt;a href=&#34;http://yoast.com/wordpress/google-analytics/&#34;&gt;http://yoast.com/wordpress/google-analytics/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Jetpack by Wordpress: &lt;a href=&#34;http://wordpress.org/plugins/jetpack/&#34;&gt;http://wordpress.org/plugins/jetpack/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;WP-Markdown&lt;/li&gt;
+&lt;li&gt;WP-Cache&lt;/li&gt;
+&lt;li&gt;WP-to-twitter: &lt;a href=&#34;http://www.joedolson.com/articles/wp-to-twitter/&#34;&gt;http://www.joedolson.com/articles/wp-to-twitter/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Todo esto ya lo tengo de serie en Ghost, excepto Jetpack que es propio de
+Wordpress, pero que realmente solo servía para optimizar tu Wordpress, mejorar
+el sharing de los posts, y más funcionalidades que van agregando poco a poco al
+plugin con cada actualización.&lt;/p&gt;
+
+&lt;p&gt;Además he de decir que estaba un poco harto ya de Wordpress y que, en mi
+opinión se ha convertido en &amp;ldquo;un monstruo&amp;rdquo; que está muy lejos de parecer para lo
+que se pensó en un principio. Ha pasado de ser una plataforma de blogging a ser
+un Framework PHP para crear sitios web, y que además puedes bloguear. Todo esto
+sin ánimo de ofender a nadie :-)&lt;/p&gt;
+
+&lt;p&gt;Tras probar la primera versión de Ghost en mi portatil, quedé bastante
+impresionado con la simplicidad de su instalación y uso, es algo que llevaba ya
+esperando y buscando mucho tiempo. De hecho, el verano pasado estuve barajando
+la posibilidad de usar &lt;a href=&#34;http://blog.getpelican.com/&#34;&gt;Pelican&lt;/a&gt; (con el que
+llegué a contactar con el creador y contribuir con él),
+&lt;a href=&#34;http://hyde.github.io/&#34;&gt;Hyde&lt;/a&gt; o &lt;a href=&#34;https://github.com/cloudhead/toto&#34;&gt;Toto&lt;/a&gt;, que
+son generadores de sitios estáticos, es decir, tienes tus posts escritos en
+Markdown y generas un blog o website estático a partir de ellos.&lt;/p&gt;
+
+&lt;p&gt;Pero al fin me encontré con Ghost y quedé gratamente impresionado, desde el
+cual estoy ya escribiendo este post. He de decir también que el proyecto es aún
+muy reciente y algunas cosas como plugins están aún por llegar; pero en cuanto
+a themes ya se pueden encontrar algunos gratuitos y de pago en el
+&lt;a href=&#34;http://marketplace.ghost.org/&#34;&gt;Marketplace&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;¿Lo instalamos?&lt;/h2&gt;
+
+&lt;p&gt;Este blog está instalado y funcionando sobre una Debian 7 (Wheezy) en la cual
+el requisito fundamental de Ghost, que es Node.js, no se encuentra en los
+repositorios; por lo que he tenido que realizar una instalación alternativa.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Node.js&lt;/h3&gt;
+
+&lt;p&gt;Hay varias formas de instalar Node.js. Podemos descargar el código, compilar e
+instalar; el mismo proceso de siempre. Pero en este caso, me ha parecido mejor
+crear un paquete Debian (.deb), que a la larga es más fácil de desinstalar y/o
+actualizar.&lt;/p&gt;
+
+&lt;p&gt;Para ello, primero instalaremos algunas dependencias necesarias en el sistema:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo apt-get install python g++ make checkinstall
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A continuación, descargamos el código fuente de Node.js, descomprimimos el
+paquete y accedemos al directorio:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir ~/node_js_src &amp;amp;&amp;amp; cd $_
+wget -N http://nodejs.org/dist/node-latest.tar.gz
+tar xzvf node-latest.tar.gz &amp;amp;&amp;amp; cd node-v*
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Configuramos la compilación del paquete:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;./configure
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero esta vez no ejecutaremos &lt;code&gt;make &amp;amp;&amp;amp; make install&lt;/code&gt;, sino que utilizaremos la
+utilidad &lt;code&gt;checkinstall&lt;/code&gt; con la que podremos modificar los metadatos del
+paquete:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;checkinstall
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; Es necesario eliminar la &lt;strong&gt;v&lt;/strong&gt; que aparece en la versión de Node.js
+(v0.10.24) y dejar solo los valores numéricos (0.10.24). En caso contrario, la
+compilación fallará.&lt;/p&gt;
+
+&lt;p&gt;Por último, y una vez generado el paquete .deb, lo instalamos:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo dpkg -i node_*
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;Ghost&lt;/h3&gt;
+
+&lt;p&gt;Lo primero es descargar el código fuente de Ghost, en este caso sera la versión
+&lt;strong&gt;latest&lt;/strong&gt; que corresponde a la &lt;em&gt;v0.3.3&lt;/em&gt;, en el momento de escribir este post:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl -L https://ghost.org/zip/ghost-latest.zip -o ghost.zip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Descomprimimos el zip descargado y accedemos al directorio:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ unzip -uo ghost.zip -d ghost
+$ cd /path/to/ghost
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A continuación, para instalar Ghost y todas sus dependencias, será necesario
+ejecutar el siguiente comando:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ npm install --production
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y una vez finalizada la instalación, podemos iniciar Ghost en modo desarrollo
+con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ npm start
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;También podemos iniciarlo en modo producción con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ npm start --production
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ghost estará ejecutándose en &lt;a href=&#34;http://127.0.0.1:2368&#34;&gt;http://127.0.0.1:2368&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt;: podemos ejecutar Ghost con diferentes configuraciones, dependiendo
+si estamos en modo desarrollo o producción, para ello es recomendable ajustar
+esta configuración en el fichero &lt;code&gt;config.js&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Para acceder a la administración de Ghost, es necesario acceder a
+&lt;a href=&#34;http://127.0.0.1:2368/ghost&#34;&gt;http://127.0.0.1:2368/ghost&lt;/a&gt; y crear el usuario administrador para poder hacer
+login.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_5&#34;&gt;Nginx&lt;/h3&gt;
+
+&lt;p&gt;Este paso no es necesario si lo que quieres es probar Ghost en tu portatil /
+pc. Pero sí que es recomendable si vas a pasar tu blog con Ghost a producción,
+que era mi caso. Es decir, tendremos como servidor web a Nginx escuchando en el
+puerto 80, que nos ayudará a gestionar mejor las peticiones de los usuarios,
+cacheo y compresión de los datos, etc.&lt;/p&gt;
+
+&lt;p&gt;Para ello, obviamente necesitamos tener instalado Nginx en nuestro servidor.
+Tan simple como ejecutar la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo apt-get install nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En mi caso, edité el fichero de configuración &lt;code&gt;/etc/nginx/nginx.conf&lt;/code&gt; y dejé la
+configuración de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;user www-data;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 768;
+}
+
+http {
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    server_names_hash_bucket_size 64;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    gzip on;
+    gzip_disable &amp;quot;msie6&amp;quot;;
+
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Hecho esto, forzamos a Nginx para que recargue la configuración:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo service nginx configtest
+$ sudo service nginx reload
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ya solo necesitamos configurar un VirtualHost en Nginx para servir el blog a
+través del puerto 80. En mi caso, la configuración que he utilizado ha sido la
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen 80;
+    server_name blog.example.org;
+    root /path/to/blog.example.org/;
+    index index.php;
+
+    if ($http_host != &amp;quot;blog.example.org&amp;quot;) {
+        rewrite ^ http://blog.example.org$request_uri permanent;
+    }
+
+    location / {
+        proxy_set_header X-Real-IP  $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Host $host;
+        proxy_pass http://127.0.0.1:2368;
+    }
+
+    location ~* \.(?:ico|css|js|gif|jpe?g|png|ttf|woff)$ {
+        access_log off;
+        expires 30d;
+        add_header Pragma public;
+        add_header Cache-Control &amp;quot;public, mustrevalidate, proxy-revalidate&amp;quot;;
+        proxy_pass http://127.0.0.1:2368;
+    }
+
+    location = /robots.txt { access_log off; log_not_found off; }
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por último, activamos el VirtualHost y recargamos la configuración de Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ cd /etc/nginx/sites-enabled
+$ sudo ln -s ../sites-available/blog.example.org
+$ sudo service nginx configtest
+$ sudo service nginx reload
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;¿Migramos?&lt;/h2&gt;
+
+&lt;p&gt;La migración de Wordpress a Ghost lógicamente comprende más pasos que los
+listados anteriormente, que abarcan solamente el setup de Ghost inicialmente.
+Estos pasos y/o problemas durante la migración son realmente el objetivo de
+este post, así que aparecerán listados a continuación con la respectiva
+solución que he decidido aplicar para cada uno de ellos.&lt;/p&gt;
+
+&lt;p&gt;He de decir que en mi caso, la migración ha supuesto pasos adicionales y la
+resolución de algunos problemas que me he ido encontrando&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_7&#34;&gt;#1 Extraer los datos de Wordpress&lt;/h3&gt;
+
+&lt;p&gt;Bueno, una vez que tenemos Ghost funcionando, el siguiente paso para realizar
+la migración desde Wordpress es extraer todos los posts para importarlos,
+posteriormente, en Ghost. Para solucionar esto, seguí los siguientes pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Instalar en Wordpress un plugin llamado &lt;strong&gt;Ghost&lt;/strong&gt;, que permite exportar tu blog para luego importarlo en una instalación de Ghost. Instalar este plugin es muy sencillo, desde el &lt;em&gt;panel de administración de Wordpress &amp;gt; Plugins &amp;gt; Add new&lt;/em&gt;, buscarlo e instalarlo.&lt;/li&gt;
+&lt;li&gt;Una vez instalado el plugin y desde &lt;em&gt;Dashboard de Wordpress &amp;gt; Tools &amp;gt; Export to Ghost&lt;/em&gt;. Haciendo click en &lt;strong&gt;download ghost file&lt;/strong&gt; obtendremos un fichero JSON con todos los posts de nuestro blog.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;toc_8&#34;&gt;#2 Importar posts en Ghost&lt;/h3&gt;
+
+&lt;p&gt;Una vez tenemos todos nuestros posts en un fichero JSON, el siguiente paso
+lógico es importar esos datos en nuestra instalación Ghost. En este caso, los
+pasos a seguir son los siguientes:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Acceder a la sección debug de Ghost en &lt;a href=&#34;http://blog.example.org/ghost/debug&#34;&gt;http://blog.example.org/ghost/debug&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Click en &lt;em&gt;Choose File&lt;/em&gt; y seleccionar el fichero JSON descargado desde el plugin de Ghost en Wordpress.&lt;/li&gt;
+&lt;li&gt;Click en &lt;em&gt;Import&lt;/em&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Si todo ha ido bien, todos los posts deberían estar visibles en Ghost.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_9&#34;&gt;#3 Exportar los comentarios&lt;/h3&gt;
+
+&lt;p&gt;En mi caso he tenido que exportar los comentarios que había en mis posts, ya
+que estaba usando hasta ahora el sistema de comentarios propio de Wordpress.&lt;/p&gt;
+
+&lt;p&gt;Ghost no tiene un sistema de comentarios propio, así que se recomienda usar un
+servicio externo como &lt;a href=&#34;http://disqus.com&#34;&gt;Disqus&lt;/a&gt;. Disqus funciona muy bien y
+se puede decir que es el servicio para alojar comentarios en websites / blogs
+por excelencia, así que decidí migrar todos los comentarios a Disqus.&lt;/p&gt;
+
+&lt;p&gt;Hay varias formas de hacerlo, pero yo solo voy a describir la que yo usé, que
+es la exportación automática:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Registrar un usuario en Disqus.&lt;/li&gt;
+&lt;li&gt;Crear un sitio nuevo en Disqus y configurar un nombre para este sitio.&lt;/li&gt;
+&lt;li&gt;En Wordpress, instalar el plugin &lt;strong&gt;Disqus Comment System&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Acceder a la configuración del plugin y configurar el nombre del sitio creado en Disqus.&lt;/li&gt;
+&lt;li&gt;En la configuración del plugin, click en &lt;strong&gt;Export comments to Disqus&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; La exportación a Disqus no se inicia de forma instantanea, por lo que
+puede extenderse a varias horas.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_10&#34;&gt;#4 Redirecciones permanentes en URLs&lt;/h3&gt;
+
+&lt;p&gt;En mi blog en Wordpress tenía configuradas las URLs de los posts con la siguiente estructura:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/YYYY/MM/nombre-del-post
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por lo que se construían URLs como las siguientes:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://blog.manuelviera.es/2011/01/configurando-los-clientes-sip/
+http://blog.manuelviera.es/2011/01/contribucion-a-trac-2/
+http://blog.manuelviera.es/2011/01/crontab/
+http://blog.manuelviera.es/2011/01/diagrama-y-componentes-de-red-con-asterisk/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ghost no permite (aún) configurar URLs limpias de esta forma, sino que
+construye la URL incluyendo solamente el nombre del post. Para que Google no me
+penalice y los visitantes puedan seguir accediendo al blog desde las URLs ya
+indexadas en los buscadores, he tenido que añadir &lt;code&gt;rewrites&lt;/code&gt; en el VirtualHost
+de Nginx. Algunos ejemplos de redirecciones permanentes son:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rewrite ^/2011/01/configurando-los-clientes-sip/ http://blog.manuelviera.es/configurando-los-clientes-sip/ permanent;
+rewrite ^/2011/01/contribucion-a-trac-2/ http://blog.manuelviera.es/contribucion-a-trac-2/ permanent;
+rewrite ^/2011/01/crontab/ http://blog.manuelviera.es/crontab/ permanent;
+rewrite ^/2011/01/diagrama-y-componentes-de-red-con-asterisk/ http://blog.manuelviera.es/diagrama-y-componentes-de-red-con-asterisk/ permanent;
+rewrite ^/2011/01/ficheros-de-configuracion-y-directorios-en-asterisk/ http://blog.manuelviera.es/ficheros-de-configuracion-y-directorios-en-asterisk/ permanent;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_11&#34;&gt;#5 Remapear URLs en los comentarios de Disqus&lt;/h3&gt;
+
+&lt;p&gt;Una vez exportados todos los comentarios a Disqus me di cuenta que había un
+problema, y es que, lógicamente, Disqus almacena la URL donde se creó el
+comentario.&lt;/p&gt;
+
+&lt;p&gt;Esto supone un problema y es que, aunque las redirecciones estén hechas y los
+comentarios exportados, si la URL que tiene Disqus almacenada para un
+comentario, no concuerda con la URL del post que se está visualizando, el
+comentario no se ve al final de ese post.&lt;/p&gt;
+
+&lt;p&gt;Para solucionar esto tuve que remapear todas las URLs, que Disqus tenía
+almacenadas, por las nuevas. Para ello hay que seguir los siguienes pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Acceder al panel de administración de Disqus.&lt;/li&gt;
+&lt;li&gt;Click en pestaña &lt;em&gt;Discussions &amp;gt; Tools &amp;gt; Upload a URL map&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;Componer un fichero CSV que contenga un listado de todas las URLs antiguas y nuevas, separadas por comas entre sí (URL antigua,URL nueva).&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;toc_12&#34;&gt;#6 Arreglar imágenes en los posts&lt;/h3&gt;
+
+&lt;p&gt;En mi caso he tenido problemas con las imágenes ya que la exportación de los
+artículos no contemplaba la exportación de esta imágenes. Se recomienda hacer
+uso de un servicio externo de almacenamiento de imágenes pero en mi caso he
+querido alojar las imágenes en mi propio servidor, bajo un dominio diferente
+(static.blog.manuelviera.es).&lt;/p&gt;
+
+&lt;p&gt;Para arreglar este problema seguí los siguientes pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Crear un directorio nuevo dentro del código de Ghost.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir /path/to/ghost/content/static/
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Crear un nuevo VirtualHost en Nginx con el siguiente contenido:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen 80;
+    server_name static.blog.example.org;
+    root /path/to/blog.example.org/content/static/;
+    index index.php;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Mover todas las imágenes especificadas a dicha ruta en el servidor.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Modificar la URL a la que apunta cada imagen en cada post hacia la nueva ubicación.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;¡Al fin! Pues esta ha sido mi experiencia migrando mi blog personal desde
+Wordpress a Ghost, espero no haberme dejado nada, pero si detectáis que algo no
+funciona como debe, por favor, reportádmelo! :-)&lt;/p&gt;
+
+&lt;p&gt;Espero que os sea de ayuda, ¡no os olvidéis de comentar! Para cualquier duda
+estoy a vuestra disposición :-D&lt;/p&gt;
+
+&lt;p&gt;Un saludo y ¡felices fiestas!
+Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

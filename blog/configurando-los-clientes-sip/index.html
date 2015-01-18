@@ -1,0 +1,403 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Configurando los clientes SIP
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2011-01-22" title="2011-01-22">January 22, 2011</time>
+            </div>
+            <h1 class="title">Configurando los clientes SIP</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/asterisk">#asterisk</a>
+              
+              <a href="/tags/voip">#voip</a>
+              
+            </div>
+        </header>
+
+        <section>
+            <p style="text-align: left;">Bueno, vamos a empezar por el principio. Deberemos
+tener presente el diagrama de red que presenté en el <a
+href="/blog/diagrama-y-componentes-de-red-con-asterisk/"
+target="_blank">anterior post</a> y por eso lo incluyo también en este.</p>
+
+<p style="text-align: center;"><a
+href="/images/blog/asterisk-network-diagram1.png"><img class="size-full
+wp-image-267 aligncenter" title="Asterisk Network Diagram"
+src="/images/blog/asterisk-network-diagram1.png" alt="" width="668"
+height="310" /></a></p>
+
+<p><p style="text-align: left;">Para poder utilizar el canal SIP lo primero que
+tenemos que hacer es configurar las cuentas SIP, utilizadas por nuestros
+dispositivos VoIP(softphones, tfnos digital y analógico y gateway) para
+registrarse en nuestra centralita Asterisk. Pero&hellip;</p> <p style="text-align:
+left;"></p>
+
+<p><h1>¿Qué es SIP?</h2>
+Session Initiation Protocol o Protocolo de Inicio de Sesión. Es un protocolo
+desarrollador por el grupo MMUSIC del IETF con el fin de ser el estandar para
+la iniciación, modificación y finalización de sesiones interactivas de usuario
+donde interviene audio, video, mensajería instantanea, juegos en linea y
+realidad virtual. SIP es uno de los protocolos de señalización para voz sobre
+IP, junto con otros como <a href="http://es.wikipedia.org/wiki/H.323"
+target="_blank">H.323</a> e <a href="http://es.wikipedia.org/wiki/IAX2"
+target="_blank">IAX2</a>.</p>
+
+<p><h2>sip.conf</h2>
+El fichero de configuración del canal sip se encuentra en
+<strong>/etc/asterisk/sip.conf</strong> y por tanto será donde configuremos las
+cuentas SIP. Su formato es similar al de los ficheros .ini; por lo que se
+encuentra dividido en secciones conocidas en Asterisk como
+<strong>contextos</strong>. En el fichero sip.conf hay un contexto predefinido,
+se llama <strong>[general]</strong>:</p>
+
+<p>En el contexto <strong>[general]</strong> definiremos parámetros que se
+aplicarán en todos los contextos posteriores. Algunos de los parámetros
+generales del canal SIP son:</p>
+
+<ul>
+    <li><strong>port</strong>: es el puerto que utilizará Asterisk para escuchar conexiones SIP entrantes. El puerto SIP por defecto es el 5060.</li>
+    <li><strong>binaddr</strong>: interfaz de red que utilizará Asterisk para atender las conexiones SIP entrantes. El valor por defecto es 0.0.0.0, es decir, escucha en todas las interfaces de red disponibles.</li>
+    <li><strong>context</strong>: contexto que se aplica a las llamadas entrantes. Se aplica cuando una cuenta SIP no tiene definido un contexto.</li>
+    <li><strong>videosupport</strong>: soporte de video en SIP. Permite los valores 'yes' o 'no'.</li>
+    <li><strong>language</strong>: lenguaje utilizado por defecto para todos los clientes SIP.</li>
+    <li><strong>allow</strong>: especificamos los códecs de sonido que vamos a utilizar. Permite valores como 'all', 'alaw', 'ulaw', 'gsm', etc.</li>
+    <li><strong>disallow</strong>: códecs de audio que no vamos a permitir. Cuando vamos a restringir los códecs de audio, lo mejor es siempre prohibirlos todos (disallow=all) y luego permitir aquellos que queramos.</li>
+    <li><strong>nat</strong>: habilitamos o deshabilitamos el soporte de nat para la extensión.</li>
+</ul>
+Un ejemplo para el contexto <strong>[general]</strong> en
+/etc/asterisk/sip.conf podría ser la siguiente:
+
+    [general]
+    port=5060
+    bindaddr=0.0.0.0
+    context=normal
+    videosupport=no
+    language=es
+    disallow=all
+    allow=alaw,gsm
+
+<h2>Definiendo los clientes SIP</h2>
+Como he comentado anteriormente, antes de que un cliente SIP pueda enviar o recibir llamadas a través de Asterisk, debe ser declarado y configurado en el fichero <strong>/etc/asterisk/sip.conf</strong>. Cada cliente SIP se configurará como si de otro contexto / sección se tratase, y podemos especificar varios parámetros. Hasta ahora los que he utilizado han sido los siguientes:
+<ul>
+    <li><strong>type</strong>: define la clase de conexión que tendrá el cliente. Hay tres tipos de clientes SIP:
+<ol>
+    <li>peer: solo puede recibir llamadas.</li>
+    <li>user: solo puede realizar llamadas.</li>
+    <li>friend: puede recibir y realizar llamadas.</li>
+</ol>
+</li>
+    <li><strong>callerid</strong>: es el identificador del cliente, es decir, el nombre que aparecerá cuando se realice una llamada.</li>
+    <li><strong>username</strong>: usuario con el que nos conectaremos al servidor Asterisk.</li>
+    <li><strong>secret</strong>: contraseña con la que se realizará la autenticación en Asterisk junto con el username.</li>
+    <li><strong>context</strong>: contexto asociado al cliente en el dialplan de Asterisk, es decir, contexto que se aplicará en el fichero <strong>extensions.conf</strong> del cual hablaremos más adelante.</li>
+    <li><strong>dtmfmode</strong>: <a href="http://es.wikipedia.org/wiki/Marcaci%C3%B3n_por_tonos" target="_blank">Dual-Tone Multi-Frequecy (DTMF)</a> se refiere a la marcación por tonos. Normalmente le especifico que use el estandar <a href="http://www.ietf.org/rfc/rfc2833.txt" target="_blank">rfc2833</a>.</li>
+    <li><strong>qualify</strong>: si se establece a 'yes' podremos monitorizar la extensión. Esta configuración no es muy recomendable cuando tenemos muchas extensiones.</li>
+</ul>
+
+<p>Bien! Ya tenemos lo suficiente como para empezar a registrar cada uno de los
+clientes SIP :-) De esta forma, para registrar el teléfono digital cuya
+extensión es 1001 tendremos que añadir la siguiente configuración al fichero
+/etc/asterisk/sip.conf:</p>
+
+<pre><code>[1001]
+callerid=digital
+username=1001
+secret=1001
+type=friend
+host=dynamic
+context=normal
+qualify=yes
+pickupgroup=1
+limitonpeers=yes
+call-limit=4
+dtmfmode=rfc2833
+nat=yes
+</code></pre>
+
+<p>Como una breve anotación tengo que decir que en la cabecera de la sección, en
+este caso [1001], podemos poner cualquier cadena, creo que sin espacios, pero
+yo opto por poner el número de la extensión, me es más cómodo al leer la
+configuración.</p>
+
+<p>Una que hemos configurado un cliente, los demás son coser y cantar. Vamos a
+registrar un nuevo cliente SIP, por ejemplo, mi portatil cuyo username es
+mviera y su extensión será 1003. La configuración en sip.conf sería la
+siguiente:</p>
+
+<pre><code>[1003]
+callerid=mviera
+username=1003
+secret=1003
+type=friend
+host=dynamic
+context=normal
+qualify=yes
+pickupgroup=1
+limitonpeers=yes
+call-limit=4
+dtmfmode=rfc2833
+nat=yes
+</code></pre>
+
+<p>Fácil ¿no? Pero ¿no os resulta esta última configuración un poco redundante?
+Algunos ya se habrán dado cuenta. En realidad esta última configuración es
+igual que la anterior, solamente cambian los parámetros callerid, username y
+secret. ¿Cierto?</p>
+
+<p>Para ello, Asterisk en su últimas versiones permite el uso de
+<strong>máscaras</strong>. Esta funcionalidad nos permite crear una sección
+&ldquo;padre&rdquo; donde configuraremos todos los parámetros comunes. De esta forma
+podremos &ldquo;heredar&rdquo; parte de la configuración, pudiendo sobreescribir o incluir
+nuevos parámetros que nos sean necesarios. Utilizaremos <code>(!)</code> junto
+al nombre de la sección, para especificar que una sección actuará como una
+máscara. Ejemplo: <code><a href="!">nombre_seccion</a></code>.</p>
+
+<p>Ya que sabemos sobre la existencia de las máscaras en Asterisk, vamos a
+modificar la configuración actual en /etc/asterisk/sip.conf. Crearemos una
+sección [normal] con los parámetros comunes y las extensiones 1001 y 1003
+&ldquo;heredarán&rdquo; de esta sección.</p>
+
+<pre><code>[normal](!)
+type=friend
+host=dynamic
+context=normal
+qualify=yes
+pickupgroup=1
+limitonpeers=yes
+call-limit=4
+dtmfmode=rfc2833
+nat=yes
+</code></pre>
+
+<p>Para especificar que una sección &ldquo;hereda&rdquo; de otra que actúa como máscara
+especificaremos el nombre de la máscara a continuación del nombre de la
+sección, es decir, de la siguiente forma:
+<code><a href="nombre_mascara">nombre_seccion</a></code>. Por lo que la configuración de
+las extensiones 1001 y 1003 se reduciría a lo siguiente:</p>
+
+<pre><code>[1001](normal)
+callerid=digital
+username=1001
+secret=1001
+
+[1003](normal)
+callerid=mviera
+username=1003
+secret=1003
+</code></pre>
+
+<p>¿Guay no? Ahora solo nos queda reiniciar el servicio Asterisk</p>
+
+<pre><code># /etc/init.d/asterisk restart
+</code></pre>
+
+<p>Nota: </strong>cuidado al reiniciar
+el servicio Asterisk cuando modifiquemos la configuración. Si utilizamos
+<strong>restart</strong> todas <strong>las llamadas activas se
+cortarán</strong>. Asi que mejor utilizad <strong>reload</strong> ;-)</p>
+
+<p>Ojo! Todavía no podemos hacer llamadas. Hasta ahora solo hemos configurado los
+clientes que podrán conectarse a Asterisk, lo próximo será configurar el plan
+de marcado o dialplan. Pero esto ya es tema para otro post ;-)</p>
+
+<p>Un saludo!</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Configurando los clientes SIP [5 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/configurando-los-clientes-sip/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

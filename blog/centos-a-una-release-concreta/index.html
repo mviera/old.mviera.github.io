@@ -1,0 +1,341 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Actualizando CentOS a una release concreta
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2012-03-06" title="2012-03-06">March 06, 2012</time>
+            </div>
+            <h1 class="title">Actualizando CentOS a una release concreta</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/linux">#linux</a>
+              
+              <a href="/tags/yaco">#yaco</a>
+              
+            </div>
+        </header>
+
+        <section>
+            <p>Ya hacía bastante tiempo que no paraba por aquí para escribir un artículo, así
+que hoy me voy a tomar mi tiempo y voy a escribir acerca de CentOS.</p>
+
+<p>¿Y por qué sobre CentOS? Pues resulta que hoy trabajando en <a title="Yaco
+Sistemas" href="http://www.yaco.es" target="_blank">Yaco Sistemas</a>, mi
+compañero <a title="@sepu66" href="http://twitter.com/sepu66"
+target="_blank">@sepu66</a> necesitaba varias máquinas virtuales con CentOS
+5.6, aunque la template de la que disponía era de CentOS 5.5.</p>
+
+<p>Fácil, pensé, creo la máquina virtual con CentOS 5.5 y actualizo la
+distribución con <code>yum update</code>:</p>
+
+<pre><code>[root@test ~]# yum update
+</code></pre>
+
+<p>Y claro, pasados unos minutos actualizando paquetes, compruebo la release de la
+distribución y, para mi sorpresa, observo que se ha actualizado a la última
+release de CentOS 5, es decir, a CentOS 5.7:</p>
+
+<pre><code>[root@test ~]# cat /etc/issue
+
+CentOS release 5.7 (Final)
+Kernel \r on an \m
+</code></pre>
+
+<p>FAIL!, pensé (últimamente pienso mucho). Esto ya lo había yo solucionado antes,
+pero no lo recordaba bien. Es una de esas tareas que haces una vez en muchos
+meses y que al final terminas olvidando, así que por eso he decidido hacer un
+volcado de conocimiento en este artículo :-)</p>
+
+<p>Tras un rato buscando alguna solución en internet, sin éxito por cierto, ya que
+todos los artículos que encontraba eran acerca de &ldquo;Cómo actualizar CentOS de
+5.4 a 5.5&rdquo; o &ldquo;Cómo actualizar CentOS de 5.5 a 5.6&rdquo;, en resumen, todos los
+artículos que encontraba eran actualizaciones a la release inmediatamente
+superior, así que se resumían en ejecutar <code>yum update</code> y listo&hellip;
+Pero mi idea era decidir yo a qué release concreta a actualizar.</p>
+
+<p>Para solucionar este tema, volví a regenerar la máquina virtual con CentOS 5.5 y empecé a modificar la configuración de los repositorios.</p>
+
+<p><h2>Configurando los repositorios</h2>
+En CentOS normalmente los repositorios se encuentran configurados en ficheros
+que terminan en <code>.repo</code> en el directorio
+<code>/etc/yum.repos.d/</code>. En mi caso los repositorios configurados por
+defecto se encuentran en el fichero
+<code>/etc/yum.repos.d/CentOS-Base.repo</code>, así que lo primero que hice fue
+editar dicho fichero y deshabilitar los repositorios por defecto, añadiendo la
+siguiente linea en cada parte de configuración de cada repositorio:</p>
+
+<pre><code>enabled=0
+</code></pre>
+
+<p>Dicha linea indica a <code>yum</code> que el repositorio en cuestión se
+encuentra deshabilitado y no queremos que se utilice. Otra forma de
+deshabilitar los repositorios por defecto sería eliminando el fichero
+<code>/etc/yum.repos.d/CentOS-Base.repo</code>, pero no me parece un solución
+muy elegante.</p>
+
+<p>Hecho esto, creé un nuevo fichero llamado
+<code>/etc/yum.repos.d/CentOS-Vault.repo</code> en el que añadí lo siguiente:</p>
+
+<pre><code>#---- Packages previously released as 5.6, and its updates
+[C5.6-base]
+name=CentOS-5.6 - Base
+baseurl=http://vault.centos.org/5.6/os/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+
+[C5.6-updates]
+name=CentOS-5.6 - Updates
+baseurl=http://vault.centos.org/5.6/updates/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+
+[C5.6-extras]
+name=CentOS-5.6 - Extras
+baseurl=http://vault.centos.org/5.6/extras/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+</code></pre>
+
+<p>¿Dónde está el truco? El secreto se encuentra en el dominio utilizado en la
+URL, <code>vault.centos.org</code> que se trata de un sitio perteneciente a
+CentOS donde se pueden encontrar los paquetes de releases antiguas de CentOS.
+Destacar como segundo truco que he fijado la versión de la release a 5.6 en la
+URL, por tanto esta distribución no pasará a una release posterior.</p>
+
+<p>Importante también marcar los repositorios como activos especificando:</p>
+
+<pre><code>enabled=1
+</code></pre>
+
+<p><h2>Listando los repositorios disponibles</h2>
+Una vez configurado los repositorios a utilizar, podemos listarlos ejecutando
+<code>yum repolist</code>:</p>
+
+<pre><code>[root@test ~]# yum repolist
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+repo id                                                                     repo name
+C5.6-base                                                                   CentOS-5.6 - Base
+C5.6-centosplus                                                             CentOS-5.6 - Plus
+C5.6-extras                                                                 CentOS-5.6 - Extras
+C5.6-updates                                                                CentOS-5.6 - Updates
+</code></pre>
+
+<p><h2>Actualizando la distribución</h2>
+Hecho esto, ya sólo nos queda forzar la actualización del sistema completo:</p>
+
+<pre><code>[root@test ~]# yum update
+</code></pre>
+
+<p>y pasados unos minutos actualizando los paquetes del sistema, deberíamos tener
+nuestra distribución en la versión deseada, en mi caso, CentOS 5.6:</p>
+
+<pre><code>[root@test ~]# cat /etc/issue
+CentOS release 5.6 (Final)
+Kernel \r on an \m
+</code></pre>
+
+<p>Espero que os sea de utilidad, a mi seguro que no se me vuelve a olvidar :-D
+Un saludo!</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Actualizando CentOS a una release concreta [3 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/centos-a-una-release-concreta/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

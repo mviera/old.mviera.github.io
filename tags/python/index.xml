@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Python on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/python/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Fri, 02 Sep 2011 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Desplegando Trac con Gunicorn</title>
+      <link>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</link>
+      <pubDate>Fri, 02 Sep 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</guid>
+      <description>&lt;p&gt;En &lt;a title=&#34;mi anterior post&#34;
+href=&#34;/blog/gunicorn/&#34; target=&#34;_blank&#34;&gt;mi anterior
+post&lt;/a&gt; hablé sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org&#34;
+target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, un servidor HTTP WSGI para Python, y terminé
+diciendo que en el próximo articulo iba a explicar cómo desplegar Trac con
+Gunicorn y como lo prometido es deuda, vamos a ello&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Preparando el entorno&lt;/h2&gt;
+Antes de nada, vamos a crear un directorio de
+trabajo, donde se alojará todo. Se me ocurre llamarlo
+&lt;code&gt;testing-gunicorn&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkdir testing-gunicorn
+$ cd testing-gunicorn
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Antes de comenzar a instalar Trac y Gunicorn, vamos a crear un virtualenv en el
+directorio &lt;code&gt;testing-gunicorn&lt;/code&gt;, dentro del cual instalaremos todos
+los modulos de Python necesarios:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ virtualenv --no-site-packages --distribute .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y activamos el virtualenv:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ source bin/activate
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Instalando Trac y Gunicorn&lt;/h2&gt;
+La instalación es realmente sencilla. Al igual que para instalar cualquier otro
+módulo de Python, utilizaremos &lt;code&gt;easy_install&lt;/code&gt; o &lt;code&gt;pip&lt;/code&gt;. Yo
+opto por utilizar &lt;code&gt;pip&lt;/code&gt;, así que ejecutamos las siguientes
+instrucciones:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pip install Trac
+$ pip install gunicorn
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez hecho esto, deberemos tener instalado Trac y Gunicorn dentro de nuestro
+virtualenv, el mismo que tenemos activado.&lt;/p&gt;
+
+&lt;p&gt;Para comprobar que la instalación se ha realizado correctamente, abriremos una
+shell de Python e importaremos los dos módulos instalados:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ python
+Python 2.7.1+ (r271:86832, Apr 11 2011, 18:13:53) 
+[GCC 4.5.2] on linux2
+Type &amp;quot;help&amp;quot;, &amp;quot;copyright&amp;quot;, &amp;quot;credits&amp;quot; or &amp;quot;license&amp;quot; for more information.
+&amp;gt;&amp;gt;&amp;gt; 
+&amp;gt;&amp;gt;&amp;gt; import trac
+&amp;gt;&amp;gt;&amp;gt; import gunicorn
+&amp;gt;&amp;gt;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esto quiere decir que la instalación se ha realizado correctamente. En caso
+contrario, obtendriamos un error al intentar importar el módulo, y se mostraría
+un error como el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt; import trac
+Traceback (most recent call last):
+  File &amp;quot;&amp;quot;, line 1, in 
+ImportError: No module named trac&amp;lt;/pre&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero no es nuestro caso, asi que sigamos adelante :-)&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Creando un Trac de ejemplo&lt;/h2&gt; Tenemos Trac instalado, así que el
+siguiente paso será crear una instancia de Trac.&lt;/p&gt;
+
+&lt;p&gt;Crearemos un directorio llamado &amp;lsquo;projects&amp;rsquo; donde crearemos nuestras instancias
+de Trac:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkdir projects
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y finalmente crearemos la instancia de Trac llamada demo, haciendo uso de la
+utilidad &lt;code&gt;trac-admin&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ trac-admin projects/demo initenv demo sqlite:db/trac.db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A modo de resumen, le hemos especificado a trac-admin que cree una instancia de
+Trac en el directorio &lt;code&gt;projects/demo&lt;/code&gt; con la opción
+&lt;code&gt;initenv&lt;/code&gt;, cuyo nombre es &amp;ldquo;demo&amp;rdquo; y siendo la base de datos de tipo
+sqlite, que se encontrará en &lt;code&gt;db/trac.db&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Hecho esto, tendremos nuestra instancia de Trac creada con una estructura como la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;projects/
+└── demo
+    ├── attachments
+    ├── conf
+    │   ├── trac.ini
+    │   └── trac.ini.sample
+    ├── db
+    │   └── trac.db
+    ├── htdocs
+    ├── log
+    ├── plugins
+    ├── README
+    ├── templates
+    │   └── site.html.sample
+    └── VERSION
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Configurando Gunicorn&lt;/h2&gt; Como comenté en &lt;a title=&#34;el anterior post&#34;
+href=&#34;http://blog.manuelviera.es/2011/09/gunicorn/&#34; target=&#34;_blank&#34;&gt;el anterior
+post&lt;/a&gt;, la configuración de Gunicorn la realizaremos creando un fichero
+Python.&lt;/p&gt;
+
+&lt;p&gt;Nuestro fichero de configuración se llamará &lt;code&gt;trac_launcher.py&lt;/code&gt; y su
+contenido debe ser el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#!/usr/bin/env python                                                                          
+import sys                                                                                     
+import os
+import trac.web.main
+
+sys.stdout = sys.stderr                                                                        
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+os.environ[&#39;TRAC_ENV_PARENT_DIR&#39;] = os.path.join(PROJECT_ROOT,&#39;projects&#39;)
+os.environ[&#39;PYTHON_EGG_CACHE&#39;] = os.path.join(PROJECT_ROOT, &#39;.egg-cache&#39;)
+application = trac.web.main.dispatch_request
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Básicamente el fichero de configuración está compuesto por:
+&lt;ol&gt;
+    &lt;li&gt;Importaciones de los módulos &lt;code&gt;sys&lt;/code&gt;, &lt;code&gt;os&lt;/code&gt; y &lt;code&gt;trac.web.main&lt;/code&gt;.&lt;/li&gt;
+    &lt;li&gt;Creación de dos variables de entorno:
+&lt;ul&gt;
+    &lt;li&gt;&lt;code&gt;TRAC_ENV_PARENT_DIR&lt;/code&gt;: directorio donde se alojan las instancias de Trac.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;PYTHON_EGG_CACHE&lt;/code&gt;: directorio de caché de los huevos de Python.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+    &lt;li&gt;Instancia de la funcion &lt;code&gt;trac.web.main.dispatch_request&lt;/code&gt; en la variable &lt;code&gt;application&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;&lt;/p&gt;
+
+&lt;p&gt;Antes de seguir hagamos un breve repaso:
+&lt;ul&gt;
+    &lt;li&gt;Nos encontramos en el directorio &lt;code&gt;testing-gunicorn&lt;/code&gt;.&lt;/li&gt;
+    &lt;li&gt;Tenemos nuestra instancia de Trac en &lt;code&gt;projects/demo&lt;/code&gt;.&lt;/li&gt;
+    &lt;li&gt;Hemos creado en el directorio actual el fichero de configuración para Gunicorn, llamado &lt;code&gt;trac_launcher.py&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;El siguiente paso será ejecutar Gunicorn!&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Ejecutando Gunicorn&lt;/h2&gt;
+Tan fácil como ejecutar la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn trac_launcher:application
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Guay! Ya deberíamos tener nuestro proyecto Trac accesible en
+&lt;a href=&#34;http://localhost:8000&#34;&gt;http://localhost:8000&lt;/a&gt; :-D&lt;/p&gt;
+
+&lt;p&gt;Por defecto Gunicorn arranca un solo worker, pero podemos indicarle que
+arranque más de uno, un número máximo de peticiones por worker y un fichero de
+log, por ejemplo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn trac_launcher:application \
+--workers 2 \
+--worker-connections 100 \
+--log-file gunicorn.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como hemos podido observar, Gunicorn abre por defecto el puerto 8000 en nuestro
+sistema, pero si por el contrario la comunicación la queremos hacer a través de
+un socket, deberemos indicarle la opción &lt;code&gt;&amp;ndash;bind
+unix:///home/mviera/testing-gunicorn/gunicorn.sock&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Por último y para terminar el despliegue, deberíamos instalar un servidor web
+que actuara de proxy, ya sea hacia &lt;code&gt;HOST:PUERTO&lt;/code&gt; o hacia el fichero
+de socket.&lt;/p&gt;
+
+&lt;p&gt;Y eso esto todo amig@s! Espero que os haya gustado y gracias por leerme!&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Gunicorn</title>
+      <link>http://blog.manuelviera.es/blog/gunicorn/</link>
+      <pubDate>Thu, 01 Sep 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/gunicorn/</guid>
+      <description>&lt;p&gt;Hace no mucho que empecé a escuchar sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, creo que allá por Marzo cuando &lt;a title=&#34;Lorenzo Gil&#34; href=&#34;http://www.lorenzogil.com/&#34; target=&#34;_blank&#34;&gt;Lorenzo Gil&lt;/a&gt; se encontraba en la PyCon 2011, pero no me había propuesto probarlo hasta hace unos días. Pero bueno, empecemos por el principio&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Qué es Gunicorn?&lt;/h2&gt;
+&lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, también conocido como Green Unicorn (Unicornio Verde), es un servidor WSGI HTTP para Python. Es un pre-fork del proyecto Unicorn de Ruby.
+Gunicorn es compatible con varios web frameworks, soporta WSGI, Django y Paster de forma nativa; consume pocos recursos en ejecución y es bastante rápido.&lt;/p&gt;
+
+&lt;p&gt;Como he comentado en el párrafo anterior, soporta nativamente WSGI, Django y Paster; administra los workers de forma automática, permite establecer hooks para hacerlo más extensible, compatible con Python 2.5 o superior.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Instalando Gunicorn&lt;/h2&gt;
+Su instalación es realmente sencilla, justo como cualquier otro módulo de Python.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pip install gunicorn
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;o si lo preferimos, podemos obtener el código con git e instalarlo como cualquier otra aplicación en Python.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ git clone git://github.com/benoitc/gunicorn.git
+$ cd gunicorn
+$ python setup.py install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez instalado Gunicorn tendremos a nuestra disposición tres comandos con los que servir diferentes web frameworks.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Ejecutando Gunicorn&lt;/h2&gt;
+Los comandos disponibles en Gunicorn son:
+&lt;ul&gt;
+    &lt;li&gt;&lt;strong&gt;gunicorn&lt;/strong&gt;: utilizado para servir aplicaciones WSGI.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;gunicorn_django&lt;/strong&gt;: utilizado para servir aplicaciones Django.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;gunicorn_paster&lt;/strong&gt;: para frameworks compatibles con Paster como Pylons, TurboGears 2, &amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;En este post me centraré en el comando &lt;strong&gt;gunicorn&lt;/strong&gt; pero podeis encontrar más información de cada uno de ellos en &lt;a title=&#34;la documentación oficial de Gunicorn&#34; href=&#34;http://gunicorn.org/run.html&#34; target=&#34;_blank&#34;&gt;la documentación oficial de Gunicorn&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Configurando Gunicorn&lt;/h2&gt;
+La configuración de Gunicorn también es muy sencilla, básicamente consiste en un fichero Python que tenga permisos de lectura en el sistema de ficheros, excepto que nuestra aplicación haya sido desarrollada utilizando Paster, en este caso haremos uso de un fichero INI.&lt;/p&gt;
+
+&lt;p&gt;Su sintaxis de uso es:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn [OPTIONS] APP_MODULE
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Donde APP_MODULE está compuesto por $(MODULE_NAME):$(VARIABLE_NAME). Un ejemplo de uso sería el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn --workers 2 prueba:aplicacion
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Gunicorn buscará el módulo, es decir, el fichero prueba.py, y el nombre de la variable (aplicacion) debe hacer referencia a una función, normalmente a la función main de nuestra aplicación, que debe encontrarse especificada en el módulo.&lt;/p&gt;
+
+&lt;p&gt;El comando &lt;strong&gt;gunicorn&lt;/strong&gt; ofrece una extensa lista de opciones para configurar su comportamiento, pero las que he utilizado y que me han parecido más interesantes son:
+&lt;ul&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;config FILE&lt;/code&gt;: ruta hacia el fichero de configuración.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;bind ADDRESS&lt;/code&gt;: es posible especificar tanto &lt;code&gt;HOST:PUERTO&lt;/code&gt; como la ruta a un socket con &lt;code&gt;unix:RUTA_SOCKET&lt;/code&gt;.
+Ejemplo: &lt;code&gt;&amp;ndash;bind unix:///home/mviera/gunicorn/gunicorn.sock&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;workers INT&lt;/code&gt;: número de procesos workers que se arrancarán para servir las peticiones.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;max-requests INT&lt;/code&gt;: número máximo de peticiones que servirá un worker antes de ser reiniciado.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;debug&lt;/code&gt;: activa el debug en el servidor.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;log-file&lt;/code&gt;: fichero de log.&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;Un ejemplo de ejecución sería:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn modulo:application --workers 2 \
+--bind unix:///home/mviera/gunicorn/gunicorn.sock \
+--max-requets 1000 --log-file /home/mviera/gunicorn/gunicorn.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podeis consultar el resto de opciones en &lt;a title=&#34;la documentación de configuración de Gunicorn&#34; href=&#34;http://gunicorn.org/configure.html&#34; target=&#34;_blank&#34;&gt;la documentación de configuración de Gunicorn&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Por último y para terminar con el despliegue, una vez que tengamos a Gunicorn sirviendo nuestra aplicación lo correcto sería instalar un servidor web que actúe como proxy HTTP hacia nuestra aplicación, yo como siempre recomiendo utilizar Nginx :-)&lt;/p&gt;
+
+&lt;p&gt;Y hasta aquí lo que he aprendido sobre Gunicorn, un breve resumen de la documentación oficial.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Conclusiones&lt;/h2&gt;
+Gunicorn me ha sorprendido no solo por su fácil instalación, a diferencia de &lt;a title=&#34;uWSGI&#34; href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt; que necesita ser compilado; sino también por su fácil configuración y uso.&lt;/p&gt;
+
+&lt;p&gt;Como dije al principio, cuenta con una serie de hooks que permite ejecutar código Python en los diferentes puntos de ejecución: &lt;code&gt;on_start&lt;/code&gt;, &lt;code&gt;when_ready&lt;/code&gt;, &lt;code&gt;on_reload&lt;/code&gt;, &lt;code&gt;pre_fork&lt;/code&gt;, &lt;code&gt;post_fork&lt;/code&gt;, etc. Esto también me ha gustado mucho, aunque no los he llegado a probar.&lt;/p&gt;
+
+&lt;p&gt;La verdad es que Gunicorn me ha dejado con un muy buen sabor de boca aunque no he llegado a probarlo en un entorno real de producción para ver cómo se comporta. De momento seguiré con &lt;a title=&#34;uWSGI&#34; href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt; hasta que tenga la ocasión de utilizar Gunicorn ;-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+
+&lt;p&gt;PD: En el próximo post explicaré cómo desplegar Trac utilizando Gunicorn!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Automatizando con Tox</title>
+      <link>http://blog.manuelviera.es/blog/automatizando-con-tox/</link>
+      <pubDate>Tue, 23 Aug 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/automatizando-con-tox/</guid>
+      <description>&lt;p&gt;Hace unos días me encontré con &lt;a title=&#34;Tox&#34; href=&#34;https://bitbucket.org/hpk42/tox&#34;&gt;Tox&lt;/a&gt; y realmente me llamó la atención, pero&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Qué es Tox?&lt;/h2&gt;
+Tox es un gestor de virtualenvs y una herramienta para realizar tests en linea de comandos. Según su documentación se puede utilizar para:
+&lt;ul&gt;
+    &lt;li&gt;Probar que tu paquete se instala correctamente con diferentes versiones de Python.&lt;/li&gt;
+    &lt;li&gt;Ejecutar los tests de tu proyecto en cada uno de los entornos.&lt;/li&gt;
+    &lt;li&gt;Integración Continua (CI = Continuous Integration).&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;No me ha quedado claro, ¿Cual es el objetivo?&lt;/h2&gt;
+El objetivo de &lt;code&gt;tox&lt;/code&gt; es automatizar el arte de empaquetado, testeo e instalación de software Python ya sea desde tu consola o desde tu servidor de CI (Integración Continua).&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Lo quiero probar, ¿cómo lo instalo?&lt;/h2&gt;
+Es muy fácil, solamente se necesita ejecutar la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;pip install tox
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Instalado, pero ¿cómo hago una primera prueba?&lt;/h2&gt;
+Se necesita crear un fichero llamado &lt;code&gt;tox.ini&lt;/code&gt; que debe estar en el mismo directorio que&lt;code&gt;setup.py&lt;/code&gt; cuyo contenido puede ser algo como:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[tox]
+envlist = py26,py27
+[testenv]
+deps =
+    unittest2
+    pytest
+commands=python bin/test
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Y ahora qué hago?&lt;/h2&gt;
+Una vez creado el fichero &lt;code&gt;tox.ini&lt;/code&gt; solamente será necesario ejecutar:&lt;/p&gt;
+
+&lt;p&gt;tox&lt;/p&gt;
+
+&lt;p&gt;Será entonces cuando &lt;code&gt;tox&lt;/code&gt; comienze a:
+&lt;ol&gt;
+    &lt;li&gt;empaquetar las fuentes del proyecto en un fichero zip&lt;/li&gt;
+    &lt;li&gt;creará un virtualenv por cada uno de los interpretes especificados, en este caso un virtualenv para Python-2.6 y otro para Python-2.7, cuyos nombres serán py26 y py27 respectivamente.&lt;/li&gt;
+    &lt;li&gt;instalará las dependencias especificadas (en este caso de ejemplo,&lt;code&gt;unittest2&lt;/code&gt; y &lt;code&gt;pytest&lt;/code&gt;).&lt;/li&gt;
+    &lt;li&gt;por último se ejecutarán los comandos especificados, en nuestro ejemplo solamente uno, &lt;code&gt;python bin/test&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;strong&gt;Importante:&lt;/strong&gt; los intérpretes de Python deben estar previamente instalados en el sistema.&lt;code&gt;tox&lt;/code&gt; no instala ningún intérprete de Python y en caso de no encontrar alguno de los especificados, informará de ello mostrando un error en linea de comandos.&lt;/p&gt;
+
+&lt;p&gt;Si ejecutamos &lt;code&gt;tox&lt;/code&gt; por segunda vez podremos comprobar que la ejecución durará mucho menos puesto que no necesita resolver de nuevo las dependencias.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Y si sólo quiero ejecutar los tests en uno de los intérpretes?&lt;/h2&gt;
+Bastaría con ejecutar la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;tox -e py27
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Dónde se almacena el resultado de la ejecución de tox?&lt;/h2&gt;
+&lt;code&gt;tox&lt;/code&gt; crea un directorio oculto llamado &lt;code&gt;.tox&lt;/code&gt; que tiene la siguiente estructura:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;.tox
+├── dist
+├── _download
+├── log
+└── py27
+    ├── bin
+    ├── include
+    ├── lib
+    └── log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;dist: directorio donde se almacenan las fuentes del proyecto comprimidas en formato zip.&lt;/li&gt;
+    &lt;li&gt;_download: directorio de descarga de todas las dependencias de Python.&lt;/li&gt;
+    &lt;li&gt;log: directorio donde se almacenan los ficheros de log de la ejecución.&lt;/li&gt;
+    &lt;li&gt;py27: directorio del virtualenv creado para instalar el proyecto utilizando python2.7.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&amp;hellip; y eso es todo amig@s! Podéis aprender más acerca de &lt;code&gt;tox&lt;/code&gt; consultando la documentación oficial en &lt;a href=&#34;http://tox.readthedocs.org/&#34;&gt;http://tox.readthedocs.org&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

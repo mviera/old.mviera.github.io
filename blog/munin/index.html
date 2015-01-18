@@ -1,0 +1,342 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Munin
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2011-01-12" title="2011-01-12">January 12, 2011</time>
+            </div>
+            <h1 class="title">Munin</h1>
+            
+            <div class="meta">
+              
+            </div>
+        </header>
+
+        <section>
+            <p>Últimamente en <a href="http://www.yaco.es" target="_blank">Yaco Sistemas</a> estamos migrando servicios que se encuentran desplegados actualmente en servidores antiguos a máquinas virtuales. Cada vez que realizamos la migración de algún servicio, instalamos <a href="http://munin-monitoring.org/" target="_blank">Munin</a> y de hecho, hoy he tenido que hacerlo, asi que aprovecho para compartirlo con vosotros.</p>
+
+<p><h2>¿Qué es Munin?</h2>
+Munin es una herramienta de monitorización software libre bajo licencia GNU GPL version 2. Permite monitorizar uno o varios equipos, permite mostrar los resultados via web mediante gráficas, está escrito en Perl y permite el uso de plugins, lo cual lo hace una herramienta bastante potente.</p>
+
+<p><h2>Instalación</h2>
+Instalaremos Munin desde los repositorios del sistema. En este caso estoy en un sistema Debian Squeeze.</p>
+
+<pre><code># apt-get install munin munin-common munin-plugins-extra
+</code></pre>
+
+<p>Una vez instalados los paquetes ya tendremos Munin casi funcionando. Munin puede actuar de dos formas: como servidor, el cual mostrará los datos recopilados de uno o más nodos, y como nodo, el cual se encarga de enviar datos al servidor. En este caso el propio Munin actuará como servidor y nodo al mismo tiempo.</p>
+
+<p>Antes de configurarlo vamos a dar un repaso a los ficheros y directorios más importantes:
+<ul>
+    <li><strong>/etc/munin/munin.conf</strong>: es el fichero de configuración del servidor Munin.</li>
+    <li><strong>/etc/munin/munin-node.conf</strong>: fichero de configuración del nodo Munin.</li>
+    <li><strong>/etc/munin/plugin-conf.d/munin-node</strong>: hay ciertos plugins que necesitan parámetros para funcionar, configuraremos los plugins en este fichero.</li>
+    <li><strong>/etc/munin/plugins/</strong>: directorio con los plugins activos en Munin. No son más que enlaces simbólicos hacia donde realmente se encuentran los plugins.</li>
+    <li><strong>/usr/share/munin/plugins</strong>: es el directorio donde se encuentran fisicamente todos los plugins de Munin. <a href="http://munin-monitoring.org/wiki/PluginCat" target="_blank">La lista de plugins</a> es extensa :-)</li>
+    <li><strong>/etc/init.d/munin-node</strong>: script utilizado para recargar la configuración del nodo Munin.</li>
+</ul></p>
+
+<p><h2>Configuración</h2>
+La configuración de Munin es bastante rápida y sencilla. Primero configuraremos el servidor por lo que tenemos que editar el fichero <strong>/etc/munin/munin.conf</strong>.</p>
+
+<pre><code>dbdir   /var/lib/munin
+htmldir /var/cache/munin/www
+logdir /var/log/munin
+rundir  /var/run/munin
+
+includedir /etc/munin/munin-conf.d
+
+[host.mydomain.com]
+address 192.168.1.116
+use_node_name yes
+</code></pre>
+
+<p>Con esta sencilla configuración, le hemos especificado a Munin sus directorios de trabajo para la base de datos, los resultados en html, el directorio de logs y donde se guardará el pid de Munin. También le especificamos la dirección IP del nodo, que en este caso será él mismo.</p>
+
+<p>Para configurar nuestro nodo, es decir, la parte de Munin que recoge los datos, editaremos el fichero <strong>/etc/munin/munin-node.conf</strong>.</p>
+
+<pre><code>log_level 4
+log_file /var/log/munin/munin-node.log
+pid_file /var/run/munin/munin-node.pid
+
+background 1
+setsid 1
+
+user root
+group root
+
+ignore_file ~$
+ignore_file DEADJOE$
+ignore_file \.bak$
+ignore_file %$
+ignore_file \.dpkg-(tmp|new|old|dist)$
+ignore_file \.rpm(save|new)$
+ignore_file \.pod$
+
+host_name host.mydomain.com
+
+allow ^127\.0\.0\.1$
+allow ^192\.168\.1\.116$
+
+host *
+host 192.168.1.116
+
+port 4949
+</code></pre>
+
+<p>La linea <strong>host_name</strong> ayuda al servidor a identificar a este nodo, mientras que las directivas <strong>allow</strong> indican desde qué direcciones IP es posible conectarse, en este caso desde localhost y desde la IP de la propio máquina. Por último, se indica el puerto de escucha con la directiva <strong>port</strong>, en este caso el 4949.</p>
+
+<p>Ya tenemos configurado nuestro Munin! Ahora queda que funcione ;-) Para comprobar que todo esté correcto podemos ejecutar el comando <strong>munin-check</strong> que comprobara si los permisos y propietarios de los ficheros son correctos o no. Si hubiera algo mal, te sugiere cómo debería ser. En mi caso tuve que corregir algunos permisos:</p>
+
+<pre><code># chmod -R 755 /etc/munin/plugin-conf.d
+# chown -R nobody:munin /var/lib/munin/plugin-state
+</code></pre>
+
+<p>Ya debería estar todo correcto, asi que podemos arrancar el nodo Munin:</p>
+
+<pre><code># /etc/init.d/munin-node start
+</code></pre>
+
+<p>Perfecto! Pero&hellip; ¿Cómo recoge datos el nodo Munin?¿Cada cuánto tiempo?¿Dónde se configura eso?</p>
+
+<p>Munin ofrece otro script llamado <strong>munin-cron</strong> el cual va actualizando los resultados en html que va generando. Yo lo que hago es configurar una tarea cron en el usuario <strong>munin</strong>, así que hacemos login como dicho usuario y configuramos la tarea cron con <strong>crontab -e</strong>:</p>
+
+<pre><code># su - munin --shell=/bin/bash
+# crontab -e
+</code></pre>
+
+<p>Normalmente actualizo las estadísticas cada 5 minutos, asi que la tarea cron debe quedar de la siguiente forma:</p>
+
+<pre><code># crontab -l
+# m h  dom mon dow   command
+*/5 * * * * munin-cron&lt;/pre&gt;
+</code></pre>
+
+<p><h2>Publicación via web</h2>
+Todo esto está muy bien, pero ¿dónde veo las gráficas? Para ello necesitaremos un servidor web.
+A mi personalmente me gusta mucho Nginx porque es muy rápido y liviano, asi que procedemos a instalarlo desde repositorios:</p>
+
+<pre><code># apt-get install nginx
+</code></pre>
+
+<p>La versión de Nginx de los repositorios es bastante antigua, pero solamente lo queremos para mostrar contenido estático, asi que esta versión nos sirve.</p>
+
+<p>Lo único que queda es configurar un location para mostrar los resultados generados por Munin en el directorio <strong>/var/cache/munin/www</strong>. Como no es una configuración muy extensa, la hago en el virtualhost por defecto que viene con Nginx en el fichero <strong>/etc/nginx/sites-enabled/default</strong> añadiendo lo siguiente dentro del bloque <strong>server</strong>:</p>
+
+<pre><code>[...]
+server_name  host.mydomain.com;
+[...]
+location /munin {
+    alias /var/cache/munin/www;
+    index index.html index.htm;
+    autoindex on;
+    allow all;
+}
+</code></pre>
+
+<p>Recargamos la configuración del servidor Nginx:</p>
+
+<pre><code># /etc/init.d/nginx reload
+</code></pre>
+
+<p>Hecho esto, tendremos accesible nuestro Munin en <a href="http://host.mydomain.com/munin">http://host.mydomain.com/munin</a></p>
+
+<p>Como decía <a href="http://es.wikipedia.org/wiki/Juan_Tamariz" target="_blank">Juan Tamariz</a>&hellip; &ldquo;Chiananananaaaa&rdquo;.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Munin [4 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/munin/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

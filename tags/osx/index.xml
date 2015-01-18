@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Osx on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/tags/osx/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Tue, 03 Jul 2012 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Actualizate a la nueva versión de OS X</title>
+      <link>http://blog.manuelviera.es/blog/actualizate-a-la-nueva-version-de-os-x/</link>
+      <pubDate>Tue, 03 Jul 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/actualizate-a-la-nueva-version-de-os-x/</guid>
+      <description>
+
+&lt;p&gt;Aunque mi sistema operativo favorito es GNU/Linux, y es el que uso a diario;
+también suelo usar OS X para temas multimedia, retoque fotográfico, creación
+de vídeos caseros, etc.&lt;/p&gt;
+
+&lt;p&gt;Hace algún tiempo me prestaron el DVD de actualización de Snow Leopard, y me
+actualicé para probar las nuevas features del sistema operativo de la
+manzanita. El caso es que hace no mucho tiempo decidí reinstalar el sistema de
+mi Mac, y claro, ya no tenía el DVD de Snow Leopard que me prestaron, así que
+tuve que volver a la versión de OS X que tenía, Leopard.&lt;/p&gt;
+
+&lt;p&gt;Para mi sorpresa, tras reinstalar el sistema operativo e intentar instalar el
+paquete iLife &amp;lsquo;11, me aparece un mensaje de aviso informándome que mi versión
+de OS X no es compatible con la versión de iLife &amp;lsquo;11. El mensaje que aparece es
+el siguiente:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;/images/blog/ilife11.jpg&#34;&gt;&lt;img src=&#34;/images/blog/ilife11.jpg&#34; alt=&#34;&#34; /&gt;
+&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora mismo actualizar a OS X Mountain Lion cuesta unos 15,99€ según Mac App
+Store o 23,99€ si actualizas a OS X Lion a través de GoldenMac, tienda
+especializada en productos Apple en España. Así que al parecer, la única
+solución es actualizarte a las nuevas versiones de OS X si quieres seguir
+disfrutando de las versiones más recientes del software que sueles utilizar&amp;hellip;
+Pero hoy he descubierto una forma muy fácil de burlar esta comprobación de
+versión y poder instalar el paquete iLife 11 aun no teniendo la versión 10.6.3
+que especifica el mensaje de información.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;Cómo cambiar la versión de tu Mac OS X&lt;/h2&gt;
+
+&lt;p&gt;La solución es bastante sencilla, solamente hay que conocer la existencia del
+fichero &lt;strong&gt;/System/Library/CoreServices/SystemVersion.plist&lt;/strong&gt;. El contenido de
+este fichero en mi sistema era el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;!DOCTYPE plist PUBLIC &amp;quot;-//Apple//DTD PLIST 1.0//EN&amp;quot; &amp;quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&amp;quot;&amp;gt;
+&amp;lt;plist version=&amp;quot;1.0&amp;quot;&amp;gt;
+&amp;lt;dict&amp;gt;
+        &amp;lt;key&amp;gt;ProductBuildVersion&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;9L31a&amp;lt;/string&amp;gt;
+        &amp;lt;key&amp;gt;ProductCopyright&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;1983-2009 Apple Inc.&amp;lt;/string&amp;gt;
+        &amp;lt;key&amp;gt;ProductName&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;Mac OS X&amp;lt;/string&amp;gt;
+        &amp;lt;key&amp;gt;ProductUserVisibleVersion&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;10.5.8&amp;lt;/string&amp;gt;
+        &amp;lt;key&amp;gt;ProductVersion&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;10.5.8&amp;lt;/string&amp;gt;
+&amp;lt;/dict&amp;gt;
+&amp;lt;/plist&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si prestamos atención, se puede ver que se trata de un fichero en formato XML
+que tiene dos parámetros de configuración bastante llamativos:
+&lt;strong&gt;ProductUserVisibleVersion&lt;/strong&gt;, que se trata de la versión del producto visible
+por el usuario; y &lt;strong&gt;ProductVersion&lt;/strong&gt;, la versión del producto, es decir, del
+sistema operativo.&lt;/p&gt;
+
+&lt;p&gt;Pues bien, para poder instalar el paquete iLife 11 ha sido tan fácil como
+editar el valor del parámetro &lt;strong&gt;ProductVersion&lt;/strong&gt; y cambiarlo por &lt;strong&gt;10.6.3&lt;/strong&gt;. Es
+posible editarlo desde una Terminal utilizando &lt;strong&gt;sudo&lt;/strong&gt; o estableciendo
+&lt;strong&gt;permisos&lt;/strong&gt; de &lt;strong&gt;escritura y lectura&lt;/strong&gt; en las propiedades del fichero,
+haciendo click derecho y seleccionando &lt;strong&gt;Obtener información&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Tras guardar los cambios realizados en el fichero &lt;strong&gt;SystemVersion.plist&lt;/strong&gt;, la
+instalación del paquete iLife 11 se ha llevado a cabo sin problema alguno.
+Después he ejecutado iMovie y GarageBand, que son los que uso; y ambos
+funcionan sin problemas.&lt;/p&gt;
+
+&lt;p&gt;Esto es lo que tiene utilizar un sistema operativo propietario, que te obligan
+en cierta manera, a ir actualizando el sistema operativo si quieres seguir
+estando en la ola de las nuevas aplicaciones que vayan surgiendo, en este caso
+parece ser solamente por un número, la retrocompatibilidad brilla por su
+ausencia; y claro, conociendo a Apple, en la mayoría de los casos los precios
+no son nada baratos&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;Espero que os sirva como me ha servido a mi!&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manuel Viera.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Cambiar contraseñas en OS X sin un CD de OS X</title>
+      <link>http://blog.manuelviera.es/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</link>
+      <pubDate>Sun, 21 Aug 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</guid>
+      <description>&lt;p&gt;Hace no mucho una amiga que tiene un Macbook me comentó que por alguna extraña
+razón no podía acceder a su cuenta de usuario. Ella aseguraba no haber cambiado
+la contraseña y que la que estaba introduciendo era la contraseña correcta. Y
+sí, el teclado respondía al layout en español, y el bloqueo de mayúsculas no
+estaba activado. Me comentaba que tenía material gráfico de mucha importancia y
+que no se podía perder, vamos, lo de siempre :-D. Solo existía su usuario en el
+sistema, y por lo tanto el único usuario administrador.&lt;/p&gt;
+
+&lt;p&gt;Fue entonces cuando busqué un poco por internet, y los pasos a seguir son los
+siguientes:
+&lt;ol&gt;
+    &lt;li&gt;Reiniciar el sistema.&lt;/li&gt;
+  &lt;li&gt;Mantener pulsado la tecla Command en Apple (⌘) + s antes de escuchar el
+  sonido inicial de arranque.&lt;/li&gt;
+  &lt;li&gt;Deberá aparecer una shell en la que
+  tendremos privilegios de root y desde la cual ejecutaremos las siguientes
+  instrucciones:&lt;/li&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# mount -uw /
+# rm /var/db/.AppleSetupDone
+# shutdown -h now
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;li&gt;Después del reinicio del sistema aparecerá de nuevo el video de
+  bienvenida y la posibilidad de crear un nuevo usuario administrador tal y
+  como cuando sacamos nuestro Mac de la caja por primera vez.&lt;/li&gt;
+  &lt;li&gt;Creado el nuevo usuario administrador y habiendo hecho login con él
+  podremos acceder a las &lt;strong&gt;Preferencias del Sistema&lt;/strong&gt; &amp;gt;
+  &lt;strong&gt;Cuentas&lt;/strong&gt; y cambiar la contraseña del anterior usuario
+  administrador.&lt;/li&gt;
+&lt;/ol&gt;&lt;/p&gt;
+
+&lt;p&gt;Parece ser que tras completar los primeros pasos en OS X, se crea el fichero
+&lt;code&gt;/var/db/.AppleSetupDone&lt;/code&gt; en el sistema. Es un fichero vacío, no
+contiene ninguna configuración, así que imagino que durante el arranque se
+comprueba si existe este fichero, y si existe es que el sistema ya ha sido
+configurado, si no, se muestra la bienvenida a OS X.&lt;/p&gt;
+
+&lt;p&gt;Espero que os sea útil, y tened cuidado con el lado oscuro ;-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,672 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Empezando con MongoDB Part.II
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2013-03-02" title="2013-03-02">March 02, 2013</time>
+            </div>
+            <h1 class="title">Empezando con MongoDB Part.II</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/mongodb">#mongodb</a>
+              
+              <a href="/tags/nosql">#nosql</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>En mi <a href="/blog/empezando-con-mongodb/">anterior post</a> hablaba sobre <a href="/blog/empezando-con-mongodb/">cómo empezar
+con MongoDB</a>, una base de datos NoSQL orientada a
+documentos; y como sigo estudiándola y me parece interesante, me gustaría
+seguir compartiendo y profundizando sobre el uso de MongoDB, así que he
+decidido escribir una segunda parte de este anterior post.</p>
+
+<p>El objetivo de este post es bien sencillo. Cubrirá las operaciones principales
+básicas de MongoDB, también conocidas como operaciones <strong>CRUD</strong>, que significa
+<strong>C</strong> reate, <strong>R</strong> ead, <strong>U</strong> pdate y <strong>D</strong> elete. ¡Así que empecemos con ello!</p>
+
+<p>Antes de nada empezaremos recordando cómo iniciar nuestra base de datos
+utilizando el comando <code>mongod</code>. Recordad que debemos especificar la ruta donde
+se almacenará la base de datos utilizando el parámetro <code>--dbpath</code>. Dicho esto,
+podremos ejecutar una instrucción como la siguiente:</p>
+
+<pre><code>$ mongod --dbpath test
+</code></pre>
+
+<p>En este caso he utilizado un directorio llamado <em>test</em> donde alojaré esta base
+de datos de pruebas. Apuntar que al no especificar un puerto con el parámetro
+<code>--port</code>, la instancia de <code>mongod</code> utilizará el puerto <code>27017</code> por defecto.</p>
+
+<p>Esta instrucción tiene un &ldquo;inconveniente&rdquo; y es que no podremos seguir
+utilizando nuestra consola actual, pues la ejecución de <code>mongod</code> se realiza en
+primer plano, o <em>foreground</em>. Para evitar esto podemos hacer uso del parámetro
+<code>--fork</code> que creará un <em>fork</em> del proceso del servidor permitiendo poder seguir
+utilizando nuestra consola. La opción <code>--fork</code> requiere que se especifique
+además un fichero de log utilizando el parámetro <code>--logpath</code> o <code>--syslog</code>, así
+que la instrucción quedaría de la siguiente forma:</p>
+
+<pre><code>$ mongod --dbpath test --logappend --logpath test.log --fork
+forked process: 10017
+all output going to: /home/mviera/Downloads/mongodb/test.log
+child process started successfully, parent exiting
+</code></pre>
+
+<p><strong>Nota:</strong> Además he utilizado la opción <code>--logappend</code> para evitar que
+sobrescriba el contenido del fichero de log. En este caso seguirá concatenando
+datos al contenido actual del fichero.</p>
+
+<p>Una vez funcionando nuestra instancia de <code>mongod</code>, podemos conectarnos a la
+consola utilizando el comando <code>mongo</code> de la siguiente forma:</p>
+
+<pre><code>$ mongo
+MongoDB shell version: 2.2.3
+connecting to: test
+&gt;
+</code></pre>
+
+<p><strong>Nota:</strong> No es necesario especificar el puerto porque se está utilizando el
+puerto por defecto (<code>27017</code>).</p>
+
+<p>Todo listo, así que ¡empecemos a crear documentos!</p>
+
+<h2 id="toc_0">Introduciendo contenido</h2>
+
+<p>Seguro que muchos ya os imagináis cómo se realiza este tipo de operación básica
+en una base de datos SQL como MySQL, PosgreSQL, SQLite, etc; pero en MongoDB se
+realiza de una forma muy diferente, por lo menos referente a cómo se realiza en
+una base de datos SQL.</p>
+
+<p>Una inserción de datos sencilla en SQL podría ser de la siguiente forma:</p>
+
+<pre><code>INSERT INTO users (firstName, lastName, username, age, city)
+VALUES ('Manuel', 'Viera', 'mviera', 26, 'Sevilla');
+</code></pre>
+
+<p>En MongoDB es completamente diferente. En mi anterior post ya traté rápidamente
+las inserciones y si recordáis, comentaba que MongoDB está orientado a
+documentos y que estos documentos siguen el estilo JSON (JavaScript Object
+Notation).</p>
+
+<p>Para realizar una inserción en MongoDB utilizaremos el método <code>insert()</code> al que
+llamaremos pasándole como parámetro el documento a introducir, el cual,
+siguiendo el ejemplo anterior, sería representado en formato JSON de la
+siguiente forma:</p>
+
+<pre><code>{
+  &quot;firstName&quot; : &quot;Manuel&quot;,
+  &quot;lastName&quot; : &quot;Viera&quot;,
+  &quot;username&quot; : &quot;mviera&quot;,
+  &quot;age&quot; : 26,
+  &quot;city&quot; : &quot;Sevilla&quot;
+}
+</code></pre>
+
+<p>Recordad también que en MongoDB los documentos se almacenan en colecciones (o
+<em>collections</em> en inglés), así que para seguir con el ejemplo introduciremos
+este documento en una colección llamada <code>users</code>.</p>
+
+<pre><code>&gt; db.users.insert({
+ firstName: &quot;Manuel&quot;,
+ lastName: &quot;Viera&quot;,
+ username: &quot;mviera&quot;,
+ age: 26,
+ city: &quot;Sevilla&quot;
+ })
+</code></pre>
+
+<p>Bien. ¿Qué tenemos hasta ahora? Por defecto cuando nos conectamos a una
+instancia MongoDB sin especificar una base de datos, se utilizará por defecto
+<code>test</code>. Así que hemos creado un documento dentro de la colección <code>users</code> en la
+base de datos <code>test</code>.</p>
+
+<p><strong>Nota:</strong> A modo de recordatorio, no es necesario crear previamente la
+colección antes de introducir documentos. MongoDB lo hará por nosotros
+automáticamente si la colección no existe.</p>
+
+<p>¿Pero cómo recuperamos los datos introducidos?</p>
+
+<h2 id="toc_1">Recuperando los documentos</h2>
+
+<p>Para seleccionar, buscar, encontrar documentos dentro de nuestra colección
+utilizaremos uno de los siguientes métodos:</p>
+
+<ul>
+<li><code>find()</code> : que devolverá un cursor con todos los documentos recuperados de la base de datos.</li>
+<li><code>findOne()</code> : que devuelve solamente un documento.</li>
+</ul>
+
+<p>El uso de <code>find()</code> es muy sencillo, como podéis ver a continuación:</p>
+
+<pre><code>&gt; db.users.find()
+{ &quot;_id&quot; : ObjectId(&quot;5131f87b350e650534c68d8e&quot;), &quot;firstName&quot; : &quot;Manuel&quot;, &quot;lastName&quot; : &quot;Viera&quot;, &quot;username&quot; : &quot;mviera&quot;, &quot;age&quot; : 26, &quot;city&quot; : &quot;Sevilla&quot; }
+&gt;
+</code></pre>
+
+<p>En este caso tanto <code>find()</code> como <code>findOne()</code> devolverán resultados idénticos,
+pues ahora mismo sólo contamos con un documento en nuestra colección <code>users</code>:</p>
+
+<pre><code>&gt; db.users.findOne()
+{
+        &quot;_id&quot; : ObjectId(&quot;5131f87b350e650534c68d8e&quot;),
+        &quot;firstName&quot; : &quot;Manuel&quot;,
+        &quot;lastName&quot; : &quot;Viera&quot;,
+        &quot;username&quot; : &quot;mviera&quot;,
+        &quot;age&quot; : 26,
+        &quot;city&quot; : &quot;Sevilla&quot;
+}
+&gt;
+</code></pre>
+
+<p>Si os fijáis en un detalle, <code>findOne()</code> devuelve el contenido de una forma
+mucho más legible al ojo humano que <code>find()</code>. Esto también podemos conseguirlo
+con <code>find()</code> si utilizamos además el método <code>pretty()</code> de la siguiente forma:</p>
+
+<pre><code>&gt; db.users.find().pretty()
+{
+        &quot;_id&quot; : ObjectId(&quot;5131f87b350e650534c68d8e&quot;),
+        &quot;firstName&quot; : &quot;Manuel&quot;,
+        &quot;lastName&quot; : &quot;Viera&quot;,
+        &quot;username&quot; : &quot;mviera&quot;,
+        &quot;age&quot; : 26,
+        &quot;city&quot; : &quot;Sevilla&quot;
+}
+</code></pre>
+
+<p>Al igual que <code>pretty()</code> también podemos utilizar otros métodos como <code>count()</code>
+que nos devuelve la cantidad total de documentos devueltos:</p>
+
+<pre><code>&gt; db.users.find().count()
+1
+&gt;
+
+O directamente sobre la colección `users` para saber el total de documentos de dicha colección:
+
+&gt; db.users.count()
+5
+&gt;
+</code></pre>
+
+<p>Si introducimos más documentos de prueba, se aprecia que el contador total de
+documentos cambia:</p>
+
+<pre><code>&gt; db.users.insert({firstName:&quot;Paco&quot;, lastName:&quot;Laverdaque&quot;, username: &quot;laverdaque&quot;, age: 40, city: &quot;Madrid&quot;})
+&gt; db.users.insert({firstName:&quot;Raul&quot;, lastName:&quot;Martin&quot;, username: &quot;rmartin&quot;, age: 39, city: &quot;Malaga&quot;})
+&gt; db.users.insert({firstName:&quot;Jose&quot;, lastName:&quot;Castillo&quot;, username: &quot;lolo&quot;, age: 25, city: &quot;Cadiz&quot;})
+&gt; db.users.insert({firstName:&quot;Jose Luis&quot;, lastName:&quot;Romero&quot;, username: &quot;selu&quot;, age: 27, city: &quot;Barcelona&quot;})
+&gt; 
+&gt; db.users.count()
+5
+</code></pre>
+
+<p>Pero no siempre vamos a querer recuperar todos los documentos de nuestra colección&hellip;</p>
+
+<h3 id="toc_2">¿Cómo filtrar documentos?</h3>
+
+<p>Seguro que muchos ya estáis pensando en la cláusula <code>WHERE</code> de las sentencias
+SQL. Por ejemplo, si quisiéramos recuperar aquellos usuarios cuya ciudad es
+Sevilla, con una sentencia SQL sería:</p>
+
+<pre><code>&gt; SELECT * FROM users WHERE city=&quot;Sevilla&quot;;
+</code></pre>
+
+<p>Sin embargo, en MongoDB es de la siguiente forma:</p>
+
+<pre><code>&gt; db.users.find({ city: &quot;Sevilla&quot; })
+</code></pre>
+
+<p>De esta forma, pasamos como parámetro un documento JSON con la cláusula a
+cumplir, en este caso que la clave <strong>city</strong> tenga como valor <em>Sevilla</em>.</p>
+
+<p>¿Y cómo podemos concatenar cláusulas? Es decir, cómo sería si quisiéramos
+recuperar aquellos usuarios cuya ciudad es Sevilla <strong>y</strong> además su edad sea 26:</p>
+
+<pre><code>&gt; db.users.find({ city: &quot;Sevilla&quot;, age: 26 })
+</code></pre>
+
+<p>Como se puede observar, solamente se necesita agregar una segunda clave o campo
+al documento JSON que se le pasa al método <code>find()</code>.</p>
+
+<p><strong>Nota:</strong> MongoDB aplica por defecto un <strong>AND</strong> entre cláusulas, es decir,
+imaginaos que la coma (<strong>,</strong>) es un operador <strong>AND</strong>.</p>
+
+<p>Para utilizar un operador <strong>OR</strong> deberemos usar el operador <code>$or</code> de MongoDB,
+de la siguiente forma:</p>
+
+<pre><code>&gt; db.users.find({ $or: [ {city:&quot;Sevilla&quot;}, {city:&quot;Malaga&quot;} ] })
+</code></pre>
+
+<p>En este caso hemos recuperado aquellos usuarios cuya ciudad es Sevilla <strong>o</strong>
+Málaga.</p>
+
+<p>Podéis aprender más sobre operadores en
+<a href="http://docs.mongodb.org/manual/reference/operators/">http://docs.mongodb.org/manual/reference/operators/</a>.
+Algunos de ellos son:</p>
+
+<ul>
+<li><code>$gt</code>: mayor que (o <em>greater than</em> en inglés).</li>
+<li>`$lt: menor que (o <em>lower than</em> en inglés).</li>
+<li><code>$gte</code>: mayor o igual que (o <em>greather or equal than</em> en inglés).</li>
+<li><code>$lte</code>: menor o igual que (o <em>lower or equal than</em> en inglés).</li>
+<li><code>$not</code>: no (negación o <em>not</em> en inglés).</li>
+<li><code>$in</code>: en, para buscar dentro de un array.</li>
+<li><code>$nin</code>: no en, para buscar algo que no se encuentre en un determinado array (o <em>not in</em> en inglés).</li>
+<li><code>$ne</code>: no es igual a (o <em>not equal to</em> en inglés).</li>
+</ul>
+
+<p>Pero, no siempre vamos a querer recuperar todos los campos de un documento,
+quizás solo necesitemos un algunos de ellos&hellip;</p>
+
+<h2 id="toc_3">¿Cómo seleccionar ciertos campos?</h2>
+
+<p>Al igual que en una sentencia <code>SELECT</code>, en una base de datos SQL, podemos
+especificar qué determinados campos queremos obtener tras seleccionar los
+documentos, en MongoDB también podemos hacerlo.</p>
+
+<p>Hasta ahora hemos estado utilizando <code>find()</code> como una sentencia SQL <code>SELECT *</code>,
+es decir:</p>
+
+<pre><code>&gt; db.users.find()
+</code></pre>
+
+<p>es equivalente a</p>
+
+<pre><code>&gt; SELECT * FROM users;
+</code></pre>
+
+<p>Pero ¿y si lo que queremos es solamente recuperar los campos <em>username</em> y
+<em>age</em>? En una sentencia SQL sería de la siguiente forma:</p>
+
+<pre><code>&gt; SELECT username, age, city FROM users;
+</code></pre>
+
+<p>En cambio, en MongoDB sería de la siguiente forma:</p>
+
+<pre><code>&gt; db.users.find({}, {username:1, age:1})
+{ &quot;_id&quot; : ObjectId(&quot;5131f87b350e650534c68d8e&quot;), &quot;username&quot; : &quot;mviera&quot;, &quot;age&quot; : 26 }
+{ &quot;_id&quot; : ObjectId(&quot;5131fdc8350e650534c68d8f&quot;), &quot;username&quot; : &quot;laverdaque&quot;, &quot;age&quot; : 40 }
+{ &quot;_id&quot; : ObjectId(&quot;5131fe00350e650534c68d90&quot;), &quot;username&quot; : &quot;rmartin&quot;, &quot;age&quot; : 39 }
+{ &quot;_id&quot; : ObjectId(&quot;5131fe20350e650534c68d91&quot;), &quot;username&quot; : &quot;lolo&quot;, &quot;age&quot; : 25 }
+{ &quot;_id&quot; : ObjectId(&quot;5131fe80350e650534c68d92&quot;), &quot;username&quot; : &quot;selu&quot;, &quot;age&quot; : 27 }
+</code></pre>
+
+<p>Sin embargo, como podéis observar, aunque no hemos especificado el campo <code>_id</code>
+sigue apareciendo en la salida. Como ya comenté en el anterior post, MongoDB
+siempre muestra el campo <code>_id</code> a menos que especifiquemos explicitamente que no
+queramos que lo haga. Y sería de la siguiente forma:</p>
+
+<pre><code>&gt; db.users.find( {}, { username:1, age:1, _id:0 })
+{ &quot;username&quot; : &quot;mviera&quot;, &quot;age&quot; : 26 }
+{ &quot;username&quot; : &quot;laverdaque&quot;, &quot;age&quot; : 40 }
+{ &quot;username&quot; : &quot;rmartin&quot;, &quot;age&quot; : 39 }
+{ &quot;username&quot; : &quot;lolo&quot;, &quot;age&quot; : 25 }
+{ &quot;username&quot; : &quot;selu&quot;, &quot;age&quot; : 27 }
+</code></pre>
+
+<p>En resumen, si analizamos la sintaxis del método <code>find()</code>, primero se
+especifica un documento JSON con las cláusulas del filtro que queremos aplicar
+y a continuación, si lo preferimos, podemos activar o desactivar cierto campos
+de la salida:</p>
+
+<ul>
+<li><strong>1</strong> : indica que queremos que muestre el campo especificado.</li>
+<li><strong>0</strong> : indica que no queremos que dicho campo se muestre en la salida.</li>
+</ul>
+
+<h1 id="toc_4">Actualizando datos de los documentos</h1>
+
+<p>Una vez que somos capaces de introducir documentos en nuestra colección,
+recuperarlos todos o aquellos que nos interesan utilizando una <em>query</em> es hora
+de conocer cómo podemos actualizar los datos de nuestros documentos.</p>
+
+<p>Para ello utilizaremos el método <code>update()</code> cuya sintaxis es la siguiente:</p>
+
+<pre><code>&gt; db.collection.update( &lt;query&gt;, &lt;update&gt;, options )
+&gt;
+</code></pre>
+
+<ul>
+<li>El parámetro <code>&lt;query&gt;</code> hace referencia a una query como las que usabamos con el comando <code>find()</code>, la cual nos permitirá seleccionar aquellos documentos los cuales queremos modificar. De otra forma, si no se especifica una query se estarían seleccionando todos los documentos de una colección.</li>
+<li>El parámetro <code>&lt;update&gt;</code> en el que podemos especificar un documento completo, que actualizará cada uno de los campos del documento seleccionado; o también podemos especificar solamente el campo del documento que queremos especificar, lo cual es más eficiente comparado con actualizar todos los campos del documento.</li>
+<li>Y con respecto a las opciones podemos citar:</li>
+<li><code>upsert</code>: si se establece este parámetro a <strong>true</strong> y no hay documento que coincida con la <code>&lt;query&gt;</code> especificada, el método <code>update()</code> insertará un nuevo documento en la colección con los valores especificados en el parámetro <code>&lt;update&gt;</code>.</li>
+<li><code>multi</code> : por defecto MongoDB solo actualiza un documento al mismo tiempo, si necesitamos actualizar más de un documento al mismo tiempo debemos establecer este parámetro a <strong>true</strong>.</li>
+</ul>
+
+<h2 id="toc_5">Actualizar un documento completo</h2>
+
+<p>Esta no es la forma más eficiente de actualizar el contenido de un documento,
+como comenté anteriormente, pues es necesario que se especifique el contenido
+completo del documento, y en caso de ser un documento muy grande puede llegar a
+ser bastante ineficiente, ya que tendra que actualizarse el valor de cada campo
+aunque no hay cambiado.</p>
+
+<p>Imaginemos que queremos modificar un documento para cambiar solamente el valor
+del campo <strong>age</strong> (edad). Tendríamos que realizar lo siguiente:</p>
+
+<pre><code>&gt; db.users.update({ username: &quot;rmartin&quot; }, { &quot;firstName&quot; : &quot;Raul&quot;, &quot;lastName&quot; : &quot;Martin&quot;, &quot;username&quot; : &quot;rmartin&quot;, &quot;age&quot; : 40, &quot;city&quot; : &quot;Malaga&quot; } })
+</code></pre>
+
+<p>Con esta instrucción hemos cambiado el valor del campo <strong>age</strong> de 39 a 40, incluyendo los demás campos que serán actualizados con los mismos datos.</p>
+
+<p>También es posible hacerlo de la siguiente forma para nuestra comodidad:</p>
+
+<pre><code>&gt; user = db.users.findOne({ username:&quot;rmartin&quot; })
+{
+        &quot;_id&quot; : ObjectId(&quot;5131fe00350e650534c68d90&quot;),
+        &quot;firstName&quot; : &quot;Raul&quot;,
+        &quot;lastName&quot; : &quot;Martin&quot;,
+        &quot;username&quot; : &quot;rmartin&quot;,
+        &quot;age&quot; : 39,
+        &quot;city&quot; : &quot;Malaga&quot;
+}
+&gt; user.age 
+39
+&gt; 
+&gt; user.age = 40
+40
+&gt; 
+&gt; db.users.update({ username:&quot;rmartin&quot; }, user )
+</code></pre>
+
+<ol>
+<li>Recupero el documento completo referente al usuario cuyo <em>username</em> es <em>rmartin</em> y lo almaceno en la variable <code>user</code>.</li>
+<li>Compruebo el valor actual del campo <em>age</em> accediendo al objeto <code>user</code> haciendo uso del <em>dot notation</em> (notación por punto: user.campo)</li>
+<li>Modifico el valor del campo <em>age</em> estableciéndolo a 40.</li>
+<li>Utilizo el método <code>update()</code> seleccionando de nuevo el mismo objeto que al principio (usando la misma query) e indico el nuevo documento a continuación, en este caso, almacenado en la variable <code>user</code>.</li>
+</ol>
+
+<h2 id="toc_6">Actualizando un campo concreto de un documento</h2>
+
+<p>Sin embargo, existe una alternativa mucho más eficiente para actualizar el
+valor de ciertos campos en un documento. Para ello será necesario volver a
+hacer uso de los operadores como los anteriormente citados. Algunos de estos
+son:</p>
+
+<ul>
+<li><p><code>$set</code>: que permite establecer un nuevo valor a un campo del documento. Si el campo no existe actualmente en el documento, será creado automáticamente. Por ejemplo:</p>
+
+<pre><code>&gt; db.users.update({ age: 26, city: &quot;Sevilla&quot; }, { $set: { weight: 68.9 } })
+</code></pre></li>
+</ul>
+
+<p>En este caso se ha seleccionado un usuario cuya edad sea 26 y su ciudad
+Sevilla, y se ha añadido el campo <strong>weight</strong>.</p>
+
+<ul>
+<li><p><code>$addToSet</code>: para añadir elementos un array. Por ejemplo, si quisieramos añadir un nuevo campo llamado <em>likes</em> con los gustos de un usuario:</p>
+
+<pre><code>&gt; db.users.update({ username:&quot;mviera&quot; }, {$addToSet: { likes: &quot;photography&quot; }})
+&gt; db.users.update({ username:&quot;mviera&quot; }, {$addToSet: { likes: &quot;music&quot; }})
+&gt;
+&gt; db.users.findOne({ username: &quot;mviera&quot; })
+{
+    &quot;_id&quot; : ObjectId(&quot;5131f87b350e650534c68d8e&quot;),
+    &quot;age&quot; : 26,
+    &quot;city&quot; : &quot;Sevilla&quot;,
+    &quot;firstName&quot; : &quot;Manuel&quot;,
+    &quot;lastName&quot; : &quot;Viera&quot;,
+    &quot;likes&quot; : [
+            &quot;photography&quot;,
+            &quot;music&quot;
+    ],
+    &quot;username&quot; : &quot;mviera&quot;,
+    &quot;weight&quot; : 68.9
+}
+&gt;
+</code></pre></li>
+
+<li><p><code>$inc</code>: permite incrementar el valor numérico de uno de los campos del documento. Por ejemplo, si quisieramos incrementar en 5 la edad del usuario <em>mviera</em>:</p>
+
+<pre><code>&gt; db.users.update({ username:&quot;mviera&quot; }, {$inc: {age: 5}})
+&gt; db.users.find({ username: &quot;mviera&quot; }, {username: 1, age: 1, _id:0})
+</code></pre>
+
+<p>{ &ldquo;age&rdquo; : 31, &ldquo;username&rdquo; : &ldquo;mviera&rdquo; }</p></li>
+</ul>
+
+<p>Para más información acerca de los operadores utilzados en el método <code>update()</code>
+podéis consultar
+<a href="http://docs.mongodb.org/manual/applications/update/#update-operators">http://docs.mongodb.org/manual/applications/update/#update-operators</a></p>
+
+<h2 id="toc_7">Eliminando documentos</h2>
+
+<p>Para eliminar documentos de nuestra colección utilizaremos el método <code>remove()</code>
+en la shell de MongoDB. Si ya sabes cómo utilizar el método <code>find()</code> no
+supondrá ningún problema porque solamente requiere que se le especifique el
+filtro o búsqueda de los documentos que se quieren eliminar. Su sintaxis es la
+siguiente:</p>
+
+<pre><code>db.collection.remove( &lt;query&gt;, &lt;justOne&gt; )
+</code></pre>
+
+<p>De forma que si queremos eliminar de la colección todos los usuarios cuya edad
+sea mayor a 30 utilizaríamos la siguiente instrucción:</p>
+
+<pre><code>&gt; db.users.remove({ age: { $gt: 30 } })
+</code></pre>
+
+<p>El parámetro <code>justOne</code> permite indicar al método <code>remove()</code> si queremos
+eliminar solamente un documento de todos los coincidentes. En ese caso, se debe
+pasar el valor <em>true</em> o <em>1</em>, de la siguiente forma:</p>
+
+<pre><code>&gt; db.users.remove({ age: { $gt: 30 } }, true )
+</code></pre>
+
+<p>Es posible utilizar el método <code>remove()</code> para eliminar todos los documentos de
+una colección si no se especifica una query o si ésta está vacía, es decir,
+<code>db.users.remove({})</code>. Pero en este caso, si queremos eliminar todos los
+documentos de una colección, es recomendable utilizar el método <code>drop()</code>, que
+<strong>elimina la colección completa</strong>:</p>
+
+<pre><code>&gt; db.users.drop()
+</code></pre>
+
+<p>¡Y eso es todo! Espero que os haya sido útil y por lo menos hayáis aprendido
+algo nuevo. Intentaré seguir escribiendo sobre MongoDB, ahora que ya conocemos
+lo básico, lo mejor está por llegar: ReplicaSets, Indexes, Shardings, etc.</p>
+
+<p>¡No olvidéis comentar vuestras impresiones y correcciones!</p>
+
+<p>Un saludo, Manu.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Empezando con MongoDB Part.II [12 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/empezando-con-mongodb-part-ii/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+

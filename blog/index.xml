@@ -1,0 +1,3546 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Blogs on Manuel Viera </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://blog.manuelviera.es/blog/index.xml/</link>
+    <language>es-es</language>
+    
+    
+    <updated>Sat, 28 Dec 2013 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Migrando de Wordpress a Ghost</title>
+      <link>http://blog.manuelviera.es/blog/migrando-de-wordpress-a-ghost/</link>
+      <pubDate>Sat, 28 Dec 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/migrando-de-wordpress-a-ghost/</guid>
+      <description>
+
+&lt;p&gt;¡Hola!&lt;/p&gt;
+
+&lt;p&gt;Hace ya bastante tiempo que no pasaba por aquí para escribir y compartir con el
+resto del mundo, pero he estado bastante liado (la excusa de siempre) y además
+decidí hace ya algún tiempo migrar mi blog de Wordpress a Ghost, que es de lo
+que vengo escribiendo hoy.&lt;/p&gt;
+
+&lt;p&gt;Pero, como siempre, empecemos por el principio&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es Ghost?&lt;/h2&gt;
+
+&lt;p&gt;Ghost es una plataforma de blogging de reciente aparición y que está teniendo
+bastante repercusión en Internet. El proyecto empezó en
+&lt;a href=&#34;http://www.kickstarter.com/projects/johnonolan/ghost-just-a-blogging-platform&#34;&gt;Kickstarter&lt;/a&gt;
+donde se pedía financiación para poder llevar a cabo la creación de una
+plataforma Open Source para blogging, que ofreciese una experiencia placentera
+a la hora de escribir y que tuviera como objetivo eso, ser una plataforma bien
+diseñada para hacer una sola cosa: publicar.&lt;/p&gt;
+
+&lt;p&gt;Su creador es &lt;a href=&#34;http://john.onolan.org&#34;&gt;John O&amp;rsquo;Nolan&lt;/a&gt; y es una aplicación
+&lt;a href=&#34;http://nodejs.org/&#34;&gt;Node.js&lt;/a&gt; que hace uso del framework
+&lt;a href=&#34;http://expressjs.com/&#34;&gt;Express&lt;/a&gt;. Ghost usa &lt;a href=&#34;http://www.sqlite.org/&#34;&gt;SQLite&lt;/a&gt;
+como base de datos por defecto, lo cual indica que puede ejecutarse casi en
+cualquier sitio, sin embargo, usa &lt;a href=&#34;http://jugglingdb.co/&#34;&gt;JugglingDB&lt;/a&gt; como ORM,
+que añade el soporte para el uso de otras bases de datos.&lt;/p&gt;
+
+&lt;p&gt;Además Ghost está disponible desde &lt;a href=&#34;https://npmjs.org/&#34;&gt;NPM&lt;/a&gt;, haciendo su
+instalación extremadamente simple y rápida en la mayoría de entornos.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;¿Por qué he migrado de Wordpress a Ghost?&lt;/h2&gt;
+
+&lt;p&gt;A decir verdad Wordpress cumplía sobradamente mis necesidades como blogger
+ocasional, precisamente por eso, , porque Wordpress ya me empezaba a quedar
+grande en cuanto a consumo de recursos para un blog pequeño como es el mío.
+Realmente no usaba muchos plugins, que normalmente añaden carga y consumo de
+recursos, sino solamente algunos que necesitaba como:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Akismet &lt;a href=&#34;http://akismet.com/&#34;&gt;http://akismet.com/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Custom About Author: &lt;a href=&#34;http://littlehandytips.com/plugins/custom-about-author/&#34;&gt;http://littlehandytips.com/plugins/custom-about-author/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Google Analytics for Wordpress: &lt;a href=&#34;http://yoast.com/wordpress/google-analytics/&#34;&gt;http://yoast.com/wordpress/google-analytics/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Jetpack by Wordpress: &lt;a href=&#34;http://wordpress.org/plugins/jetpack/&#34;&gt;http://wordpress.org/plugins/jetpack/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;WP-Markdown&lt;/li&gt;
+&lt;li&gt;WP-Cache&lt;/li&gt;
+&lt;li&gt;WP-to-twitter: &lt;a href=&#34;http://www.joedolson.com/articles/wp-to-twitter/&#34;&gt;http://www.joedolson.com/articles/wp-to-twitter/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Todo esto ya lo tengo de serie en Ghost, excepto Jetpack que es propio de
+Wordpress, pero que realmente solo servía para optimizar tu Wordpress, mejorar
+el sharing de los posts, y más funcionalidades que van agregando poco a poco al
+plugin con cada actualización.&lt;/p&gt;
+
+&lt;p&gt;Además he de decir que estaba un poco harto ya de Wordpress y que, en mi
+opinión se ha convertido en &amp;ldquo;un monstruo&amp;rdquo; que está muy lejos de parecer para lo
+que se pensó en un principio. Ha pasado de ser una plataforma de blogging a ser
+un Framework PHP para crear sitios web, y que además puedes bloguear. Todo esto
+sin ánimo de ofender a nadie :-)&lt;/p&gt;
+
+&lt;p&gt;Tras probar la primera versión de Ghost en mi portatil, quedé bastante
+impresionado con la simplicidad de su instalación y uso, es algo que llevaba ya
+esperando y buscando mucho tiempo. De hecho, el verano pasado estuve barajando
+la posibilidad de usar &lt;a href=&#34;http://blog.getpelican.com/&#34;&gt;Pelican&lt;/a&gt; (con el que
+llegué a contactar con el creador y contribuir con él),
+&lt;a href=&#34;http://hyde.github.io/&#34;&gt;Hyde&lt;/a&gt; o &lt;a href=&#34;https://github.com/cloudhead/toto&#34;&gt;Toto&lt;/a&gt;, que
+son generadores de sitios estáticos, es decir, tienes tus posts escritos en
+Markdown y generas un blog o website estático a partir de ellos.&lt;/p&gt;
+
+&lt;p&gt;Pero al fin me encontré con Ghost y quedé gratamente impresionado, desde el
+cual estoy ya escribiendo este post. He de decir también que el proyecto es aún
+muy reciente y algunas cosas como plugins están aún por llegar; pero en cuanto
+a themes ya se pueden encontrar algunos gratuitos y de pago en el
+&lt;a href=&#34;http://marketplace.ghost.org/&#34;&gt;Marketplace&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;¿Lo instalamos?&lt;/h2&gt;
+
+&lt;p&gt;Este blog está instalado y funcionando sobre una Debian 7 (Wheezy) en la cual
+el requisito fundamental de Ghost, que es Node.js, no se encuentra en los
+repositorios; por lo que he tenido que realizar una instalación alternativa.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Node.js&lt;/h3&gt;
+
+&lt;p&gt;Hay varias formas de instalar Node.js. Podemos descargar el código, compilar e
+instalar; el mismo proceso de siempre. Pero en este caso, me ha parecido mejor
+crear un paquete Debian (.deb), que a la larga es más fácil de desinstalar y/o
+actualizar.&lt;/p&gt;
+
+&lt;p&gt;Para ello, primero instalaremos algunas dependencias necesarias en el sistema:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo apt-get install python g++ make checkinstall
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A continuación, descargamos el código fuente de Node.js, descomprimimos el
+paquete y accedemos al directorio:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir ~/node_js_src &amp;amp;&amp;amp; cd $_
+wget -N http://nodejs.org/dist/node-latest.tar.gz
+tar xzvf node-latest.tar.gz &amp;amp;&amp;amp; cd node-v*
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Configuramos la compilación del paquete:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;./configure
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero esta vez no ejecutaremos &lt;code&gt;make &amp;amp;&amp;amp; make install&lt;/code&gt;, sino que utilizaremos la
+utilidad &lt;code&gt;checkinstall&lt;/code&gt; con la que podremos modificar los metadatos del
+paquete:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;checkinstall
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; Es necesario eliminar la &lt;strong&gt;v&lt;/strong&gt; que aparece en la versión de Node.js
+(v0.10.24) y dejar solo los valores numéricos (0.10.24). En caso contrario, la
+compilación fallará.&lt;/p&gt;
+
+&lt;p&gt;Por último, y una vez generado el paquete .deb, lo instalamos:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo dpkg -i node_*
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;Ghost&lt;/h3&gt;
+
+&lt;p&gt;Lo primero es descargar el código fuente de Ghost, en este caso sera la versión
+&lt;strong&gt;latest&lt;/strong&gt; que corresponde a la &lt;em&gt;v0.3.3&lt;/em&gt;, en el momento de escribir este post:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl -L https://ghost.org/zip/ghost-latest.zip -o ghost.zip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Descomprimimos el zip descargado y accedemos al directorio:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ unzip -uo ghost.zip -d ghost
+$ cd /path/to/ghost
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A continuación, para instalar Ghost y todas sus dependencias, será necesario
+ejecutar el siguiente comando:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ npm install --production
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y una vez finalizada la instalación, podemos iniciar Ghost en modo desarrollo
+con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ npm start
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;También podemos iniciarlo en modo producción con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ npm start --production
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ghost estará ejecutándose en &lt;a href=&#34;http://127.0.0.1:2368&#34;&gt;http://127.0.0.1:2368&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt;: podemos ejecutar Ghost con diferentes configuraciones, dependiendo
+si estamos en modo desarrollo o producción, para ello es recomendable ajustar
+esta configuración en el fichero &lt;code&gt;config.js&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Para acceder a la administración de Ghost, es necesario acceder a
+&lt;a href=&#34;http://127.0.0.1:2368/ghost&#34;&gt;http://127.0.0.1:2368/ghost&lt;/a&gt; y crear el usuario administrador para poder hacer
+login.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_5&#34;&gt;Nginx&lt;/h3&gt;
+
+&lt;p&gt;Este paso no es necesario si lo que quieres es probar Ghost en tu portatil /
+pc. Pero sí que es recomendable si vas a pasar tu blog con Ghost a producción,
+que era mi caso. Es decir, tendremos como servidor web a Nginx escuchando en el
+puerto 80, que nos ayudará a gestionar mejor las peticiones de los usuarios,
+cacheo y compresión de los datos, etc.&lt;/p&gt;
+
+&lt;p&gt;Para ello, obviamente necesitamos tener instalado Nginx en nuestro servidor.
+Tan simple como ejecutar la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo apt-get install nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En mi caso, edité el fichero de configuración &lt;code&gt;/etc/nginx/nginx.conf&lt;/code&gt; y dejé la
+configuración de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;user www-data;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 768;
+}
+
+http {
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    server_names_hash_bucket_size 64;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    gzip on;
+    gzip_disable &amp;quot;msie6&amp;quot;;
+
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Hecho esto, forzamos a Nginx para que recargue la configuración:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo service nginx configtest
+$ sudo service nginx reload
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ya solo necesitamos configurar un VirtualHost en Nginx para servir el blog a
+través del puerto 80. En mi caso, la configuración que he utilizado ha sido la
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen 80;
+    server_name blog.example.org;
+    root /path/to/blog.example.org/;
+    index index.php;
+
+    if ($http_host != &amp;quot;blog.example.org&amp;quot;) {
+        rewrite ^ http://blog.example.org$request_uri permanent;
+    }
+
+    location / {
+        proxy_set_header X-Real-IP  $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Host $host;
+        proxy_pass http://127.0.0.1:2368;
+    }
+
+    location ~* \.(?:ico|css|js|gif|jpe?g|png|ttf|woff)$ {
+        access_log off;
+        expires 30d;
+        add_header Pragma public;
+        add_header Cache-Control &amp;quot;public, mustrevalidate, proxy-revalidate&amp;quot;;
+        proxy_pass http://127.0.0.1:2368;
+    }
+
+    location = /robots.txt { access_log off; log_not_found off; }
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por último, activamos el VirtualHost y recargamos la configuración de Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ cd /etc/nginx/sites-enabled
+$ sudo ln -s ../sites-available/blog.example.org
+$ sudo service nginx configtest
+$ sudo service nginx reload
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;¿Migramos?&lt;/h2&gt;
+
+&lt;p&gt;La migración de Wordpress a Ghost lógicamente comprende más pasos que los
+listados anteriormente, que abarcan solamente el setup de Ghost inicialmente.
+Estos pasos y/o problemas durante la migración son realmente el objetivo de
+este post, así que aparecerán listados a continuación con la respectiva
+solución que he decidido aplicar para cada uno de ellos.&lt;/p&gt;
+
+&lt;p&gt;He de decir que en mi caso, la migración ha supuesto pasos adicionales y la
+resolución de algunos problemas que me he ido encontrando&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_7&#34;&gt;#1 Extraer los datos de Wordpress&lt;/h3&gt;
+
+&lt;p&gt;Bueno, una vez que tenemos Ghost funcionando, el siguiente paso para realizar
+la migración desde Wordpress es extraer todos los posts para importarlos,
+posteriormente, en Ghost. Para solucionar esto, seguí los siguientes pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Instalar en Wordpress un plugin llamado &lt;strong&gt;Ghost&lt;/strong&gt;, que permite exportar tu blog para luego importarlo en una instalación de Ghost. Instalar este plugin es muy sencillo, desde el &lt;em&gt;panel de administración de Wordpress &amp;gt; Plugins &amp;gt; Add new&lt;/em&gt;, buscarlo e instalarlo.&lt;/li&gt;
+&lt;li&gt;Una vez instalado el plugin y desde &lt;em&gt;Dashboard de Wordpress &amp;gt; Tools &amp;gt; Export to Ghost&lt;/em&gt;. Haciendo click en &lt;strong&gt;download ghost file&lt;/strong&gt; obtendremos un fichero JSON con todos los posts de nuestro blog.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;toc_8&#34;&gt;#2 Importar posts en Ghost&lt;/h3&gt;
+
+&lt;p&gt;Una vez tenemos todos nuestros posts en un fichero JSON, el siguiente paso
+lógico es importar esos datos en nuestra instalación Ghost. En este caso, los
+pasos a seguir son los siguientes:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Acceder a la sección debug de Ghost en &lt;a href=&#34;http://blog.example.org/ghost/debug&#34;&gt;http://blog.example.org/ghost/debug&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Click en &lt;em&gt;Choose File&lt;/em&gt; y seleccionar el fichero JSON descargado desde el plugin de Ghost en Wordpress.&lt;/li&gt;
+&lt;li&gt;Click en &lt;em&gt;Import&lt;/em&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Si todo ha ido bien, todos los posts deberían estar visibles en Ghost.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_9&#34;&gt;#3 Exportar los comentarios&lt;/h3&gt;
+
+&lt;p&gt;En mi caso he tenido que exportar los comentarios que había en mis posts, ya
+que estaba usando hasta ahora el sistema de comentarios propio de Wordpress.&lt;/p&gt;
+
+&lt;p&gt;Ghost no tiene un sistema de comentarios propio, así que se recomienda usar un
+servicio externo como &lt;a href=&#34;http://disqus.com&#34;&gt;Disqus&lt;/a&gt;. Disqus funciona muy bien y
+se puede decir que es el servicio para alojar comentarios en websites / blogs
+por excelencia, así que decidí migrar todos los comentarios a Disqus.&lt;/p&gt;
+
+&lt;p&gt;Hay varias formas de hacerlo, pero yo solo voy a describir la que yo usé, que
+es la exportación automática:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Registrar un usuario en Disqus.&lt;/li&gt;
+&lt;li&gt;Crear un sitio nuevo en Disqus y configurar un nombre para este sitio.&lt;/li&gt;
+&lt;li&gt;En Wordpress, instalar el plugin &lt;strong&gt;Disqus Comment System&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Acceder a la configuración del plugin y configurar el nombre del sitio creado en Disqus.&lt;/li&gt;
+&lt;li&gt;En la configuración del plugin, click en &lt;strong&gt;Export comments to Disqus&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; La exportación a Disqus no se inicia de forma instantanea, por lo que
+puede extenderse a varias horas.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_10&#34;&gt;#4 Redirecciones permanentes en URLs&lt;/h3&gt;
+
+&lt;p&gt;En mi blog en Wordpress tenía configuradas las URLs de los posts con la siguiente estructura:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/YYYY/MM/nombre-del-post
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por lo que se construían URLs como las siguientes:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://blog.manuelviera.es/2011/01/configurando-los-clientes-sip/
+http://blog.manuelviera.es/2011/01/contribucion-a-trac-2/
+http://blog.manuelviera.es/2011/01/crontab/
+http://blog.manuelviera.es/2011/01/diagrama-y-componentes-de-red-con-asterisk/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ghost no permite (aún) configurar URLs limpias de esta forma, sino que
+construye la URL incluyendo solamente el nombre del post. Para que Google no me
+penalice y los visitantes puedan seguir accediendo al blog desde las URLs ya
+indexadas en los buscadores, he tenido que añadir &lt;code&gt;rewrites&lt;/code&gt; en el VirtualHost
+de Nginx. Algunos ejemplos de redirecciones permanentes son:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rewrite ^/2011/01/configurando-los-clientes-sip/ http://blog.manuelviera.es/configurando-los-clientes-sip/ permanent;
+rewrite ^/2011/01/contribucion-a-trac-2/ http://blog.manuelviera.es/contribucion-a-trac-2/ permanent;
+rewrite ^/2011/01/crontab/ http://blog.manuelviera.es/crontab/ permanent;
+rewrite ^/2011/01/diagrama-y-componentes-de-red-con-asterisk/ http://blog.manuelviera.es/diagrama-y-componentes-de-red-con-asterisk/ permanent;
+rewrite ^/2011/01/ficheros-de-configuracion-y-directorios-en-asterisk/ http://blog.manuelviera.es/ficheros-de-configuracion-y-directorios-en-asterisk/ permanent;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_11&#34;&gt;#5 Remapear URLs en los comentarios de Disqus&lt;/h3&gt;
+
+&lt;p&gt;Una vez exportados todos los comentarios a Disqus me di cuenta que había un
+problema, y es que, lógicamente, Disqus almacena la URL donde se creó el
+comentario.&lt;/p&gt;
+
+&lt;p&gt;Esto supone un problema y es que, aunque las redirecciones estén hechas y los
+comentarios exportados, si la URL que tiene Disqus almacenada para un
+comentario, no concuerda con la URL del post que se está visualizando, el
+comentario no se ve al final de ese post.&lt;/p&gt;
+
+&lt;p&gt;Para solucionar esto tuve que remapear todas las URLs, que Disqus tenía
+almacenadas, por las nuevas. Para ello hay que seguir los siguienes pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Acceder al panel de administración de Disqus.&lt;/li&gt;
+&lt;li&gt;Click en pestaña &lt;em&gt;Discussions &amp;gt; Tools &amp;gt; Upload a URL map&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;Componer un fichero CSV que contenga un listado de todas las URLs antiguas y nuevas, separadas por comas entre sí (URL antigua,URL nueva).&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;toc_12&#34;&gt;#6 Arreglar imágenes en los posts&lt;/h3&gt;
+
+&lt;p&gt;En mi caso he tenido problemas con las imágenes ya que la exportación de los
+artículos no contemplaba la exportación de esta imágenes. Se recomienda hacer
+uso de un servicio externo de almacenamiento de imágenes pero en mi caso he
+querido alojar las imágenes en mi propio servidor, bajo un dominio diferente
+(static.blog.manuelviera.es).&lt;/p&gt;
+
+&lt;p&gt;Para arreglar este problema seguí los siguientes pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Crear un directorio nuevo dentro del código de Ghost.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir /path/to/ghost/content/static/
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Crear un nuevo VirtualHost en Nginx con el siguiente contenido:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen 80;
+    server_name static.blog.example.org;
+    root /path/to/blog.example.org/content/static/;
+    index index.php;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Mover todas las imágenes especificadas a dicha ruta en el servidor.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Modificar la URL a la que apunta cada imagen en cada post hacia la nueva ubicación.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;¡Al fin! Pues esta ha sido mi experiencia migrando mi blog personal desde
+Wordpress a Ghost, espero no haberme dejado nada, pero si detectáis que algo no
+funciona como debe, por favor, reportádmelo! :-)&lt;/p&gt;
+
+&lt;p&gt;Espero que os sea de ayuda, ¡no os olvidéis de comentar! Para cualquier duda
+estoy a vuestra disposición :-D&lt;/p&gt;
+
+&lt;p&gt;Un saludo y ¡felices fiestas!
+Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Instalar Solr en Jetty</title>
+      <link>http://blog.manuelviera.es/blog/instalar-solr-en-jetty/</link>
+      <pubDate>Mon, 29 Apr 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/instalar-solr-en-jetty/</guid>
+      <description>
+
+&lt;p&gt;Hace ya más de un mes que no pasaba por aquí más que para ver las estadísticas
+del blog; así que ya es hora de que me siente a escribir algo y compartir con
+el resto de internet.&lt;/p&gt;
+
+&lt;p&gt;Hoy vengo hablando, o escribiendo, sobre cómo instalar / montar una instancia
+de Solr sobre Jetty, porque esta semana pasada me surgió la necesidad de montar
+una instancia y hemos tenido que pelear un poco para hacerlo, así que he
+decidido crear una receta muy simple para tenerlo funcionando rápidamente y
+siguiendo unos pasos muy sencillos. Pero empecemos por el principio&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es Solr?&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://lucene.apache.org/solr/&#34;&gt;Solr&lt;/a&gt; es la plataforma de búsqueda de código
+abierto del proyecto Apache Lucene. Es una plataforma de búsqueda muy popular y
+rápida; está escrita en Java y se ejecuta de forma independiente dentro de un
+servidor de aplicaciones como pueder ser &lt;a href=&#34;http://tomcat.apache.org/&#34;&gt;Tomcat&lt;/a&gt; o
+&lt;a href=&#34;http://www.eclipse.org/jetty/&#34;&gt;Jetty&lt;/a&gt;. Podéis encontrar mucha más información
+de Sorl en su &lt;a href=&#34;http://lucene.apache.org/solr/&#34;&gt;página oficial&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Preparativos&lt;/h2&gt;
+
+&lt;p&gt;Antes de empezar con la instalación de Solr necesitamos tener instalados varios
+paquetes en nuestro sistema. En mi caso, y a la hora de escribir este post,
+estoy utilizando una distribución Ubuntu; y muchos pensaréis que es tan fácil
+como hacer un &lt;code&gt;apt-get install solr-jetty solr-common&lt;/code&gt; pero mi necesidad surgió
+en una distribución Debian Squeeze, y no contaba con Solr en mi sistema de
+paquetería. De todas formas, este post tiene como fin poder instalar un Solr
+sin necesidad de utilizar el sistema de paquetería de nuestra distribución y
+poder utilizar una versión más nueva de Solr que la empaquetada en esta. Así
+que necesitaremos:&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Java&lt;/h3&gt;
+
+&lt;p&gt;Necesitaremos la máquina virtual de Java para poder ejecutar Solr dentro de
+nuestro contenedor de aplicaciones Jetty. Podemos buscar el paquete referente a
+&lt;strong&gt;openjdk&lt;/strong&gt; en nuestra distribución. En mi caso, tengo instalado varios
+paquetes referentes a &lt;strong&gt;openjdk-7&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dpkg -l |grep openjdk |awk &#39;{print $2}&#39;
+openjdk-7-jre:amd64
+openjdk-7-jre-headless:amd64
+openjdk-7-jre-lib
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Para comprobar que tenemos &lt;strong&gt;java&lt;/strong&gt; correctamente instalado y
+conocer la versión que vamos a utilizar podemos ejecutar la siguiente
+instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ java -version
+java version &amp;quot;1.7.0_21&amp;quot;
+Java(TM) SE Runtime Environment (build 1.7.0_21-b11)
+Java HotSpot(TM) 64-Bit Server VM (build 23.21-b01, mixed mode)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Jetty&lt;/h3&gt;
+
+&lt;p&gt;Instalaremos el servidor de aplicaciones Jetty utilizando nuestro sistema de
+paquetería igual que hemos hecho con Java. Así que en distribuciones basadas en
+Debian utilizaremos la siguiente instrucción para su instalación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo apt-get install jetty libjetty-extra
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;Solr&lt;/h3&gt;
+
+&lt;p&gt;Como he comentado antes, en este caso no vamos a instalar Solr desde el sistema
+de paquetería, pues yo no tuve esa posibilidad y mi intención es compartir la
+forma de hacerlo de que exista un paquete en los repositorios, como era mi
+caso.&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_5&#34;&gt;Descargar y descomprimir Solr&lt;/h4&gt;
+
+&lt;p&gt;Descargaremos y descomprimiremos la última versión disponible de Solr en este
+momento, la versión 4.2.1:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ cd /opt
+$ sudo wget http://apache.rediris.es/lucene/solr/4.2.1/solr-4.2.1.tgz
+$ tar xzf solr-4.2.1.tgz &amp;amp;amp;&amp;amp;amp; mv solr-4.2.1 solr
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Crearemos el directorio &lt;code&gt;/usr/share/solr&lt;/code&gt; y descomprimiremos dentro de él el
+contenido de &lt;code&gt;dist/solr-4.2.1.war&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir /usr/share/solr
+$ cd /usr/share/solr
+$ sudo unzip /opt/solr/dist/solr-4.2.1.war
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esta última instrucción descomprime los ficheros web de Solr en el directorio
+&lt;code&gt;/usr/share/solr&lt;/code&gt; teniendo este el siguiente contenido:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ls
+admin.html  css  favicon.ico  img  js  META-INF  mgc  solr.xml  tpl  WEB-INF
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;toc_6&#34;&gt;Añadiendo Solr a Jetty&lt;/h4&gt;
+
+&lt;p&gt;Para instalar Solr como aplicación dentro de Jetty, crearemos un enlace
+simbólico de &lt;code&gt;/usr/share/solr&lt;/code&gt; en &lt;code&gt;/usr/share/jetty/webapps&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo ln -s /usr/share/solr /usr/share/jetty/webbaps/solr
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;NOTA:&lt;/strong&gt; &lt;code&gt;/usr/share/jetty&lt;/code&gt; es el directorio donde se encuentra instalado
+Jetty en nuestra distribución. Puedes consultarlo ejecutando: &lt;code&gt;dpkg -L jetty&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Esto quiere decir que nuestra instancia de Solr va a ser accesible en
+&lt;a href=&#34;http://localhost:8080/solr&#34;&gt;http://localhost:8080/solr&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_7&#34;&gt;Configurando Jetty&lt;/h4&gt;
+
+&lt;p&gt;Editaremos el fichero &lt;code&gt;/etc/default/jetty&lt;/code&gt; a través del cual podremos modificar
+el comportamiento de éste sin necesidad de modificar sus ficheros de
+configuración XML.&lt;/p&gt;
+
+&lt;p&gt;En mi caso he incluido las siguientes lineas:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NO_START=0
+VERBOSE=yes
+JETTY_PORT=8080
+JETTY_HOST=0.0.0.0
+JAVA_OPTIONS=&amp;quot;-Dsolr.solr.home=/usr/share/solr $JAVA_OPTIONS&amp;quot;
+JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;NO_START=0&lt;/strong&gt;: permite que Jetty se ejecute. Si el valor es 1, Jetty no podrá ejecutarse.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;VERBOSE=yes&lt;/strong&gt;: indica a Jetty que queremos que nos muestra mucha más información durante su ejecución. Muy recomendable sobre todo cuando se intenta depurar un error.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;JETTY_PORT=8080&lt;/strong&gt;: puerto en el que escuchará Jetty. En este caso se utiliza el puerto por defecto, pero se puede establecer cualquier otro siempre y cuand o no se encuentra ya en uso en el sistema.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;JETTY_HOST=0.0.0.0&lt;/strong&gt;: indica a Jetty que escuche en todas las interfaces de red y no solo en localhost. Aunque es recomendable que escuche solo en localhost, sobre todo si se encuentra instalada en el mismo servidor donde se encuentra la aplicación.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;JAVA_OPTIONS&lt;/strong&gt;: opciones y parámetros que se pueden pasar a la máquina virtual de Java.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;JAVA_HOME&lt;/strong&gt;: indica el directorio HOME de la máquina virtual de Java. Es posible descubrirlo ejecutando &lt;code&gt;dpkg -L openjdk-7-jre&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;toc_8&#34;&gt;Añadiendo Cores a Solr&lt;/h4&gt;
+
+&lt;p&gt;Es necesario configurar al menos un &lt;strong&gt;Core&lt;/strong&gt; en Solr para que podamos hacer uso
+de él, así que editaremos el fichero &lt;code&gt;/usr/share/solr/solr.xml&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo vim /usr/share/solr/solr.xml
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y añadiremos algo como lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;solr persistent=&amp;quot;true&amp;quot;&amp;gt;
+    &amp;lt;cores adminPath=&amp;quot;/admin/cores&amp;quot;&amp;gt;
+    &amp;lt;core name=&amp;quot;mysitename&amp;quot; instanceDir=&amp;quot;mysitename&amp;quot; dataDir=&amp;quot;/var/lib/solr/mysitename/data&amp;quot; /&amp;gt;
+    &amp;lt;/cores&amp;gt;
+&amp;lt;/solr&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esto añade un &lt;strong&gt;Core&lt;/strong&gt; llamado &lt;strong&gt;mysitename&lt;/strong&gt;. Ahora crearemos el directorio
+del &lt;strong&gt;Core&lt;/strong&gt; que acabamos de configurar:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir -p /var/lib/solr/mysitename/data
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y establecemos &lt;strong&gt;jetty&lt;/strong&gt; como propietario y grupo a los directorios
+&lt;code&gt;/var/lib/solr&lt;/code&gt; &lt;code&gt;/usr/share/solr&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo chown -R jetty:jetty /var/lib/solr/
+$ sudo chown -R jetty:jetty /usr/share/solr
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;toc_9&#34;&gt;Configurando el Core&lt;/h4&gt;
+
+&lt;p&gt;Tal y como hemos hecho antes, tenemos que crear el directorio que alojará la
+configuración para el Core &lt;strong&gt;mysitename&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir -p /usr/share/solr/mysitename
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y si aún no tenemos una configuración disponible, podemos copiar la
+configuración de ejemplo que viene incluida con Solr y que se encuentra en el
+directorio &lt;code&gt;example&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo cp -r /opt/solr/example/solr/collection1/conf/ /usr/share/solr/mysitename/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;toc_10&#34;&gt;Reiniciar Jetty&lt;/h4&gt;
+
+&lt;p&gt;Por último y para terminar solo nos quedaría reiniciar el servido Jetty:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo service jetty restart
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si todo va bien, Solr debería estar accesible en &lt;a href=&#34;http://localhost:8080/solr&#34;&gt;http://localhost:8080/solr&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Y esto es todo! Espero que os sirva de ayuda, a mi seguro que me va a ser muy
+útil cuando tenga que montar un Solr de nuevo.&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Empezando con MongoDB Part.II</title>
+      <link>http://blog.manuelviera.es/blog/empezando-con-mongodb-part-ii/</link>
+      <pubDate>Sat, 02 Mar 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/empezando-con-mongodb-part-ii/</guid>
+      <description>
+
+&lt;p&gt;En mi &lt;a href=&#34;/blog/empezando-con-mongodb/&#34;&gt;anterior post&lt;/a&gt; hablaba sobre &lt;a href=&#34;/blog/empezando-con-mongodb/&#34;&gt;cómo empezar
+con MongoDB&lt;/a&gt;, una base de datos NoSQL orientada a
+documentos; y como sigo estudiándola y me parece interesante, me gustaría
+seguir compartiendo y profundizando sobre el uso de MongoDB, así que he
+decidido escribir una segunda parte de este anterior post.&lt;/p&gt;
+
+&lt;p&gt;El objetivo de este post es bien sencillo. Cubrirá las operaciones principales
+básicas de MongoDB, también conocidas como operaciones &lt;strong&gt;CRUD&lt;/strong&gt;, que significa
+&lt;strong&gt;C&lt;/strong&gt; reate, &lt;strong&gt;R&lt;/strong&gt; ead, &lt;strong&gt;U&lt;/strong&gt; pdate y &lt;strong&gt;D&lt;/strong&gt; elete. ¡Así que empecemos con ello!&lt;/p&gt;
+
+&lt;p&gt;Antes de nada empezaremos recordando cómo iniciar nuestra base de datos
+utilizando el comando &lt;code&gt;mongod&lt;/code&gt;. Recordad que debemos especificar la ruta donde
+se almacenará la base de datos utilizando el parámetro &lt;code&gt;--dbpath&lt;/code&gt;. Dicho esto,
+podremos ejecutar una instrucción como la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mongod --dbpath test
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En este caso he utilizado un directorio llamado &lt;em&gt;test&lt;/em&gt; donde alojaré esta base
+de datos de pruebas. Apuntar que al no especificar un puerto con el parámetro
+&lt;code&gt;--port&lt;/code&gt;, la instancia de &lt;code&gt;mongod&lt;/code&gt; utilizará el puerto &lt;code&gt;27017&lt;/code&gt; por defecto.&lt;/p&gt;
+
+&lt;p&gt;Esta instrucción tiene un &amp;ldquo;inconveniente&amp;rdquo; y es que no podremos seguir
+utilizando nuestra consola actual, pues la ejecución de &lt;code&gt;mongod&lt;/code&gt; se realiza en
+primer plano, o &lt;em&gt;foreground&lt;/em&gt;. Para evitar esto podemos hacer uso del parámetro
+&lt;code&gt;--fork&lt;/code&gt; que creará un &lt;em&gt;fork&lt;/em&gt; del proceso del servidor permitiendo poder seguir
+utilizando nuestra consola. La opción &lt;code&gt;--fork&lt;/code&gt; requiere que se especifique
+además un fichero de log utilizando el parámetro &lt;code&gt;--logpath&lt;/code&gt; o &lt;code&gt;--syslog&lt;/code&gt;, así
+que la instrucción quedaría de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mongod --dbpath test --logappend --logpath test.log --fork
+forked process: 10017
+all output going to: /home/mviera/Downloads/mongodb/test.log
+child process started successfully, parent exiting
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; Además he utilizado la opción &lt;code&gt;--logappend&lt;/code&gt; para evitar que
+sobrescriba el contenido del fichero de log. En este caso seguirá concatenando
+datos al contenido actual del fichero.&lt;/p&gt;
+
+&lt;p&gt;Una vez funcionando nuestra instancia de &lt;code&gt;mongod&lt;/code&gt;, podemos conectarnos a la
+consola utilizando el comando &lt;code&gt;mongo&lt;/code&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mongo
+MongoDB shell version: 2.2.3
+connecting to: test
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; No es necesario especificar el puerto porque se está utilizando el
+puerto por defecto (&lt;code&gt;27017&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;Todo listo, así que ¡empecemos a crear documentos!&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;Introduciendo contenido&lt;/h2&gt;
+
+&lt;p&gt;Seguro que muchos ya os imagináis cómo se realiza este tipo de operación básica
+en una base de datos SQL como MySQL, PosgreSQL, SQLite, etc; pero en MongoDB se
+realiza de una forma muy diferente, por lo menos referente a cómo se realiza en
+una base de datos SQL.&lt;/p&gt;
+
+&lt;p&gt;Una inserción de datos sencilla en SQL podría ser de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;INSERT INTO users (firstName, lastName, username, age, city)
+VALUES (&#39;Manuel&#39;, &#39;Viera&#39;, &#39;mviera&#39;, 26, &#39;Sevilla&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En MongoDB es completamente diferente. En mi anterior post ya traté rápidamente
+las inserciones y si recordáis, comentaba que MongoDB está orientado a
+documentos y que estos documentos siguen el estilo JSON (JavaScript Object
+Notation).&lt;/p&gt;
+
+&lt;p&gt;Para realizar una inserción en MongoDB utilizaremos el método &lt;code&gt;insert()&lt;/code&gt; al que
+llamaremos pasándole como parámetro el documento a introducir, el cual,
+siguiendo el ejemplo anterior, sería representado en formato JSON de la
+siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;,
+  &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;,
+  &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;,
+  &amp;quot;age&amp;quot; : 26,
+  &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Recordad también que en MongoDB los documentos se almacenan en colecciones (o
+&lt;em&gt;collections&lt;/em&gt; en inglés), así que para seguir con el ejemplo introduciremos
+este documento en una colección llamada &lt;code&gt;users&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.insert({
+ firstName: &amp;quot;Manuel&amp;quot;,
+ lastName: &amp;quot;Viera&amp;quot;,
+ username: &amp;quot;mviera&amp;quot;,
+ age: 26,
+ city: &amp;quot;Sevilla&amp;quot;
+ })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Bien. ¿Qué tenemos hasta ahora? Por defecto cuando nos conectamos a una
+instancia MongoDB sin especificar una base de datos, se utilizará por defecto
+&lt;code&gt;test&lt;/code&gt;. Así que hemos creado un documento dentro de la colección &lt;code&gt;users&lt;/code&gt; en la
+base de datos &lt;code&gt;test&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; A modo de recordatorio, no es necesario crear previamente la
+colección antes de introducir documentos. MongoDB lo hará por nosotros
+automáticamente si la colección no existe.&lt;/p&gt;
+
+&lt;p&gt;¿Pero cómo recuperamos los datos introducidos?&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Recuperando los documentos&lt;/h2&gt;
+
+&lt;p&gt;Para seleccionar, buscar, encontrar documentos dentro de nuestra colección
+utilizaremos uno de los siguientes métodos:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;find()&lt;/code&gt; : que devolverá un cursor con todos los documentos recuperados de la base de datos.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;findOne()&lt;/code&gt; : que devuelve solamente un documento.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;El uso de &lt;code&gt;find()&lt;/code&gt; es muy sencillo, como podéis ver a continuación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find()
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;), &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;, &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;, &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En este caso tanto &lt;code&gt;find()&lt;/code&gt; como &lt;code&gt;findOne()&lt;/code&gt; devolverán resultados idénticos,
+pues ahora mismo sólo contamos con un documento en nuestra colección &lt;code&gt;users&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.findOne()
+{
+        &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;),
+        &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;,
+        &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;,
+        &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;,
+        &amp;quot;age&amp;quot; : 26,
+        &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot;
+}
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si os fijáis en un detalle, &lt;code&gt;findOne()&lt;/code&gt; devuelve el contenido de una forma
+mucho más legible al ojo humano que &lt;code&gt;find()&lt;/code&gt;. Esto también podemos conseguirlo
+con &lt;code&gt;find()&lt;/code&gt; si utilizamos además el método &lt;code&gt;pretty()&lt;/code&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find().pretty()
+{
+        &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;),
+        &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;,
+        &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;,
+        &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;,
+        &amp;quot;age&amp;quot; : 26,
+        &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Al igual que &lt;code&gt;pretty()&lt;/code&gt; también podemos utilizar otros métodos como &lt;code&gt;count()&lt;/code&gt;
+que nos devuelve la cantidad total de documentos devueltos:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find().count()
+1
+&amp;gt;
+
+O directamente sobre la colección `users` para saber el total de documentos de dicha colección:
+
+&amp;gt; db.users.count()
+5
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si introducimos más documentos de prueba, se aprecia que el contador total de
+documentos cambia:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.insert({firstName:&amp;quot;Paco&amp;quot;, lastName:&amp;quot;Laverdaque&amp;quot;, username: &amp;quot;laverdaque&amp;quot;, age: 40, city: &amp;quot;Madrid&amp;quot;})
+&amp;gt; db.users.insert({firstName:&amp;quot;Raul&amp;quot;, lastName:&amp;quot;Martin&amp;quot;, username: &amp;quot;rmartin&amp;quot;, age: 39, city: &amp;quot;Malaga&amp;quot;})
+&amp;gt; db.users.insert({firstName:&amp;quot;Jose&amp;quot;, lastName:&amp;quot;Castillo&amp;quot;, username: &amp;quot;lolo&amp;quot;, age: 25, city: &amp;quot;Cadiz&amp;quot;})
+&amp;gt; db.users.insert({firstName:&amp;quot;Jose Luis&amp;quot;, lastName:&amp;quot;Romero&amp;quot;, username: &amp;quot;selu&amp;quot;, age: 27, city: &amp;quot;Barcelona&amp;quot;})
+&amp;gt; 
+&amp;gt; db.users.count()
+5
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero no siempre vamos a querer recuperar todos los documentos de nuestra colección&amp;hellip;&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;¿Cómo filtrar documentos?&lt;/h3&gt;
+
+&lt;p&gt;Seguro que muchos ya estáis pensando en la cláusula &lt;code&gt;WHERE&lt;/code&gt; de las sentencias
+SQL. Por ejemplo, si quisiéramos recuperar aquellos usuarios cuya ciudad es
+Sevilla, con una sentencia SQL sería:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; SELECT * FROM users WHERE city=&amp;quot;Sevilla&amp;quot;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Sin embargo, en MongoDB es de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find({ city: &amp;quot;Sevilla&amp;quot; })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;De esta forma, pasamos como parámetro un documento JSON con la cláusula a
+cumplir, en este caso que la clave &lt;strong&gt;city&lt;/strong&gt; tenga como valor &lt;em&gt;Sevilla&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;¿Y cómo podemos concatenar cláusulas? Es decir, cómo sería si quisiéramos
+recuperar aquellos usuarios cuya ciudad es Sevilla &lt;strong&gt;y&lt;/strong&gt; además su edad sea 26:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find({ city: &amp;quot;Sevilla&amp;quot;, age: 26 })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como se puede observar, solamente se necesita agregar una segunda clave o campo
+al documento JSON que se le pasa al método &lt;code&gt;find()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; MongoDB aplica por defecto un &lt;strong&gt;AND&lt;/strong&gt; entre cláusulas, es decir,
+imaginaos que la coma (&lt;strong&gt;,&lt;/strong&gt;) es un operador &lt;strong&gt;AND&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Para utilizar un operador &lt;strong&gt;OR&lt;/strong&gt; deberemos usar el operador &lt;code&gt;$or&lt;/code&gt; de MongoDB,
+de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find({ $or: [ {city:&amp;quot;Sevilla&amp;quot;}, {city:&amp;quot;Malaga&amp;quot;} ] })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En este caso hemos recuperado aquellos usuarios cuya ciudad es Sevilla &lt;strong&gt;o&lt;/strong&gt;
+Málaga.&lt;/p&gt;
+
+&lt;p&gt;Podéis aprender más sobre operadores en
+&lt;a href=&#34;http://docs.mongodb.org/manual/reference/operators/&#34;&gt;http://docs.mongodb.org/manual/reference/operators/&lt;/a&gt;.
+Algunos de ellos son:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;$gt&lt;/code&gt;: mayor que (o &lt;em&gt;greater than&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;`$lt: menor que (o &lt;em&gt;lower than&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$gte&lt;/code&gt;: mayor o igual que (o &lt;em&gt;greather or equal than&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$lte&lt;/code&gt;: menor o igual que (o &lt;em&gt;lower or equal than&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$not&lt;/code&gt;: no (negación o &lt;em&gt;not&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$in&lt;/code&gt;: en, para buscar dentro de un array.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$nin&lt;/code&gt;: no en, para buscar algo que no se encuentre en un determinado array (o &lt;em&gt;not in&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$ne&lt;/code&gt;: no es igual a (o &lt;em&gt;not equal to&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Pero, no siempre vamos a querer recuperar todos los campos de un documento,
+quizás solo necesitemos un algunos de ellos&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;¿Cómo seleccionar ciertos campos?&lt;/h2&gt;
+
+&lt;p&gt;Al igual que en una sentencia &lt;code&gt;SELECT&lt;/code&gt;, en una base de datos SQL, podemos
+especificar qué determinados campos queremos obtener tras seleccionar los
+documentos, en MongoDB también podemos hacerlo.&lt;/p&gt;
+
+&lt;p&gt;Hasta ahora hemos estado utilizando &lt;code&gt;find()&lt;/code&gt; como una sentencia SQL &lt;code&gt;SELECT *&lt;/code&gt;,
+es decir:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;es equivalente a&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; SELECT * FROM users;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero ¿y si lo que queremos es solamente recuperar los campos &lt;em&gt;username&lt;/em&gt; y
+&lt;em&gt;age&lt;/em&gt;? En una sentencia SQL sería de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; SELECT username, age, city FROM users;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En cambio, en MongoDB sería de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find({}, {username:1, age:1})
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26 }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fdc8350e650534c68d8f&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;laverdaque&amp;quot;, &amp;quot;age&amp;quot; : 40 }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fe00350e650534c68d90&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;rmartin&amp;quot;, &amp;quot;age&amp;quot; : 39 }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fe20350e650534c68d91&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;lolo&amp;quot;, &amp;quot;age&amp;quot; : 25 }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fe80350e650534c68d92&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;selu&amp;quot;, &amp;quot;age&amp;quot; : 27 }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Sin embargo, como podéis observar, aunque no hemos especificado el campo &lt;code&gt;_id&lt;/code&gt;
+sigue apareciendo en la salida. Como ya comenté en el anterior post, MongoDB
+siempre muestra el campo &lt;code&gt;_id&lt;/code&gt; a menos que especifiquemos explicitamente que no
+queramos que lo haga. Y sería de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find( {}, { username:1, age:1, _id:0 })
+{ &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26 }
+{ &amp;quot;username&amp;quot; : &amp;quot;laverdaque&amp;quot;, &amp;quot;age&amp;quot; : 40 }
+{ &amp;quot;username&amp;quot; : &amp;quot;rmartin&amp;quot;, &amp;quot;age&amp;quot; : 39 }
+{ &amp;quot;username&amp;quot; : &amp;quot;lolo&amp;quot;, &amp;quot;age&amp;quot; : 25 }
+{ &amp;quot;username&amp;quot; : &amp;quot;selu&amp;quot;, &amp;quot;age&amp;quot; : 27 }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;En resumen, si analizamos la sintaxis del método &lt;code&gt;find()&lt;/code&gt;, primero se
+especifica un documento JSON con las cláusulas del filtro que queremos aplicar
+y a continuación, si lo preferimos, podemos activar o desactivar cierto campos
+de la salida:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;1&lt;/strong&gt; : indica que queremos que muestre el campo especificado.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;0&lt;/strong&gt; : indica que no queremos que dicho campo se muestre en la salida.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;toc_4&#34;&gt;Actualizando datos de los documentos&lt;/h1&gt;
+
+&lt;p&gt;Una vez que somos capaces de introducir documentos en nuestra colección,
+recuperarlos todos o aquellos que nos interesan utilizando una &lt;em&gt;query&lt;/em&gt; es hora
+de conocer cómo podemos actualizar los datos de nuestros documentos.&lt;/p&gt;
+
+&lt;p&gt;Para ello utilizaremos el método &lt;code&gt;update()&lt;/code&gt; cuya sintaxis es la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.collection.update( &amp;lt;query&amp;gt;, &amp;lt;update&amp;gt;, options )
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;El parámetro &lt;code&gt;&amp;lt;query&amp;gt;&lt;/code&gt; hace referencia a una query como las que usabamos con el comando &lt;code&gt;find()&lt;/code&gt;, la cual nos permitirá seleccionar aquellos documentos los cuales queremos modificar. De otra forma, si no se especifica una query se estarían seleccionando todos los documentos de una colección.&lt;/li&gt;
+&lt;li&gt;El parámetro &lt;code&gt;&amp;lt;update&amp;gt;&lt;/code&gt; en el que podemos especificar un documento completo, que actualizará cada uno de los campos del documento seleccionado; o también podemos especificar solamente el campo del documento que queremos especificar, lo cual es más eficiente comparado con actualizar todos los campos del documento.&lt;/li&gt;
+&lt;li&gt;Y con respecto a las opciones podemos citar:&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;upsert&lt;/code&gt;: si se establece este parámetro a &lt;strong&gt;true&lt;/strong&gt; y no hay documento que coincida con la &lt;code&gt;&amp;lt;query&amp;gt;&lt;/code&gt; especificada, el método &lt;code&gt;update()&lt;/code&gt; insertará un nuevo documento en la colección con los valores especificados en el parámetro &lt;code&gt;&amp;lt;update&amp;gt;&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;multi&lt;/code&gt; : por defecto MongoDB solo actualiza un documento al mismo tiempo, si necesitamos actualizar más de un documento al mismo tiempo debemos establecer este parámetro a &lt;strong&gt;true&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Actualizar un documento completo&lt;/h2&gt;
+
+&lt;p&gt;Esta no es la forma más eficiente de actualizar el contenido de un documento,
+como comenté anteriormente, pues es necesario que se especifique el contenido
+completo del documento, y en caso de ser un documento muy grande puede llegar a
+ser bastante ineficiente, ya que tendra que actualizarse el valor de cada campo
+aunque no hay cambiado.&lt;/p&gt;
+
+&lt;p&gt;Imaginemos que queremos modificar un documento para cambiar solamente el valor
+del campo &lt;strong&gt;age&lt;/strong&gt; (edad). Tendríamos que realizar lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.update({ username: &amp;quot;rmartin&amp;quot; }, { &amp;quot;firstName&amp;quot; : &amp;quot;Raul&amp;quot;, &amp;quot;lastName&amp;quot; : &amp;quot;Martin&amp;quot;, &amp;quot;username&amp;quot; : &amp;quot;rmartin&amp;quot;, &amp;quot;age&amp;quot; : 40, &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot; } })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Con esta instrucción hemos cambiado el valor del campo &lt;strong&gt;age&lt;/strong&gt; de 39 a 40, incluyendo los demás campos que serán actualizados con los mismos datos.&lt;/p&gt;
+
+&lt;p&gt;También es posible hacerlo de la siguiente forma para nuestra comodidad:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; user = db.users.findOne({ username:&amp;quot;rmartin&amp;quot; })
+{
+        &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131fe00350e650534c68d90&amp;quot;),
+        &amp;quot;firstName&amp;quot; : &amp;quot;Raul&amp;quot;,
+        &amp;quot;lastName&amp;quot; : &amp;quot;Martin&amp;quot;,
+        &amp;quot;username&amp;quot; : &amp;quot;rmartin&amp;quot;,
+        &amp;quot;age&amp;quot; : 39,
+        &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot;
+}
+&amp;gt; user.age 
+39
+&amp;gt; 
+&amp;gt; user.age = 40
+40
+&amp;gt; 
+&amp;gt; db.users.update({ username:&amp;quot;rmartin&amp;quot; }, user )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Recupero el documento completo referente al usuario cuyo &lt;em&gt;username&lt;/em&gt; es &lt;em&gt;rmartin&lt;/em&gt; y lo almaceno en la variable &lt;code&gt;user&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Compruebo el valor actual del campo &lt;em&gt;age&lt;/em&gt; accediendo al objeto &lt;code&gt;user&lt;/code&gt; haciendo uso del &lt;em&gt;dot notation&lt;/em&gt; (notación por punto: user.campo)&lt;/li&gt;
+&lt;li&gt;Modifico el valor del campo &lt;em&gt;age&lt;/em&gt; estableciéndolo a 40.&lt;/li&gt;
+&lt;li&gt;Utilizo el método &lt;code&gt;update()&lt;/code&gt; seleccionando de nuevo el mismo objeto que al principio (usando la misma query) e indico el nuevo documento a continuación, en este caso, almacenado en la variable &lt;code&gt;user&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Actualizando un campo concreto de un documento&lt;/h2&gt;
+
+&lt;p&gt;Sin embargo, existe una alternativa mucho más eficiente para actualizar el
+valor de ciertos campos en un documento. Para ello será necesario volver a
+hacer uso de los operadores como los anteriormente citados. Algunos de estos
+son:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;$set&lt;/code&gt;: que permite establecer un nuevo valor a un campo del documento. Si el campo no existe actualmente en el documento, será creado automáticamente. Por ejemplo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.update({ age: 26, city: &amp;quot;Sevilla&amp;quot; }, { $set: { weight: 68.9 } })
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;En este caso se ha seleccionado un usuario cuya edad sea 26 y su ciudad
+Sevilla, y se ha añadido el campo &lt;strong&gt;weight&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;$addToSet&lt;/code&gt;: para añadir elementos un array. Por ejemplo, si quisieramos añadir un nuevo campo llamado &lt;em&gt;likes&lt;/em&gt; con los gustos de un usuario:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.update({ username:&amp;quot;mviera&amp;quot; }, {$addToSet: { likes: &amp;quot;photography&amp;quot; }})
+&amp;gt; db.users.update({ username:&amp;quot;mviera&amp;quot; }, {$addToSet: { likes: &amp;quot;music&amp;quot; }})
+&amp;gt;
+&amp;gt; db.users.findOne({ username: &amp;quot;mviera&amp;quot; })
+{
+    &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;5131f87b350e650534c68d8e&amp;quot;),
+    &amp;quot;age&amp;quot; : 26,
+    &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot;,
+    &amp;quot;firstName&amp;quot; : &amp;quot;Manuel&amp;quot;,
+    &amp;quot;lastName&amp;quot; : &amp;quot;Viera&amp;quot;,
+    &amp;quot;likes&amp;quot; : [
+            &amp;quot;photography&amp;quot;,
+            &amp;quot;music&amp;quot;
+    ],
+    &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;,
+    &amp;quot;weight&amp;quot; : 68.9
+}
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;$inc&lt;/code&gt;: permite incrementar el valor numérico de uno de los campos del documento. Por ejemplo, si quisieramos incrementar en 5 la edad del usuario &lt;em&gt;mviera&lt;/em&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.update({ username:&amp;quot;mviera&amp;quot; }, {$inc: {age: 5}})
+&amp;gt; db.users.find({ username: &amp;quot;mviera&amp;quot; }, {username: 1, age: 1, _id:0})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;{ &amp;ldquo;age&amp;rdquo; : 31, &amp;ldquo;username&amp;rdquo; : &amp;ldquo;mviera&amp;rdquo; }&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Para más información acerca de los operadores utilzados en el método &lt;code&gt;update()&lt;/code&gt;
+podéis consultar
+&lt;a href=&#34;http://docs.mongodb.org/manual/applications/update/#update-operators&#34;&gt;http://docs.mongodb.org/manual/applications/update/#update-operators&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_7&#34;&gt;Eliminando documentos&lt;/h2&gt;
+
+&lt;p&gt;Para eliminar documentos de nuestra colección utilizaremos el método &lt;code&gt;remove()&lt;/code&gt;
+en la shell de MongoDB. Si ya sabes cómo utilizar el método &lt;code&gt;find()&lt;/code&gt; no
+supondrá ningún problema porque solamente requiere que se le especifique el
+filtro o búsqueda de los documentos que se quieren eliminar. Su sintaxis es la
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.collection.remove( &amp;lt;query&amp;gt;, &amp;lt;justOne&amp;gt; )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;De forma que si queremos eliminar de la colección todos los usuarios cuya edad
+sea mayor a 30 utilizaríamos la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.remove({ age: { $gt: 30 } })
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El parámetro &lt;code&gt;justOne&lt;/code&gt; permite indicar al método &lt;code&gt;remove()&lt;/code&gt; si queremos
+eliminar solamente un documento de todos los coincidentes. En ese caso, se debe
+pasar el valor &lt;em&gt;true&lt;/em&gt; o &lt;em&gt;1&lt;/em&gt;, de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.remove({ age: { $gt: 30 } }, true )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Es posible utilizar el método &lt;code&gt;remove()&lt;/code&gt; para eliminar todos los documentos de
+una colección si no se especifica una query o si ésta está vacía, es decir,
+&lt;code&gt;db.users.remove({})&lt;/code&gt;. Pero en este caso, si queremos eliminar todos los
+documentos de una colección, es recomendable utilizar el método &lt;code&gt;drop()&lt;/code&gt;, que
+&lt;strong&gt;elimina la colección completa&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.drop()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Y eso es todo! Espero que os haya sido útil y por lo menos hayáis aprendido
+algo nuevo. Intentaré seguir escribiendo sobre MongoDB, ahora que ya conocemos
+lo básico, lo mejor está por llegar: ReplicaSets, Indexes, Shardings, etc.&lt;/p&gt;
+
+&lt;p&gt;¡No olvidéis comentar vuestras impresiones y correcciones!&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Empezando con MongoDB</title>
+      <link>http://blog.manuelviera.es/blog/empezando-con-mongodb/</link>
+      <pubDate>Wed, 06 Feb 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/empezando-con-mongodb/</guid>
+      <description>
+
+&lt;p&gt;Normalmente muchos de los que nos dedicamos a la informática, cuando escuchamos
+el término &lt;em&gt;base de datos&lt;/em&gt; o &lt;em&gt;database&lt;/em&gt; (en inglés) pensamos directamente en un
+tipo de base de datos, las bases de datos relacionales, como MySQL, PostgreSQL,
+etc; quizás porque son las más comunes y utilizadas durante mucho tiempo. Pero
+esto está cambiando.&lt;/p&gt;
+
+&lt;p&gt;Desde hace un tiempo hasta ahora han ido proliferando otro tipo de base de
+datos conocidas como &lt;em&gt;NoSQL&lt;/em&gt; y seguro que conocéis algunas como: &lt;strong&gt;Memcached&lt;/strong&gt;,
+una caché tipo clave-valor en RAM, su variante &lt;strong&gt;MemcacheDB&lt;/strong&gt; que almacena
+datos clave-valor en disco usando &lt;strong&gt;BerkeleyDB&lt;/strong&gt;; &lt;strong&gt;Redis&lt;/strong&gt;, otra base de datos
+de tipo clave-valor; o &lt;strong&gt;MongoDB&lt;/strong&gt; que a diferencia de las anteriores, está
+&lt;strong&gt;orientada a documentos&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es MongoDB?&lt;/h2&gt;
+
+&lt;p&gt;Primero, ¿Qué significa &lt;em&gt;NoSQL&lt;/em&gt;? El término &lt;em&gt;NoSQL&lt;/em&gt; se utiliza para indicar que
+dicha base de datos no utiliza el sistema relacional tan ampliamente utilizado.
+Las bases de datos &lt;em&gt;NoSQL&lt;/em&gt; no se construyen sobre &lt;em&gt;tablas&lt;/em&gt; y normalmente
+tampoco utilizan el lenguaje &lt;em&gt;SQL&lt;/em&gt; para realizar consultas.&lt;/p&gt;
+
+&lt;p&gt;Muchos sistemas &lt;em&gt;NoSQL&lt;/em&gt; utilizan una arquitectura distribuida y tolerante a
+fallos, lo que permite mantener los datos en varios servidores de forma
+redundante. De esta forma es bastante fácil escalar el sistema añadiendo más
+servidores. Normalmente este tipo de base de datos escala horizontalmente
+permitiendo administrar grandes cantidades de datos.&lt;/p&gt;
+
+&lt;p&gt;El nombre de &lt;strong&gt;MongoDB&lt;/strong&gt; proviene de &amp;ldquo;hu&lt;strong&gt;mongo&lt;/strong&gt;us&amp;rdquo;, que significa enorme en
+inglés, y es una base de datos &lt;em&gt;NoSQL&lt;/em&gt; software libre, escalable y de alto
+rendimiento escrita en C++.&lt;/p&gt;
+
+&lt;p&gt;Algunas de las características más importantes de MongoDB son:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Almacenamiento orientado a documentos (&lt;em&gt;document-oriented&lt;/em&gt; en inglés).&lt;/li&gt;
+&lt;li&gt;Replicación y Alta Disponibilidad.&lt;/li&gt;
+&lt;li&gt;Soporte de índices.&lt;/li&gt;
+&lt;li&gt;Consultas, también basadas en documentos.&lt;/li&gt;
+&lt;li&gt;Auto-Sharding, permitiendo escalar horizontalmente.&lt;/li&gt;
+&lt;li&gt;GridFS, que permite almacenar ficheros de cualquier tamaño sin necesidad de complicar el entorno.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;¿Orientado a documentos?&lt;/h2&gt;
+
+&lt;p&gt;Si hubiera que destacar una de las características anteriormente citadas, en mi
+opinión, la más importante ahora mismo sería la de &lt;em&gt;orientado a documentos&lt;/em&gt; o
+&lt;em&gt;document-oriented&lt;/em&gt;, ya que se trata de un concepto fundamental para entender
+cómo funciona y cómo trabajar con MongoDB.&lt;/p&gt;
+
+&lt;p&gt;El almacenamiento de los datos en MongoDB utiliza documentos &lt;strong&gt;JSON&lt;/strong&gt;
+(JavaScript Object Notation), contando con un esquema dinámico y totalmente
+flexible. De hecho se dice que MongoDB es &lt;em&gt;schemaless&lt;/em&gt; (sin esquema).&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_2&#34;&gt;¿Pero qué es un documento JSON?&lt;/h4&gt;
+
+&lt;p&gt;De forma rápida y sencilla, un documento JSON no es más que descripción de un
+objecto en formato JSON, un formato muy rápido para el intercambio de datos y
+muy legible para el humano (&lt;em&gt;human-readable&lt;/em&gt; en inglés).&lt;/p&gt;
+
+&lt;p&gt;Un documento JSON podria tener la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;username&amp;quot;:&amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot;: 26, &amp;quot;city&amp;quot;: &amp;quot;Sevilla&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Este documento describe un usuario cuyo &amp;ldquo;&lt;em&gt;username&lt;/em&gt;&amp;rdquo; es &amp;ldquo;mviera&amp;rdquo;, con una edad
+de 26 años y cuya ciudad es &amp;ldquo;Sevilla&amp;rdquo;.&lt;/p&gt;
+
+&lt;p&gt;En JSON hay 6 tipos de datos diferentes:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Number&lt;/li&gt;
+&lt;li&gt;String&lt;/li&gt;
+&lt;li&gt;Boolean (true o false)&lt;/li&gt;
+&lt;li&gt;Array&lt;/li&gt;
+&lt;li&gt;Object&lt;/li&gt;
+&lt;li&gt;null&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Podéis aprender más sobre JSON en &lt;a href=&#34;http://json.org/json-es.html&#34;&gt;http://json.org/json-es.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;¿Cómo se instala?&lt;/h2&gt;
+
+&lt;p&gt;La instalación de MongoDB es bastante sencilla. La versión actual de MongoDB es
+&lt;strong&gt;2.2.3&lt;/strong&gt;, en el momento en que escribo este artículo.&lt;/p&gt;
+
+&lt;p&gt;Su instalación se puede llevar a cabo a través del sistema de paquetería de
+nuestra distribución, APT, Aptitude, Yum&amp;hellip; En Debian el nombre del paquete que
+contiene el servidor de MongoDB se llaman &lt;strong&gt;mongodb-server&lt;/strong&gt; y el paquete que
+contiene el cliente y otras utilidades de MongoDB se llama &lt;strong&gt;mongodb-clients&lt;/strong&gt;.
+Así que si estamos en un sistema Debian o derivado, podemos instalarlo de la
+siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~$ sudo apt-get update
+mviera@mongodb:~$ sudo apt-get install mongodb-server mongodb-clients
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;También podemos descargar los binarios desde la propia web oficial de MongoDB
+&lt;a href=&#34;http://www.mongodb.org/downloads&#34;&gt;www.mongodb.org&lt;/a&gt; o el código fuente si lo
+que queremos es compilar nuestro propio MongoDB. Hay binarios disponibles para
+OS X, Linux, Windows para plataformas de 32 y 64bits; y Solaris 64 bits.&lt;/p&gt;
+
+&lt;p&gt;Si lo que queremos es realizar un despliegue en producción, recomendaría
+instalar utilizando el sistema de paquetería del sistema con el que contaremos
+con futuras actualizaciones de seguridad, etc. Si el objetivo es aprender
+MongoDB, podemos instalarlo tanto a través del sistema de paquetería, como
+descargando los binarios desde la web de MongoDB.&lt;/p&gt;
+
+&lt;p&gt;En este caso voy a descargar los binarios de MongoDB desde la sección de
+descargas de la web oficial, ya que lo utilizaré para aprender y enseñaros
+MongoDB. Son binarios precompilados, así que no será necesario instalar ningún
+paquete adicional en nuestro sistema.&lt;/p&gt;
+
+&lt;p&gt;Para ello, descargamos el tarball que se ajuste a nuestro sistema, en este
+caso, Linux x86-64:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~$ wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-2.2.3.tgz
+mviera@mongodb:~$ tar xzf mongodb-linux-x86_64-2.2.3.tgz                                         
+mviera@mongodb:~$ ln -s mongodb-linux-x86_64-2.2.3 mongodb                   
+mviera@mongodb:~$ cd mongodb
+mviera@mongodb:~/mongodb$ 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; he creado un enlace simbólico llamado &lt;em&gt;mongodb&lt;/em&gt; para evitar tener
+acceder a un directorio con un nombre tan largo y complejo.&lt;/p&gt;
+
+&lt;p&gt;Si listamos el contenido del directorio recién descomprimido, deberíamos tener
+algo similar a los siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ tree 
+.
+|-- GNU-AGPL-3.0
+|-- README
+|-- THIRD-PARTY-NOTICES
+`-- bin
+    |-- bsondump
+    |-- mongo
+    |-- mongod
+    |-- mongodump
+    |-- mongoexport
+    |-- mongofiles
+    |-- mongoimport
+    |-- mongooplog
+    |-- mongoperf
+    |-- mongorestore
+    |-- mongos
+    |-- mongosniff
+    |-- mongostat
+    `-- mongotop
+
+1 directory, 17 files
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Entre ellos se encuentran el fichero de licencia &lt;em&gt;GNU-AGPL-3.0&lt;/em&gt;, el
+fichero&lt;em&gt;README&lt;/em&gt; y &lt;em&gt;THIRD-PARTY-NOTICES&lt;/em&gt;; y el directorio &lt;em&gt;bin/&lt;/em&gt; que contiene
+todos los binarios y utilidades necesarios para empezar con MongoDB. Aunque hay
+una buena selección de utilidades, de momento sólo vamos a utilizar &lt;strong&gt;mongod&lt;/strong&gt;
+y &lt;strong&gt;mongo&lt;/strong&gt; para familiarizarnos con MongoDB.&lt;/p&gt;
+
+&lt;p&gt;Si la instalación de MongoDB se ha realizado utilizando el sistema de
+paquetería del sistema, estas utilidades y herramientas se encontrarán en los
+directorios habituales como &lt;em&gt;/usr/bin&lt;/em&gt;. En caso de Debian, es posible consultar
+los ficheros instalados con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~$ dpkg -L mongodb-server mongodb-clients
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;Primera toma de contacto&lt;/h2&gt;
+
+&lt;p&gt;Una vez tenemos MongoDB instalado en nuestro sistema, lo primero que debemos
+hacer es iniciar la base de datos. Para ello utilizaremos &lt;em&gt;mongod&lt;/em&gt;. Si se ha
+instalado utilizando paquetería, es posible que se haya iniciado la base de
+datos automáticamente, especialmente en distribuciones basadas en Debian.&lt;/p&gt;
+
+&lt;p&gt;Antes de ejecutarlo se necesita especificar el directorio donde se alojará la
+base de datos. Por defecto, MongoDB buscará el directorio &lt;em&gt;/data/db&lt;/em&gt; y si no lo
+encuentra, se producirá un error como el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;*********************************************************************
+ ERROR: dbpath (/data/db/) does not exist.
+ Create this directory or give existing directory in --dbpath.
+ See http://dochub.mongodb.org/core/startingandstoppingmongo
+*********************************************************************
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Así que para evitar dicho error, crearemos un directorio local llamado &lt;em&gt;data&lt;/em&gt;
+en la ruta actual y especificaremos dicho directorio con el parámetro &lt;em&gt;&amp;ndash;
+dbpath&lt;/em&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ mkdir data 
+mviera@mongodb:~/mongodb$ ./bin/mongod --dbpath data
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si todo ha ido bien, deberíamos ver algo similar a la siguiente salida:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ ./bin/mongod --dbpath data/
+Wed Feb  6 01:36:44 [initandlisten] MongoDB starting : pid=1082 port=27017 dbpath=data/ 64-bit host=mongodb
+Wed Feb  6 01:36:44 [initandlisten] db version v2.2.3, pdfile version 4.5
+Wed Feb  6 01:36:44 [initandlisten] git version: f570771a5d8a3846eb7586eaffcf4c2f4a96bf08
+Wed Feb  6 01:36:44 [initandlisten] build info: Linux ip-10-2-29-40 2.6.21.7-2.ec2.v1.2.fc8xen ...
+Wed Feb  6 01:36:44 [initandlisten] options: { dbpath: &amp;quot;data/&amp;quot; }
+Wed Feb  6 01:36:44 [initandlisten] journal dir=data/journal
+Wed Feb  6 01:36:44 [initandlisten] recover : no journal files present, no recovery needed
+Wed Feb  6 01:36:44 [websvr] admin web console waiting for connections on port 28017
+Wed Feb  6 01:36:44 [initandlisten] waiting for connections on port 27017
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como se puede observar, MongoDB se encuentra funcionando en el puerto &lt;strong&gt;27017&lt;/strong&gt;
+por defecto, su directorio de almacenamiento de la base de datos se encuentra
+en &lt;strong&gt;dbpath=data/&lt;/strong&gt; y además ofrece una consola de administración en el puerto
+&lt;strong&gt;28017&lt;/strong&gt;, a través de la cual podemos visualizar el log, listar bases de
+datos, etc.&lt;/p&gt;
+
+&lt;p&gt;Si echamos un vistazo al directorio &lt;em&gt;data/&lt;/em&gt; deberíamos ver algo similar a lo
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ ls -l data/
+total 8
+drwxrwxr-x 2 mviera mviera 4096 Feb  6 01:36 journal
+-rwxrwxr-x 1 mviera mviera    5 Feb  6 01:36 mongod.lock
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Actualmente, sólo tendremos un directorio &lt;em&gt;journal/&lt;/em&gt; para recuperaciones de
+datos en caso de desastre y el fichero &lt;em&gt;mongod.lock&lt;/em&gt; que almacena el PID del
+proceso &lt;em&gt;mongod&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Interactuando con MongoDB&lt;/h2&gt;
+
+&lt;p&gt;Una vez tenemos nuestra base de datos MongoDB iniciada, el siguiente paso será
+conectar a ella utilizando la consola o &lt;em&gt;shell&lt;/em&gt;, en inglés, de Mongo. Para ello
+utilizaremos &lt;em&gt;mongo&lt;/em&gt; ejecutando la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ ./bin/mongo
+MongoDB shell version: 2.2.3
+connecting to: test
+Welcome to the MongoDB shell.
+For interactive help, type &amp;quot;help&amp;quot;.
+For more comprehensive documentation, see
+    http://docs.mongodb.org/
+Questions? Try the support group
+    http://groups.google.com/group/mongodb-user
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si todo va bien, espero que sí, deberíamos ver el prompt de MongoDB. Por
+defecto Mongo, si no se le especifica lo contrario, siempre conectará a una
+base de datos &lt;strong&gt;test&lt;/strong&gt; en la que podremos realizar todas las pruebas que
+queramos.&lt;/p&gt;
+
+&lt;p&gt;La &lt;em&gt;shell&lt;/em&gt; de Mongo es una shell interactiva de JavaScript, por lo que podremos
+hacer uso de código JavaScript en caso de que nos sea necesario. Es decir,
+podemos realizar operaciones básicas de JavaScript como las siguientes en la
+shell de Mongo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; 2 + 3
+5
+&amp;gt; 
+&amp;gt; 10 * 2
+20
+&amp;gt; 
+&amp;gt; var double = function (n1) { return n1 * n1 }
+&amp;gt; double(2)
+4
+&amp;gt; double
+function (n1) {
+    return n1 * n1;
+}
+&amp;gt; stuff = [1, 2, 3, 4]
+[ 1, 2, 3, 4 ]
+&amp;gt; for (n in stuff) { print( parseInt(n) * 2 ) }
+0
+2
+4
+6
+&amp;gt; var x = {name: &amp;quot;mviera&amp;quot;, age: 26}
+&amp;gt; x.age
+26
+&amp;gt; x.city = &amp;quot;Sevilla&amp;quot;
+Sevilla
+&amp;gt; x
+{ &amp;quot;name&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;IMPORTANTE:&lt;/strong&gt; Estas instrucciones &lt;strong&gt;NO&lt;/strong&gt; son de MongoDB, es puro JavaScript.
+&lt;strong&gt;La consola de MongoDB es una shell interactiva de JavaScript&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Familiarización con el entorno&amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;Bien. Estamos conectados a la consola de Mongo, así que nuestro siguiente paso
+será crear una base de datos. Podemos comprobar cuál es la base de datos que
+estamos usando actualmente llamando al objeto &lt;strong&gt;db&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db
+test
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Crear una base de datos es tan fácil como ejecutar lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; use mydb
+switched to db mydb
+&amp;gt; db
+mydb
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podemos observar que el valor del objeto &lt;em&gt;db&lt;/em&gt; ha cambiado a &lt;strong&gt;mydb&lt;/strong&gt;. Lo
+siguiente será crear una colección, llamado &lt;em&gt;collection&lt;/em&gt; en inglés. Las
+colecciones son los contenedores de los documentos en MongoDB. Serían las
+conocidas tablas que contienen los datos en las bases de datos relacionales.&lt;/p&gt;
+
+&lt;p&gt;Podemos crear una colección de prueba de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.createCollection(&amp;quot;test&amp;quot;)
+{ &amp;quot;ok&amp;quot; : 1 }
+&amp;gt; 
+&amp;gt; show collections
+system.indexes
+test
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero en MongoDB no es necesario crear una colección antes de introducir datos
+por primera vez, ya que Mongo comprobará previamente si existe la colección y
+si no, la creará automáticamente por nosotros.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.test2.insert({username:&amp;quot;mviera&amp;quot;})
+&amp;gt; 
+&amp;gt; show collections
+system.indexes
+test
+test2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como se puede observar, la colección &lt;strong&gt;test2&lt;/strong&gt; se ha creado automáticamente al
+crear el documento &lt;code&gt;{username:&amp;quot;mviera&amp;quot;}&lt;/code&gt; dentro de él. Con esto ya he
+introducido rápidamente la forma de introducir datos en una colección de
+MongoDB. De todas formas, la sintaxis de uso es la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db.&amp;lt;nombre_coleccion&amp;gt;.verbo()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Donde &lt;code&gt;verbo()&lt;/code&gt; puede ser:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;insert&lt;/code&gt;: para insertar documentos en la colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;find&lt;/code&gt;: para buscar o seleccionar documentos dentro de la colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;count&lt;/code&gt;: para contar el total de documentos dentro de una colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;update&lt;/code&gt;: para actualizar uno o varios documentos dentro de una colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;remove&lt;/code&gt;: para eliminar documentos de la colección.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;drop&lt;/code&gt;: para eliminar una colección.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;toc_7&#34;&gt;Hagamos unos ejercicios&lt;/h2&gt;
+
+&lt;p&gt;Nuestra base de datos actual se llama &lt;code&gt;mydb&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db
+mydb
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y actualmente nuestra base de datos sólo contiene tres colecciones:
+&lt;code&gt;system.indexes&lt;/code&gt; (creada por MongoDB automáticamente), &lt;code&gt;test&lt;/code&gt; y &lt;code&gt;test2&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; show collections
+system.indexes
+test
+test2
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Crearemos tres documentos que describirán usuarios dentro de una colección que
+se llamará &lt;code&gt;users&lt;/code&gt;. Los datos a almacenar en los documentos serán: username,
+age (edad), y ciudad. Para ello utilizaremos el método &lt;code&gt;insert&lt;/code&gt; y podemos
+hacerlo de varias formas:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Directamente especificando el documento JSON en el método &lt;code&gt;insert()&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.insert({username:&amp;quot;mviera&amp;quot;,age:26,city:&amp;quot;Sevilla&amp;quot;})
+&amp;gt; db.users.insert({username:&amp;quot;robot&amp;quot;, age:32, city:&amp;quot;Cadiz&amp;quot;})
+&amp;gt; db.users.insert({username:&amp;quot;testuser&amp;quot;, age:20, city:&amp;quot;Malaga&amp;quot;})
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Almacenar los documentos en variables JavaScript y posteriormente utilizar
+dicha variable en &lt;code&gt;insert()&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; user1 = {username:&amp;quot;mviera&amp;quot;,age:26,city:&amp;quot;Sevilla&amp;quot;}
+{ &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+&amp;gt; user2 = {username:&amp;quot;robot&amp;quot;, age:32, city:&amp;quot;Cadiz&amp;quot;}
+{ &amp;quot;username&amp;quot; : &amp;quot;robot&amp;quot;, &amp;quot;age&amp;quot; : 32, &amp;quot;city&amp;quot; : &amp;quot;Cadiz&amp;quot; }
+&amp;gt; user3 = {username:&amp;quot;testuser&amp;quot;, age:20, city:&amp;quot;Malaga&amp;quot;}
+{ &amp;quot;username&amp;quot; : &amp;quot;testuser&amp;quot;, &amp;quot;age&amp;quot; : 20, &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot; }
+&amp;gt; 
+&amp;gt; 
+&amp;gt; db.users.insert(user1)
+&amp;gt; db.users.insert(user2)
+&amp;gt; db.users.insert(user3)
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Utilizando un for loop de JavaScript en la shell de Mongo para automatizar
+la tarea:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; users = [user1, user2, user3]
+&amp;gt; for (i = 0; i &amp;lt; users.length; i++) { db.users.insert(users[i]) }
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; Realmente en los tres casos hemos hecho lo mismo, pero solamente
+quería mostrar la potencia que ofrece la shell de Mongo, una shell de
+JavaScript.&lt;/p&gt;
+
+&lt;p&gt;Si consultamos de nuevo las colecciones disponibles en nuestra base de datos
+&lt;code&gt;mydb&lt;/code&gt;, podremos observar que MongoDB ha creado la colección &lt;code&gt;users&lt;/code&gt; por
+nosotros, y de forma automática:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; show collections
+system.indexes
+test
+test2
+users
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Después de esto, deberíamos ser capaces de saber cuántos documentos hay en la
+colección &lt;code&gt;users&lt;/code&gt;, pero podemos cerciorarnos utilizando el método &lt;code&gt;count&lt;/code&gt; en
+nuestra colección:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.count()
+3
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Perfecto! Eso quiere decir que hasta ahora ha ido todo de maravilla. Ya solo
+nos falta poder seleccionar dichos documentos, es decir, poder recuperar dicha
+información de la base de datos. Esto lo conseguiremos con el método &lt;code&gt;find&lt;/code&gt;,
+ejecutando lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find()
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89517&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89518&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;robot&amp;quot;, &amp;quot;age&amp;quot; : 32, &amp;quot;city&amp;quot; : &amp;quot;Cadiz&amp;quot; }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89519&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;testuser&amp;quot;, &amp;quot;age&amp;quot; : 20, &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot; }
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Bien! Pero&amp;hellip; seguro que os estáis preguntando por ese campo llamado &lt;code&gt;_id&lt;/code&gt;&amp;hellip;
+¿Qué significa?¿Por qué está ahí?&lt;/p&gt;
+
+&lt;p&gt;En MongoDB todo documento tiene que tener un &lt;strong&gt;identificador único dentro de la
+colección&lt;/strong&gt; que puede ser especificado explicitamente con el campo &lt;code&gt;_id&lt;/code&gt; dentro
+del documento, y si no se especifica ninguno, Mongo creará uno automáticamente
+por nosotros sin que tengamos que preocuparnos de ello.&lt;/p&gt;
+
+&lt;p&gt;De esta forma, podemos introducir un nuevo documento que sí tenga especificado
+un &lt;code&gt;_id&lt;/code&gt; por nosotros:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.insert({_id: 101, username:&amp;quot;iloveyou&amp;quot;, age: 12, likes: &amp;quot;destroy your computer&amp;quot;})
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y si ahora volvemos a recuperar todos los documentos de la colección &lt;code&gt;users&lt;/code&gt;,
+debería aparecer el nuevo documento en la lista:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.users.find()
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89517&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;mviera&amp;quot;, &amp;quot;age&amp;quot; : 26, &amp;quot;city&amp;quot; : &amp;quot;Sevilla&amp;quot; }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89518&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;robot&amp;quot;, &amp;quot;age&amp;quot; : 32, &amp;quot;city&amp;quot; : &amp;quot;Cadiz&amp;quot; }
+{ &amp;quot;_id&amp;quot; : ObjectId(&amp;quot;51118e261caf692fdfc89519&amp;quot;), &amp;quot;username&amp;quot; : &amp;quot;testuser&amp;quot;, &amp;quot;age&amp;quot; : 20, &amp;quot;city&amp;quot; : &amp;quot;Malaga&amp;quot; }
+{ &amp;quot;_id&amp;quot; : 101, &amp;quot;username&amp;quot; : &amp;quot;iloveyou&amp;quot;, &amp;quot;age&amp;quot; : 12, &amp;quot;likes&amp;quot; : &amp;quot;destroy your computer&amp;quot; }
+&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¿Recordáis lo que comentaba al principio sobre &lt;em&gt;schemaless&lt;/em&gt;? Si se observa el
+listado de documentos anterior, se puede ver que los campos de los tres
+primeros documentos son &lt;em&gt;username&lt;/em&gt;, &lt;em&gt;age&lt;/em&gt; y &lt;em&gt;city&lt;/em&gt;. Pero sin embargo, el nuevo
+documento introducido no solo no utiliza el campo &lt;em&gt;city&lt;/em&gt; sino que además
+incluye uno nuevo llamado &lt;em&gt;likes&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Esto es debido a la flexibilidad que ofrece MongoDB en sus esquemas, es decir,
+no todos los documentos tienen que tener los mismo campos, sino que pueden
+incluirse o no ciertos campos según convenga. De hecho, podría haberse incluido
+el campo &lt;code&gt;city&lt;/code&gt; con un valor &lt;code&gt;null&lt;/code&gt; pero si no lo incluimos, en el futuro
+ahorraremos espacio en la base de datos.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_8&#34;&gt;Retrospectiva&lt;/h2&gt;
+
+&lt;p&gt;Después de todo esto, algo habrá ocurrido en nuestro directorio &lt;em&gt;data/&lt;/em&gt; donde
+se alojan las bases de datos. Si listamos el contenido del directorio,
+deberíamos ver algo como lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@mongodb:~/mongodb$ ls -lh data/
+total 209M
+drwxrwxr-x 2 mviera mviera 4.0K Feb  6 02:40 _tmp
+drwxrwxr-x 2 mviera mviera 4.0K Feb  6 03:22 journal
+-rwxrwxr-x 1 mviera mviera    0 Feb  6 03:22 mongod.lock
+-rw------- 1 mviera mviera  64M Feb  6 03:08 mydb.0
+-rw------- 1 mviera mviera 128M Feb  6 02:12 mydb.1
+-rw------- 1 mviera mviera  16M Feb  6 03:08 mydb.ns
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podemos observar que se han creado dos ficheros &lt;code&gt;mydb.0&lt;/code&gt; y &lt;code&gt;mydb.1&lt;/code&gt; que
+contienen los datos; y otro fichero llamado &lt;code&gt;mydb.ns&lt;/code&gt; que contiene el
+namespace. Si no estoy equivocado, y si lo estoy, por favor corregidme, MongoDB
+creará nuevos ficheros cuando los actuales ocupen un tamaño de 2G, con el fin
+de facilitar el traslado de estos fichero a través de la red, etc.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_9&#34;&gt;Apaga y vámonos&lt;/h2&gt;
+
+&lt;p&gt;Por último y para terminar el post, os comentaré cómo podemos para el servidor
+Mongo de forma correcta. Es muy sencillo, solamente tenemos que cambiar a la
+base de datos llamada &lt;code&gt;admin&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; use admin
+switched to db admin
+&amp;gt; db
+admin
+&amp;gt; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y ejecutar el método &lt;code&gt;shutdownServer&lt;/code&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; db.shutdownServer()
+Wed Feb  6 03:29:30 DBClientCursor::init call() failed
+Wed Feb  6 03:29:30 query failed : admin.$cmd { shutdown: 1.0 } to: 127.0.0.1:27017
+server should be down...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Y esto es todo por ahora! Espero que el post haya sido de vuestro agrado y
+agradeceros a aquellos que hayáis llegado leyendo hasta esta linea. ¡Gracias!&lt;/p&gt;
+
+&lt;p&gt;Con respecto a MongoDB es tipo de base de datos nueva para mi y que me está
+gustando bastante. Estoy estudiándola y aprendiendo a través de un curso de
+10gen, la empresa que la desarrolla. El curso es totalmente gratuito, no se si
+es posible apuntarse a estas alturas, ya que lleva tres semanas, pero os
+recomiendo que lo tengáis en cuenta para próximas ediciones. Podeis encontrarlo
+en &lt;a href=&#34;https://education.10gen.com&#34;&gt;https://education.10gen.com&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;¡No olvideis comentar vuestras dudas o sugerencias!&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Qué es un sparse file</title>
+      <link>http://blog.manuelviera.es/blog/que-es-un-sparse-file/</link>
+      <pubDate>Thu, 17 Jan 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/que-es-un-sparse-file/</guid>
+      <description>
+
+&lt;p&gt;Hoy me he encontrado con el término &lt;em&gt;sparse file&lt;/em&gt; y realmente no lo conocía,
+aunque puede que os pase como a mi, que después de que os diga qué es, muchos
+de vosotros ya sabíais de su existencia e incluso es muy probable que hayáis
+trabajado con este tipo de ficheros. Pero&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es un &lt;em&gt;sparse file&lt;/em&gt;?&lt;/h2&gt;
+
+&lt;p&gt;Un &lt;em&gt;sparse file&lt;/em&gt; es un tipo de fichero el cual se crea con un tamaño específico
+pero no se reserva dicho espacio en el sistema de ficheros inicialmente. Su
+tamaño irá creciendo a medida que vaya siendo necesario. Por ejemplo, podríamos
+crear un fichero cuyo tamaño máximo sea 2G pero que inicialmente en nuestro
+sistema de ficheros ocupe 0 bytes.&lt;/p&gt;
+
+&lt;p&gt;Es muy probable que ya es sea más familiar este tipo de ficheros, sobre todo
+aquellos que hayáis trabajado con virtualización, por ejemplo con KVM
+utilizando virt-manager, cuando al crear un volumen de almacenamiento para una máquina virtual ofrece la opción de alojar la totalidad del volumen en el pool de almacenamiento, o que el tamaño del volumen vaya creciendo dinámicamente.&lt;/p&gt;
+
+&lt;p&gt;Para temas de virtualización &lt;strong&gt;no&lt;/strong&gt; es aconsejable utilizar este tipo de
+ficheros porque pueden generar problemas de rendimiento e integridad de los
+datos. De todas formas, son bastante útiles para realizar pruebas.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;¿Qué ventajas me aporta?&lt;/h2&gt;
+
+&lt;p&gt;Como ventajas puntualizaría la rapidez con la que son creados, que como he
+comentado anteriormente, para realizar pruebas son perfectos, ya que
+inicialmente &amp;ldquo;no ocupan&amp;rdquo; espacio en el sistema.&lt;/p&gt;
+
+&lt;p&gt;Además utilizar un &lt;em&gt;sparse file&lt;/em&gt; nos permitirá crear un fichero de gran tamaño
+aunque en ese momento no dispongamos de tal espacio en nuestro sistema de
+ficheros.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Pero no es oro todo lo que reluce&amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;Este tipo de fichero es soportado en la mayoría de los sistemas de ficheros
+modernos en Unix, incluso en NTFS; pero al parecer no es posible, y lo he
+comprobado, en HFS+ de Apple.&lt;/p&gt;
+
+&lt;p&gt;A parte de los problemas de rendimiento e integridad con los datos comentados
+anteriormente, es posible que obtengamos resultados inesperados cuando tratemos
+de copiar este tipo de ficheros, pues si la utilidad que hemos usado para
+copiarlo no soporta este tipo de ficheros, será copiado con el tamaño completo.
+Afortunadamente &lt;em&gt;cp&lt;/em&gt;, por defecto, y &lt;em&gt;rsync&lt;/em&gt; con la opción &lt;strong&gt;-S&lt;/strong&gt; /
+&lt;strong&gt;&amp;ndash;sparse&lt;/strong&gt;, soportan este tipo de ficheros.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;¿Y cómo creo un &lt;em&gt;sparse file&lt;/em&gt;?&lt;/h2&gt;
+
+&lt;p&gt;La creación de un &lt;em&gt;sparse file&lt;/em&gt; es muy sencillo, es posible hacerlo con el
+comando &lt;em&gt;dd&lt;/em&gt; que muchos ya conoceréis al haber creado ficheros llenos de ceros
+de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dd if=/dev/zero of=file.img bs=1M count=1G
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esta instrucción creará un fichero lleno de ceros ocupando 1G de espacio en
+vuestro sistema de ficheros.&lt;/p&gt;
+
+&lt;p&gt;Pero para crear un &lt;em&gt;sparse file&lt;/em&gt; será necesario ejecutar la siguiente
+instrucción, similar a la anterior:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dd if=/dev/zero of=file.img bs=1M count=0 seek=1024
+0+0 registros leídos
+0+0 registros escritos
+0 bytes (0 B) copiados, 1,802e-05 s, 0,0 kB/s
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El truco se encuentra en el operador &lt;strong&gt;seek&lt;/strong&gt;. En este caso tendremos un
+fichero que inicialmente ocupa 0 bytes pero con un tamaño de 1G en potencia.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -hs file.img 
+0   file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Sin embargo, podemos ver su tamaño real con la opción &lt;strong&gt;&amp;ndash;apparent-size&lt;/strong&gt; de
+la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h --apparent-size file.img
+1,0G    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;¿Pero cómo compruebo que su tamaño crece dinámicamente?&lt;/h2&gt;
+
+&lt;p&gt;Es muy sencillo, crearemos ficheros dentro de este y veremos cómo aumenta de
+tamaño dinámicamente hasta un total de 1G. Para ello seguiremos los siguiente
+pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Crearemos un sistema de ficheros en &lt;em&gt;file.img&lt;/em&gt;, lo cual nos va a permitir
+alojar ficheros dentro de él convirtiéndolo en un volumen de almacenamiento:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkfs.ext4 -q file.img  
+file.img no es un dispositivo especial de bloques.
+¿Continuar de todas formas? (s,n) s
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Montamos el fichero como si de un dispositivo de almacenamiento se
+tratase, utilizando el comando &lt;em&gt;mount&lt;/em&gt;, de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkdir mnt
+$ sudo mount -t auto file.img mnt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si listamos los puntos de montaje actuales en nuestro sistema, deberíamos
+ver el fichero &lt;em&gt;file.img&lt;/em&gt; montado en el directorio local &lt;em&gt;mnt&lt;/em&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mount |grep file.img
+/tmp/file.img on /tmp/mnt type ext4 (rw)
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Creamos varios ficheros temporales dentro del punto de montaje:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ for i in {1..10};do mktemp --tmpdir=mnt; done
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; aprovecho para enseñar el comando &lt;em&gt;mktemp&lt;/em&gt; crea un fichero
+temporal del tipo &lt;em&gt;tmp.XXXXXXXX&lt;/em&gt; en el directorio actual. Con la opción
+&lt;em&gt;&amp;ndash;tmpdir&lt;/em&gt; es posible indicar el directorio destino donde se creará el
+fichero temporal.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Comprobamos que el tamaño del fichero ha crecido con respecto al estado
+anterior:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h file.img 
+49M    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y obviamente el tamaño total sigue siendo 1G:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h --apparent-size file.img 
+1,0G    file.img
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Dónde está el límite&lt;/h2&gt;
+
+&lt;p&gt;Lo único que nos falta comprobar es dónde está el limite. En el ejemplo
+utilizado es 1G, así que intentaremos crear un fichero de un tamaño mayor que
+el total del &lt;em&gt;sparse file&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Teniendo montado el fichero en el directorio &lt;em&gt;mnt&lt;/em&gt;, crearemos un fichero de 2G
+dentro de este, ejecutando lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dd if=/dev/zero of=file bs=1M count=2048
+dd: escribiendo «file»: No queda espacio en el dispositivo
+924+0 registros leídos
+923+0 registros escritos
+968290304 bytes (968 MB) copiados, 4,71871 s, 205 MB/s
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como podemos observar, nos ha avisado de que no queda espacio libre en el
+dispositivo y si comprobamos el tamaño actual del fichero obtendremos lo
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h file.img 
+973M    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota:&lt;/strong&gt; Hay un resto de espacio de 27M que es posible que sea debido a la
+reserva del 5% de espacio para el usuario root. Siempre hay una reserva de
+espacio para el usuario root, por defecto del 5%, de forma que este pueda
+acceder al dispositivo cuando haya alcanzado su límite de espacio. Si
+eliminamos dicha reserva, &lt;strong&gt;para nada recomendable en producción&lt;/strong&gt; pero en este
+caso estamos probando en un fichero local, podremos comprobar que si volvemos a
+crear el fichero de 2G dentro del &lt;em&gt;sparse file&lt;/em&gt;, el espacio llega a ocuparse
+completamente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ tune2fs -m 0 file.img 
+tune2fs 1.41.14 (22-Dec-2010)
+Setting reserved blocks percentage to 0% (0 blocks)
+
+$ dd if=/dev/zero of=file bs=1M count=2048
+dd: escribiendo «file»: No queda espacio en el dispositivo
+965+0 registros leídos
+964+0 registros escritos
+1011208192 bytes (1,0 GB) copiados, 3,27181 s, 309 MB/s
+
+$ du -h file.img  
+1,0G    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Actualización: ¿Y si queremos aumentar el límite?&lt;/h2&gt;
+
+&lt;p&gt;Ayer se me debió pasar esta cuestión mientras me centraba en escribir, pero sí,
+es posible aumentar el tamaño del &lt;em&gt;sparse file&lt;/em&gt;, ¿pero cómo?&lt;/p&gt;
+
+&lt;p&gt;Pues muy sencillo, solo tenemos que volver a utilizar el comando &lt;em&gt;dd&lt;/em&gt; indicando
+un tamaño mayor en el parámetro &lt;em&gt;seek&lt;/em&gt;, como indico a continuación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ dd if=/dev/zero of=file.img bs=1M count=0 seek=2048
+0+0 registros leídos
+0+0 registros escritos
+0 bytes (0 B) copiados, 1,6064e-05 s, 0,0 kB/s
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si comprobamos ahora el tamaño del fichero, podremos observar que su tamaño
+total a aumentado en 1G:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ du -h --apparent-size file.img 
+2,0G    file.img
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero aun no hemos terminado, sólo nos falta &lt;strong&gt;redimensionar&lt;/strong&gt; el sistema de
+ficheros incluido en él, y esto lo haremos haciendo uso del comando
+&lt;em&gt;resize2fs&lt;/em&gt;, pero primero realizaremos un chequeo del sistema de ficheros:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;e2fsck -f file.img 
+e2fsck 1.41.14 (22-Dec-2010)
+Paso 1: Verificando nodos-i, bloques y tamaños
+Paso 2: Verificando la estructura de directorios
+Paso 3: Revisando la conectividad de directorios
+Paso 4: Revisando las cuentas de referencia
+Paso 5: Revisando el resumen de información de grupos
+file.img: 22/65536 ficheros (0.0% no contiguos), 259513/262144 bloques
+
+$ resize2fs file.img 
+resize2fs 1.41.14 (22-Dec-2010)
+Resizing the filesystem on file.img to 524288 (4k) blocks.
+El sistema de ficheros en file.img tiene ahora 524288 bloques.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por último, si comprobamos el total de espacio disponible dentro del &lt;em&gt;sparse
+file&lt;/em&gt; podremos observar que a aumentado a 2G:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ df -h mnt 
+S.ficheros     Tamaño Usado  Disp Uso% Montado en
+/dev/loop0       2,0G  998M  998M  51% /tmp/mnt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como decía el maestro &lt;a href=&#34;http://es.wikipedia.org/wiki/Juan_Tamariz&#34;&gt;Juan
+Tamariz&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Chianananaaaaaaaa&amp;hellip; La magia no tiene trucos, por la razón de que todos sabemos que sí que los tiene.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Espero que os haya parecido interesante! No dudéis en comentar!&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Nginx como proxy HTTP</title>
+      <link>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</link>
+      <pubDate>Sun, 06 Jan 2013 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</guid>
+      <description>
+
+&lt;p&gt;De regalo de Reyes os traigo un post bastante sencillo sobre Nginx. Se trata de
+configurar Nginx para que funcione como un proxy HTTP, pero antes de nada&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es un proxy?&lt;/h2&gt;
+
+&lt;p&gt;Un proxy no es más que un &lt;strong&gt;intermediario&lt;/strong&gt;, que es el significado que tiene la
+palabra &lt;em&gt;proxy&lt;/em&gt; en inglés, en la comunicación que se realiza entre dos puntos.
+Por ejemplo, entre un cliente, que puede ser un navegador web, petición Ajax,
+etc; y un servidor.  Hay muchos tipos o aplicaciones distintas para un proxy
+como pueden ser proxy inverso (reverse proxy), proxy transparente, proxy cache;
+y todas ellas se pueden combinar en una misma configuración. Por ejemplo
+podríamos configurar un proxy HTTP inverso con cache para acelerar el tiempo de
+respuesta de éste a medida que se va utilizando. En este caso vamos a
+configurar un proxy HTTP inverso, pero&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;¿Que nos ofrece un proxy HTTP inverso?&lt;/h2&gt;
+
+&lt;p&gt;Antes de nada, nuestro proxy, como su propio nombre indica, va a estar
+orientado al servicio HTTP o HTTPS (HTTP Secure), es decir, sólo va a trabajar
+con peticiones HTTP. Aunque Nginx como tal, también podría actuar como IMAP
+Proxy, un proxy para el protocolo IMAP (Internet Message Access Protocol) de
+correo, pero no va a ser este el caso. Como proxy inverso nos va a permitir:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Añadir &lt;strong&gt;seguridad&lt;/strong&gt;, protegiendo al resto de servidores web del ataque directo de los usuarios.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Reescribir&lt;/strong&gt; las &lt;strong&gt;URLs&lt;/strong&gt; según nuestras necesidades.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Securizar&lt;/strong&gt; el acceso a nuestras aplicaciones web con &lt;strong&gt;HTTPS&lt;/strong&gt;, es decir, podremos enrutar la petición HTTP hacia HTTPS y securizar la comunicación entre los dos puntos.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Imaginemos que en nuestra red corporativa o doméstica, tenemos varios
+servidores web en nuestra DMZ publicando diferentes aplicaciones web, pero
+queremos controlar la publicación de cada una de éstas al exterior. En ese
+caso, podríamos redirigir todo el tráfico HTTP entrante desde el firewall hacia
+el proxy HTTP y controlar la publicación de las aplicaciones web al exterior.
+Como he comentado anteriormente, podríamos añadir HTTPS obligatoriamente al
+acceder a una aplicación web, añadir autenticación básica (usuario y
+contraseña), etc.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Configuración&lt;/h2&gt;
+
+&lt;p&gt;Vamos a suponer que Nginx ya se encuentra instalado en nuestro sistema. Si no
+fuera el caso, es posible consultar mi anterior articulo sobre la &lt;a href=&#34;/blog/nginx/&#34;&gt;instalación
+de Nginx&lt;/a&gt;. La configuración que
+obtengo, eliminando los comentarios, tras haber instalado Nginx desde los
+&lt;strong&gt;repositorios de Debian 7&lt;/strong&gt; (Wheezy) es la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@nginx:/# grep -v &amp;quot;#&amp;quot; /etc/nginx/nginx.conf |uniq
+user www-data;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 768;
+}
+
+http {
+
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  types_hash_max_size 2048;
+
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log;
+
+  gzip on;
+  gzip_disable &amp;quot;msie6&amp;quot;;
+
+  include /etc/nginx/conf.d/*.conf;
+  include /etc/nginx/sites-enabled/*;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;NOTA: la configuración suele ser diferente dependiendo del método de
+instalación: utilizando los repositorios de la distribución o compilando desde
+las fuentes.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;¿Qué significa ésta configuración?&lt;/h3&gt;
+
+&lt;p&gt;Podemos apreciar varias &lt;strong&gt;directivas&lt;/strong&gt; que son &lt;strong&gt;globales&lt;/strong&gt;: &lt;code&gt;user&lt;/code&gt;,
+&lt;code&gt;worker_processes&lt;/code&gt; y &lt;code&gt;pid&lt;/code&gt;; y varios bloques como &lt;code&gt;events&lt;/code&gt;, que configura el
+número de conexiones para cada worker (recordad, número de conexiones totales =
+worker_processes * worker_connections) y el bloque &lt;code&gt;http&lt;/code&gt; que define algunas
+directivas como:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;keepalive_timeout&lt;/code&gt; : tiempo que se va a mantener una conexión viva.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;include&lt;/code&gt; : permite incluir ficheros que contienen más configuración como en este caso los tipos MIME y los ficheros de configuración en el directorio sites-enabled.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;access_log&lt;/code&gt; : define el fichero de acceso donde se registrarán las conexiones al proxy http.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;error_log&lt;/code&gt; :  igual que access_log pero solo registrará los intentos fallidos de conexión.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;gzip&lt;/code&gt; : permite comprimir los datos enviados con gzip, consumiendo menos ancho de banda.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Es posible que dentro del bloque &lt;code&gt;http&lt;/code&gt; podamos encontrar otro bloque
+llamado &lt;code&gt;server&lt;/code&gt; y que contenga algo como lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen       80;
+    server_name  localhost;
+
+    location / {
+        root   html;
+        index  index.html index.htm;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   html;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Es necesario eliminar este bloque de configuración en el fichero de
+configuración principal nginx.conf ya que el bloque &lt;code&gt;server&lt;/code&gt; lo definiremos
+para cada uno de los sitios a publicar, dentro del directorio &lt;code&gt;sites-
+available&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;sites-available y sites-enabled&lt;/h2&gt;
+
+&lt;p&gt;Normalmente, y sobretodo si se instala Nginx utilizando los repositorios del
+sistema, durante la instalación se crean dos directorios llamados &lt;code&gt;sites-
+available&lt;/code&gt; y &lt;code&gt;sites-enabled&lt;/code&gt;, pero ¿para qué función tienen y para qué se
+usan? Muy fácil.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;sites-available&lt;/code&gt; : se utiliza para almacenar la configuración de cada sitio o aplicación web. Siguiendo las buenas prácticas, se debe crear un fichero de configuración por cada sitio, para evitar tener la configuración de todos los sitios en un solo fichero.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sites-enabled&lt;/code&gt; : directorio que utiliza Nginx para saber qué sitios están activados. El contenido de este directorio deben ser enlaces simbólicos que apuntan a los ficheros de configuración del directorio &lt;code&gt;sites-available&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota&lt;/strong&gt;: la creación de los directorios &lt;code&gt;sites-available&lt;/code&gt; y &lt;code&gt;sites-enabled&lt;/code&gt;
+son una práctica muy común realizada por la paquetería del sistema, es decir,
+es una acción que realiza el paquete descargado de los repositorios durante la
+instalación. Pero es muy probable que dichos directorios no aparezcan si se
+instala Nginx desde las fuentes. En ese caso, solamente habría que crear dichos
+directorios e incluir el futuro contenido de estos mediante la
+directiva &lt;code&gt;include&lt;/code&gt; en la configuración principal de Nginx.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Publicando un sitio web&lt;/h2&gt;
+
+&lt;p&gt;Ya estamos casi a punto. Sólo nos falta configurar una redirección en el
+directorio &lt;code&gt;sites-available&lt;/code&gt; y enlazarla con un enlace simbólico en &lt;code&gt;sites-
+enabled&lt;/code&gt;, así que vamos a ello!&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Creamos el fichero de configuración test.manuelviera.es.conf en el
+directorio &lt;code&gt;/etc/nginx/sites-available/&lt;/code&gt; con una configuración como la
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+    listen 80;
+    server_name     test.manuelviera.es;
+    location / {
+        proxy_pass http://192.168.1.200:8080;
+        proxy_set_header  X-Real-IP  $remote_addr;
+        proxy_set_header  Host  $http_host;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota&lt;/strong&gt;: creo que es buena práctica establecer como nombre de fichero el
+mismo que el dominio que estamos publicando, es decir, el valor de la
+directiva &lt;code&gt;server_name&lt;/code&gt;. De esta forma, le indicando nuestro Nginx que
+cuando reciba una petición del dominio &amp;ldquo;test.manuelviera.es&amp;rdquo; por el puerto
+80, debe redirigir la petición HTTP al host 192.168.1.200 al puerto 8080,
+que es donde se encuentra nuestra aplicación web desplegada. El ingrediente
+estrella en esta configuración es el uso del módulo &lt;code&gt;proxy_pass&lt;/code&gt; incluido
+en el Core de Nginx, y es la directiva que nos permite pasar la petición
+que nos llega hacia otro destino, en este caso, el servidor web donde se
+aloja nuestra supuesta aplicación. Como podéis observar, también hemos
+hecho uso de otra directiva llamada &lt;code&gt;proxy_set_header&lt;/code&gt; que nos permite
+añadir o modificar cabeceras, en este caso hemos editado dos cabeceras:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;X-Real-IP&lt;/code&gt; : contiene la IP del cliente que inicia la petición, y se ha establecido el valor de la variable $remote_addr con la idea de que al servidor destino le llegue la IP del cliente y no la del proxy HTTP. Si no se hubiese modificado esta cabecera (header) la IP que recibiría el servidor web objetivo siempre sería la del proxy HTTP.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Host&lt;/code&gt; : Al igual que la anterior cabecera, establecemos el valor con el contenido de la variable $http_host, es decir, el nombre de host que especificó el cliente.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Una vez configurado nuestra primera redirección, sólo nos falta activarla,
+es decir, crear un enlace simbólico hacia esta en el directorio
+sites-enabled:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@nginx:~# cd /etc/nginx/sites-enabled/
+root@nginx:/etc/nginx/sites-enabled# ln -s ../sites-available/test.manuelviera.es.conf
+root@nginx:/etc/nginx/sites-enabled# ls -l
+total 0
+
+
+lrwxrwxrwx 1 root root 43 Jan  6 12:05 test.manuelviera.es.conf -&amp;gt; ../sites-available/test.manuelviera.es.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Una vez enlazada el fichero de configuración, debemos obligar a Nginx a
+recargar la configuración con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@nginx:~# service nginx reload
+Reloading nginx configuration: nginx.
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;¡Perfecto! Pero aún nos queda el último paso, y no por ello menos importante&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Comprobar el funcionamiento del proxy HTTP&lt;/h2&gt;
+
+&lt;p&gt;Siempre debemos comprobar que lo que hemos hecho realmente funciona, ya que de
+no ser así, es como si no hubiésemos hecho nada y daremos mala imagen como
+profesionales. Si lo que tenemos es un entorno de prueba, que aún no se
+encuentra implantado en producción, una prueba muy sencilla sería utilizar el
+fichero &lt;code&gt;/etc/hosts&lt;/code&gt; añadiendo la IP de nuestro proxy HTTP y el dominio
+especificado en la directiva &lt;code&gt;server_name&lt;/code&gt;, de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo sh -c &amp;quot;echo 192.168.1.200 test.manuelviera.es &amp;gt;&amp;gt; /etc/hosts&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Nota&lt;/strong&gt;: en mi caso, el proxy HTTP se encuentra en la IP 192.168.1.200. Si
+todo ha ido bien, nuestro proxy HTTP, tras realizar la petición, deber habernos
+redirigido al host especificado en la directiva &lt;code&gt;proxy_pass&lt;/code&gt; :-) Otra prueba
+sencilla para comprobar que el proxy HTTP funciona es especificar un sitio
+externo como terra.es, google.es, etc; en la directiva &lt;code&gt;proxy_pass&lt;/code&gt;, si aún no
+se dispone de un servidor web interno que sirva una aplicación web.&lt;/p&gt;
+
+&lt;p&gt;Y esto ha sido todo amigos! Espero que os sea de utilidad y Feliz día de Reyes!&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Adiós 2012, Hello 2013!</title>
+      <link>http://blog.manuelviera.es/blog/adios-2012-hello-2013/</link>
+      <pubDate>Mon, 31 Dec 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/adios-2012-hello-2013/</guid>
+      <description>&lt;p&gt;Bueno pues el 2012 ya está a punto de terminar, ya solo quedan horas. Llevo ya
+un buen rato pensando, intentando resumir lo que ha sido mi 2012 y no se si es
+que han pasado muchas cosas, pocas o es que estoy empezando a perder la memoria
+:-)&lt;/p&gt;
+
+&lt;p&gt;Mi 2012 no ha sido malo en general, comparado con la situación de mucha gente
+en España, ya que aun estando la situación como está, se me ha permitido seguir
+el camino que yo creo que es correcto. Y si no es el correcto, tampoco es el
+malo.&lt;/p&gt;
+
+&lt;p&gt;Estoy contento, porque este año he alcanzado algún objetivo que otro, como
+conseguir la certificación &lt;strong&gt;LPIC-1 Junior Level Linux Certification&lt;/strong&gt;
+y &lt;strong&gt;Novell Certified Linux Administrator&lt;/strong&gt; (CLA); además de seguir mejorando mi
+inglés hablado. También he estado estudiando &lt;strong&gt;HTML5, CSS3, Javascript&lt;/strong&gt;; los
+cuales seguiré aprendiendo en 2013.&lt;/p&gt;
+
+&lt;p&gt;En julio viajé a Alemania, concretamente estuvimos recorriendo Baviera,
+visitando lugares como Núrember, Bamberg, Rothenburg ob der Taube&amp;hellip;; y
+viviendo situaciones que no olvidaremos en mucho tiempo.&lt;/p&gt;
+
+&lt;p&gt;Sigo escribiendo en este blog, uno de los objetivos del año pasado (aunque
+debería escribir más a menudo); y también sigo aprendiendo música y a tocar la
+guitarra, afición que descubrí a finales del pasado 2011.&lt;/p&gt;
+
+&lt;p&gt;Sin embargo, este año también ha tenido situaciones difíciles para mí, sobre
+todo cuando decidí dejar de trabajar en &lt;a href=&#34;http://www.yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Tenemos que mirar a 2013 con una mirada positiva, de superación y mejora
+personal. Si puedo pedir algo, será salud. Y como objetivos para el nuevo año:
+procastinar menos, seguir aprendiendo, y no perder la fuerza de voluntad por
+seguir adelante.&lt;/p&gt;
+
+&lt;p&gt;De momento esta noche la voy a pasar cenando con mi familia y celebrándolo
+después con mis mejores amigos&amp;hellip; ¿se puede pedir más?&lt;/p&gt;
+
+&lt;p&gt;Esta noche brindemos por los que están y por los que ya no están pero que
+siguen &amp;ldquo;estando&amp;rdquo;&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;Os deseo a tod@s un ¡Feliz año nuevo 2013!&lt;/p&gt;
+
+&lt;p&gt;Un abrazo. Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Nginx</title>
+      <link>http://blog.manuelviera.es/blog/nginx/</link>
+      <pubDate>Fri, 23 Nov 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/nginx/</guid>
+      <description>
+
+&lt;p&gt;Hace bastante tiempo que tengo en mente escribir un post sobre Nginx
+(pronunciado como &amp;ldquo;engine x&amp;rdquo;), aunque ya lo he comentado en algún otro post
+anterior, y creo que hoy va a ser el día. No por nada en especial, si no porque
+me apetece compartirlo y además es un servidor web que me gusta mucho y que, en
+ciertos aspectos, ha ido conquistando terreno de otros servidores web.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es Nginx?&lt;/h2&gt;
+
+&lt;p&gt;Como decía, &lt;a href=&#34;http://nginx.org/&#34;&gt;Nginx&lt;/a&gt; es un servidor HTTP libre, de código
+abierto, de alto rendimiento y que puede ser utilizado para actuar tanto como
+proxy HTTP reverso, como proxy IMAP/POP3. Nginx es famoso por ser muy ligero,
+ya que consume muy pocos recursos del sistema; es muy estable, y además su
+configuración es relativamente sencilla, bastante más simple a la vista que la
+configuración de Apache2.&lt;/p&gt;
+
+&lt;p&gt;Su instalación es bastante sencilla también, independientemente de que lo
+hagamos mediante herramientas de paquetería o compilando del código fuente
+directamente.&lt;/p&gt;
+
+&lt;p&gt;Como apunte, decir que fue escrito por &lt;a href=&#34;http://sysoev.ru/en/&#34;&gt;Igor Sysoev&lt;/a&gt;, de
+origen ruso, escrito para solventar un problema llamado
+&lt;a href=&#34;http://www.kegel.com/c10k.html&#34;&gt;C10K&lt;/a&gt;. Resumiendo, ser capaz de manejar 10.000
+clientes de forma simultanea.&lt;/p&gt;
+
+&lt;p&gt;La primera vez que instalé Nginx, compilando desde las fuentes, fue allá por
+2008 simplemente por probarlo. No fue hasta 2009 ó 2010 cuando empecé a usarlo
+de verdad cuando trabajaba en &lt;a href=&#34;http://yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;, para realizar
+despliegues de aplicaciones web con Django. Y recuerdo que mi primer despliegue
+utilizando &lt;a href=&#34;http://merengueproject.org/&#34;&gt;Merengue Project&lt;/a&gt; + Nginx + uWSGI, con
+el fin de ver si mejoraba el rendimiento y la verdad es que quedamos
+encantados. Así que vamos a instalarlo ya!&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Instalando Nginx ¿pero cómo?&lt;/h2&gt;
+
+&lt;p&gt;Es posible que antes de instalar nos surjan dudas con respecto a la forma de
+instalar ya sea Nginx u otro software en nuestro sistema. Hay varias formas de
+instalar Nginx:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Descargar el código fuente y seguir el proceso de instalación típico: configurar, compilar e instalar; también conocido como &lt;strong&gt;cmmi&lt;/strong&gt; (&lt;strong&gt;c&lt;/strong&gt;onfigure - &lt;strong&gt;m&lt;/strong&gt;ake - &lt;strong&gt;m&lt;/strong&gt;ake &lt;strong&gt;i&lt;/strong&gt;nstall).&lt;/li&gt;
+&lt;li&gt;Utilizando las herramientas de paquetería de nuestra distribución: &lt;strong&gt;Aptitude&lt;/strong&gt; o &lt;strong&gt;APT&lt;/strong&gt; si utilizamos una distribución basada en Debian, &lt;strong&gt;yum&lt;/strong&gt; si utilizamos CentOS, RedHat, Fedora o similar; etc.&lt;/li&gt;
+&lt;li&gt;Añadir el repositorio oficial de Nginx a nuestro sistema de paquetería, si hubiera alguno disponible y compatible; en caso de que no estuviese disponible el paquete en nuestra distribución.&lt;/li&gt;
+&lt;li&gt;Descargar el paquete de instalación compatible con nuestro sistema de paquetería, de otra distribución e instalarlo con las herramientas habituales en nuestro sistema.&lt;/li&gt;
+&lt;li&gt;Descargar un paquete de instalación (&lt;strong&gt;.deb&lt;/strong&gt; o &lt;strong&gt;.rpm&lt;/strong&gt;, por ejemplo) y convertirlo con &lt;strong&gt;alien&lt;/strong&gt; si el paquete descargado no es compatible con nuestro sistema de paquetería.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Todas estas formas permitirían instalar Nginx, pero &lt;strong&gt;no todas son
+aconsejables&lt;/strong&gt;, según qué casos, me explico.&lt;/p&gt;
+
+&lt;p&gt;Si se trata de una &lt;strong&gt;instalación en producción&lt;/strong&gt;, y con ello me refiero a la
+instalación de Nginx en un servidor de un cliente, o en un servidor de
+producción para nuestra empresa; me decantaría sin dudar por la &lt;strong&gt;instalación
+mediante el sistema de paquetería&lt;/strong&gt;. De esta forma, contaría con todas las
+posibles futuras actualizaciones de seguridad y/o correcciones del paquete de
+forma muy cómoda utilizando las herramientas de paquetería del sistema.&lt;/p&gt;
+
+&lt;p&gt;Si la instalación de Nginx se va a realizar en un &lt;strong&gt;sistema antiguo&lt;/strong&gt;, y en ese
+caso, si es que existe un paquete para Nginx en el sistema de paquetería, es
+probable que sea &lt;strong&gt;más antiguo y desactualizado&lt;/strong&gt; que la versión actual de
+Nginx. Con lo que es muy posible que no cuente con mejoras de &lt;strong&gt;fallos de
+seguridad&lt;/strong&gt;, arreglos de &lt;strong&gt;bugs&lt;/strong&gt; encontrados, etc; en este caso,
+personalmente, optaría por una &lt;strong&gt;instalación desde las fuentes&lt;/strong&gt;. Es cierto que
+antes de instalar desde las fuentes sopesaría mis necesidades sobre Nginx, es
+decir, si es una instalación en producción pero sólo voy a servir &lt;strong&gt;HTML
+estático&lt;/strong&gt;, es muy posible que aun siendo una versión antigua de Nginx, hubiera
+optado por la &lt;strong&gt;instalación por PAQUETERÍa&lt;/strong&gt;. Pero si el fin es servir una
+&lt;strong&gt;web más compleja&lt;/strong&gt;, optaría por &lt;strong&gt;utilizar la versión estable más reciente de
+Nginx&lt;/strong&gt; y &lt;strong&gt;compilar desde las fuentes&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Con respecto a &lt;strong&gt;descargar un paquete de otra distribución&lt;/strong&gt; o convertir el
+paquete con &lt;strong&gt;alien&lt;/strong&gt;, &lt;strong&gt;no lo recomendaría&lt;/strong&gt; a menos que fuera una situación
+extrema, que no haya otro camino, y si la distribución a la que pertenece el
+paquete es muy similar a la que estamos usando. En cualquier otro caso, no lo
+usaría nunca, ya que: &lt;strong&gt;no&lt;/strong&gt; contamos con futuras &lt;strong&gt;actualizaciones&lt;/strong&gt; del
+paquete, al pertenecer a otra distribución &lt;strong&gt;es posible que los ficheros se
+instalen&lt;/strong&gt; en &lt;strong&gt;directorios no habituales en nuestra distribución&lt;/strong&gt;, es posible
+que los &lt;strong&gt;scripts SysV&lt;/strong&gt; del servicio &lt;strong&gt;no funcionen&lt;/strong&gt;, etc.&lt;/p&gt;
+
+&lt;p&gt;Esto sólo es mi humilde opinión de lo que haría en una situación real. Es
+imposible describir todas las posibilidades o dar unas directrices de qué hacer
+en una determinada situación, más que elegir una nosotros mismos basándonos en
+nuestro conocimiento, experiencia y muchos otros factores. En caso de dudar, si
+es posible, es aconsejable obtener una segunda opinión de un compañero o
+consultarlo con alguien con rango superior.&lt;/p&gt;
+
+&lt;p&gt;Y bueno, después de esta parrafada (perdón), nos puede quedar claro, qué dos
+opciones de instalación elegiría yo, &lt;strong&gt;IMHO&lt;/strong&gt; (¿qué pensais vosotros?) Así que
+veremos la instalación utilizando herramientas de paquetería y compilando desde
+el código fuente.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Instalación por paquetería&lt;/h2&gt;
+
+&lt;p&gt;La instalación por paquetería es bastante trivial si ya estamos familiarizados
+con estas herramientas. Bastaría con buscar el paquete en la base de datos de
+nuestro sistema de paquetería, ver el nombre e instalarlo.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Debian&lt;/h3&gt;
+
+&lt;p&gt;En &lt;strong&gt;Debian 7&lt;/strong&gt; (wheezy) que es la que estoy usando actualmente hay varios
+paquetes de Nginx en los repositorios oficiales de Debian:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;nginx-light&lt;/code&gt; : una versión &amp;ldquo;light&amp;rdquo; que sólo incluye un Nginx precompilado con unos cuantos módulos, pero no todos.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nginx-full&lt;/code&gt; : incluye Nginx precompilado con todos los módulos estandar incluidos.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nginx-extras&lt;/code&gt; : se trata de Nginx precompilado con todos los módulos estandar más una serie de módulos extras incluyendo algunos como Perl.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Depende de las necesidades que tengamos instalaremos uno u otro, pero en este
+caso instalaré nginx-full, y para ello ejecutaremos la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# apt-get install nginx-full
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;La instalación no tardará mucho en finalizar y tendremos instalado Nginx en
+nuestro sistema. Una de las ventajas de utilizar el sistema de paquetería de
+nuestro sistema frente a compilar nuestra propia versión de Nginx es que el
+paquete además de instalar Nginx, instala ciertas utilidades adicionales como
+pueden ser los scripts de inicio SysV y demás scripts que nos permiten
+arrancar, reiniciar o parar nuestro servidor Nginx. Para arrancar Nginx
+utilizaremos, como root, el comando &lt;strong&gt;service&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# service nginx start
+Starting nginx: nginx.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si consultamos el estado utilizando el parámetro &lt;strong&gt;status&lt;/strong&gt; podremos ver que
+Nginx ya se encuentra en funcionamiento:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# service nginx status
+nginx is running.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Para comprobar si realmente el puerto 80 (http/tcp) está escuchando podemos
+utilizar el comando &lt;strong&gt;netstat&lt;/strong&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# netstat -ntp
+Active Internet connections (w/o servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 192.168.1.40:80         192.168.1.35:60110      ESTABLISHED 3262/nginx: worker
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;CentOS&lt;/h3&gt;
+
+&lt;p&gt;En &lt;strong&gt;CentOS&lt;/strong&gt; al parecer no hay paquete en los repositorios oficiales por
+defecto, así que hay que añadir primero el repositorio a nuestra lista de
+repositorios y luego instalarlo. Es muy fácil, sólo hay que hace lo siguiente:&lt;/p&gt;
+
+&lt;p&gt;Podemos descargar el paquete &lt;strong&gt;RPM&lt;/strong&gt; que instala la configuración del
+repositorio y posteriormente instalarlo con la utilida &lt;code&gt;rpm&lt;/code&gt;, o instalarlo
+directamente con la utilidad &lt;code&gt;yum&lt;/code&gt; pasando la URL completa hacia el fichero RPM
+de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@centos /]# yum install http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez instalado, podemos consultar la configuración del repositorio de Nginx
+que se ha instalado en el fichero &lt;code&gt;/etc/yum.repos.d/nginx.repo&lt;/code&gt;. Tras instalar
+la configuración del repositorio, ya solo nos queda utilizar &lt;code&gt;yum&lt;/code&gt; para
+instalar Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@centos /]# yum install nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ya solo nos queda arrancar nuestro Nginx utilizando la utilidad &lt;code&gt;service&lt;/code&gt; al
+igual que hicimos en Debian.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;IMPORTANTE:&lt;/strong&gt; Es posible que en CentOS ya se encuentre ejecutándose una
+instancia de &lt;code&gt;httpd&lt;/code&gt; (Apache2) por defecto. Antes de arrancar Nginx es
+necesario parar dicha instancia o Nginx informará con un error indicando que el
+puerto 80 (http/tcp) se encuentra ocupado.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@centos /]# service nginx start
+Starting nginx: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si accedemos ahora utilizando nuestro navegador a &lt;code&gt;http://localhost:80&lt;/code&gt; veremos
+un útil, pero poco bonito, mensaje: &lt;strong&gt;Welcome to nginx!&lt;/strong&gt; El fichero de
+configuración para ambos casos se encuentra en &lt;code&gt;/etc/nginx/nginx.conf&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Instalando desde las fuentes&lt;/h2&gt;
+
+&lt;p&gt;Antes de comenzar, deberemos disponer en nuestro sistema de ciertas utilidades
+que serán de vital importancia para poder compilar en nuestro sistema, como
+&lt;strong&gt;gcc&lt;/strong&gt;, &lt;strong&gt;make&lt;/strong&gt; y otras librerias de desarrollo que se necesitan instaladas
+para poder compilar Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# apt-get install gcc make libpcre3 libpcre3-dev zlib1g zlib1g-dev
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Instalados los prerequisitos, procedemos entonces con la descarga de las
+fuentes de Nginx desde su sitio oficial:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# wget http://nginx.org/download/nginx-1.2.4.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A continuación descomprimimos y procedemos con la configuración, compilación e
+instalación:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# tar xzf nginx-1.2.4.tar.gz 
+root@debian:~# cd nginx-1.2.4/
+root@debian:~/nginx-1.2.4# 
+root@debian:~/nginx-1.2.4# ./configure &amp;amp;&amp;amp; make &amp;amp;&amp;amp; make install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por defecto, Nginx se instala en &lt;code&gt;/usr/local/&lt;/code&gt; aunque podemos modificar este
+comportamiento con &lt;code&gt;./configure --prefix=/path/to/install/&lt;/code&gt;. Como comentaba
+antes, esta vez no contamos con scripts de inicio SysV, así que tendremos que
+arrancar Nginx de forma manual, ejecutando directamente el binario de &lt;code&gt;nginx&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# /usr/local/nginx/sbin/nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si todo va bien, deberíamos tener inmediatamente el puerto 80 escuchando
+peticiones HTTP en nuestro sistema. Para para Nginx, también deberemos hacerlo
+de forma totalmente manual, utilizando la opción &lt;code&gt;-s&lt;/code&gt; y pasándole el argumento
+&lt;code&gt;stop&lt;/code&gt;; aunque también se puede hacer uso de otros argumentos como &lt;code&gt;quit&lt;/code&gt;,
+&lt;code&gt;reopen&lt;/code&gt; y &lt;code&gt;reload&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# /usr/local/nginx/sbin/nginx -s stop
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;La configuración por defecto&lt;/h2&gt;
+
+&lt;p&gt;La ubicación del fichero de configuración cambia dependiendo de la forma en que
+se haya instalado, a menos que cambiemos el comportamiento por defecto con
+&lt;code&gt;./configure --conf-path&lt;/code&gt; al compilar desde las fuentes. Si Nginx ha sido
+instalado utilizando el sistema de paquetería se encontrará en
+&lt;code&gt;/etc/nginx/nginx.conf&lt;/code&gt;. Sin embargo, si se ha compilado desde las fuentes y no
+se ha modificado la ruta del fichero de configuración, entonces lo más probable
+es que se encuentre en &lt;code&gt;/usr/local/nginx/conf/nginx.conf&lt;/code&gt;. El contenido de este
+fichero es bastante similar en ambos casos, aunque por defecto, hay muchas
+lineas de ejemplo comentadas. Si eliminamos todos los comentarios, se puede
+apreciar que la configuración es bastante simple:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# grep -v &amp;quot;#&amp;quot; /usr/local/nginx/conf/nginx.conf |uniq
+
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+
+    keepalive_timeout  65;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como se puede ver, la configuración se estructura en bloques delimitados por
+llaves {} (en inglés &lt;em&gt;curly braces&lt;/em&gt;) haciéndola mucho más legible que un bloque
+de configuración de Apache2, por ejemplo. Como parámetros a destacar, me
+gustaría comentar los siguientes:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;worker_processess&lt;/code&gt; : indica el número de workers/procesos de nginx que se van a arrancar simultaneamente. Si establecemos &lt;code&gt;worker_processes&lt;/code&gt; con valor 2, se ejecutarán dos procesos worker de Nginx.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;worker_connections&lt;/code&gt; : hace referencia al número de conexiones por worker. Esto quiere decir que el número de conexiones que será capaz de servir nuestro servidor nginx corresponde a worker_processes x worker_connections. Según la configuración del ejemplo, solo aceptará 1024 conexiones simultaneas (1 (&lt;em&gt;worker_processes&lt;/em&gt;) x 1024 (&lt;em&gt;worker_connections&lt;/em&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;http {}&lt;/code&gt; : bloque donde se especifica la configuración de cada servidos. Es posible configurar varios bloques &lt;code&gt;server {}&lt;/code&gt; en un mismo bloque &lt;code&gt;http {}&lt;/code&gt;, utilizando diferentes puertos lógicamente.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;server {}&lt;/code&gt; : configuración para un servidor concreto, que normalmente se corresponderá con un número de puerto único.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;listen 80;&lt;/code&gt; : puerto de escucha de Nginx. Se corresponde con la directiva &lt;code&gt;Listen&lt;/code&gt; de Apache2&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;server_name localhost;&lt;/code&gt; : hostname o FQDN del servidor. Se corresponde con la directiva &lt;code&gt;ServerName&lt;/code&gt; de Apache2.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;location&lt;/code&gt; : configuración de un &lt;code&gt;location&lt;/code&gt; concreto. Se corresponde con la directiva &lt;code&gt;Location&lt;/code&gt; en Apache2.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;root&lt;/code&gt; : directorio utilizado para buscar los ficheros estáticos. Se corresponde con la directiva &lt;code&gt;DocumentRoot&lt;/code&gt; de Apache2.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Bueno, eso es todo por hoy amigos, espero que os haya sido de utilidad para
+aquellos que no conocíais Nginx o aquellos que nunca lo habíais instalado. En
+próximos posts veremos diferentes tipos de configuración que podemos realizar
+con Nginx. Mientras tanto, podeis encontrar mucha más información en la wiki de
+Nginx en &lt;a href=&#34;http://wiki.nginx.org/Main&#34;&gt;http://wiki.nginx.org/Main&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Un saludo a todos y no dudéis en comentar! ;-)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Añadir nuevas fuentes en Linux</title>
+      <link>http://blog.manuelviera.es/blog/anadir-nuevas-fuentes-en-linux/</link>
+      <pubDate>Mon, 27 Aug 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/anadir-nuevas-fuentes-en-linux/</guid>
+      <description>
+
+&lt;p&gt;Añadir nuevas fuentes a mi sistema Linux siempre ha sido una incógnita, al
+menos para mí. Supongo que es algo por lo que no me he preocupado demasiado o
+que quizás no me haya hecho falta saberlo, hasta ahora. El objetivo de este
+post, añadir nuevas fuentes a nuestro sistema GNU/Linux, está relacionado
+directamente con nuestro servidor X, es decir, nuestro servidor gráfico. Creo
+que este siempre ha sido un punto problemático en GNU/Linux ya que agregar una
+tipografía nueva a nuestro sistema no es tan sencillo como hacerlo, por
+ejemplo, en otro sistema operativo como Microsoft Windows, que básicamente
+consiste en copiar los ficheros de las fuentes en un directorio. Pero empecemos
+por el principio&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Cuál es mi servidor gráfico o servidor X?&lt;/h2&gt;
+
+&lt;p&gt;Existen varios servidores gráficos disponibles para GNU/Linux, pero
+generalmente, en las distribuciones actuales, nos encontraremos principalmente
+con &lt;strong&gt;XFree86 4.x&lt;/strong&gt; y &lt;strong&gt;X.org-X11&lt;/strong&gt;, sobre todo con este último. Para
+cerciorarnos sobre cuál es nuestro servidor X podemos ejecutar la siguiente
+instrucción en una consola:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;root@debian:~# X -version
+X.Org X Server 1.7.7
+Release Date: 2010-05-04
+X Protocol Version 11, Revision 0
+Build Operating System: Linux 3.0.0-1-amd64 x86_64 Debian
+Current Operating System: Linux debian 2.6.32-5-amd64 #1 SMP Wed Jan 12 03:40:32 UTC 2011 x86_64
+Kernel command line: BOOT_IMAGE=/vmlinuz-2.6.32-5-amd64 root=/dev/mapper/debian-root ro quiet
+Build Date: 29 October 2011  06:58:14PM
+xorg-server 2:1.7.7-14 (Julien Cristau ) 
+Current version of pixman: 0.16.4
+        Before reporting problems, check http://wiki.x.org
+        to make sure that you have the latest version.
+root@debian:~#
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como podeis observar, en mi caso estoy utilizando la versión 1.7.7 de Xorg en
+un sistema Debian 6.0, una versión de Xorg algo antigua ya, aunque todo lo que
+se explica en el post será aplicable a versiones más recientes.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Pero, ¿Qué tipos y formatos de fuentes hay?&lt;/h2&gt;
+
+&lt;p&gt;Cuando hablamos de tipografías, o de fuentes, normalmente no sabemos con qué
+tipo de fuentes y formatos estamos tratando, quizás por prisa o bien, porque
+tampoco nos hace falta saberlo para trabajar con ellas; pero básicamente, con
+respecto a tecnologías, hay dos tipos:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fuentes de mapa de bits: que son fuentes muy simples y bastante fáciles de manipular y visualizar. El problema es que hay que optimizar dicha fuente para que pueda visualizarse correctamente en diferentes resoluciones o dispositivos de visualización, como la pantalla o impresa en un papel. Debido a esto, una misma fuente puede constar de varios ficheros, para poderla representar en varios tamaños o dispositivos de visualización.&lt;/li&gt;
+&lt;li&gt;Fuentes escalables, que es el tipo de fuente más utilizado en la actualidad, ya que cada carácter se representa con una serie de curvas y lineas dentro de una matriz; evitando tener que producir varios ficheros para una misma fuente. Uno de los inconvenientes del escalado es que consume más CPU, pero esto ya no supone un problema con las CPUs utilizadas hoy en día.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;En cuanto a los formatos de fuentes, básicamente vamos a encontrar
+&lt;strong&gt;&lt;a href=&#34;http://es.wikipedia.org/wiki/TrueType&#34;&gt;TrueType&lt;/a&gt;&lt;/strong&gt;, desarrollado
+inicialmente por &lt;strong&gt;&lt;a href=&#34;http://es.wikipedia.org/wiki/Apple_Computer&#34;&gt;Apple
+Computers&lt;/a&gt;&lt;/strong&gt; (.ttf); y
+&lt;strong&gt;PostScript Type1&lt;/strong&gt;, o
+&lt;strong&gt;&lt;a href=&#34;http://en.wikipedia.org/wiki/PostScript_fonts#Type_1&#34;&gt;Type1&lt;/a&gt;&lt;/strong&gt; (.pfa, .pfb),
+desarrollado por &lt;strong&gt;Adobe&lt;/strong&gt;. Bueno, pues ya sabemos un poco más acerca de las
+fuentes. Ahora dejémonos de teoría y vayamos al tema que concierne a este post.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Conseguir nuevas fuentes&lt;/h2&gt;
+
+&lt;p&gt;Es posible conseguir fuentes desde varios sitios, por ejemplo, desde el sistema
+de paquetería de nuestra distribución. En mi caso uso Debian, así que si busco
+el término &lt;strong&gt;xfonts&lt;/strong&gt; con APT (Advanced Packaging Tools) seguro que encuentro
+algún que otro paquete con nuevas fuentes para mi distribución:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ apt-cache search xfonts
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Un paquete con una fuente, que a mi personalmente me gusta mucho para la
+terminal, se llama &lt;strong&gt;xfonts-terminus&lt;/strong&gt;. Así que para instalarla ejecutamos la
+siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo apt-get install xfonts-terminus
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero esto no tiene ningún misterio para nosotros, ya que el paquete con las
+nuevas fuentes se instalará en el directorio correspondiente de nuestro
+sistema, y las tendremos disponibles sin tener nosotros que hacer nada. El
+problema de instalar fuentes, en GNU/Linux, es cuando nos encontramos una
+fuente que nos gusta en Internet. Hay muchos sitios en Internet desde donde se
+pueden descargar fuentes como &lt;a href=&#34;http://www.fontsquirrel.com/&#34;&gt;Font Squirrel&lt;/a&gt; o
+&lt;a href=&#34;http://www.1001freefonts.com/&#34;&gt;1001 Free Fonts&lt;/a&gt;. Desde esta última me he
+descargado una fuente llamada &lt;a href=&#34;http://www.1001freefonts.com/font/VideoPhreak.zip&#34;&gt;Video
+Phreak&lt;/a&gt;, que tiene una pinta
+muy retro y me ha gustado.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;Preparando un directorio con fuentes&lt;/h2&gt;
+
+&lt;p&gt;Si echamos un vistazo al fichero de configuración de nuestro servidor X,
+&lt;strong&gt;/etc/X11/xorg.conf&lt;/strong&gt; si estamos usando Xorg-X11 o &lt;strong&gt;/etc/X11/XF86Config&lt;/strong&gt; si
+estamos usando XFree86 4.x; podemos ver la sección llamada &lt;strong&gt;Files&lt;/strong&gt;, que
+tendrá una forma similar a la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Section &amp;quot;Files&amp;quot;
+        ModulePath   &amp;quot;/usr/lib/xorg/modules&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/misc&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/cyrillic&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/100dpi/:unscaled&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/75dpi/:unscaled&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/Type1&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/100dpi&amp;quot;
+        FontPath     &amp;quot;/usr/share/fonts/X11/75dpi&amp;quot;
+        FontPath     &amp;quot;/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType&amp;quot;
+        FontPath     &amp;quot;built-ins&amp;quot;
+EndSection
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Cada linea &lt;strong&gt;FontPath&lt;/strong&gt; indica una ruta al servidor X donde encontrar ficheros
+de fuentes. El orden establecido para los directorios de fuentes es influyente,
+es decir, el servidor X empieza a buscar en orden empezando por el primero
+hasta encontrar la fuente en uno de los directorios listados. De esta forma, si
+hay directorios con fuentes del mismo nombre, el servidor X utilizará la
+primera que encuentre según el orden establecido. Para hacer bien las cosas, no
+vamos a copiar nuestras fuentes en ninguno de esos directorios, ya que ahí se
+encuentran las fuentes básicas del servidor X. Crearemos nuestro propio
+directorio de fuentes. Siguiendo un poco el estándar
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard&#34;&gt;FHS&lt;/a&gt; es posible
+crear un directorio en &lt;strong&gt;/opt&lt;/strong&gt; o utilizar &lt;strong&gt;/usr/local&lt;/strong&gt;. A mi personalmente
+me gusta más la opción de &lt;strong&gt;/usr/local&lt;/strong&gt;. Dicho esto, procedemos a crear el
+directorio &lt;strong&gt;fonts&lt;/strong&gt; en &lt;strong&gt;/usr/local&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir /usr/local/fonts
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ya tengo descargada mi fuente &lt;a href=&#34;http://www.1001freefonts.com/font/VideoPhreak.zip&#34;&gt;Video
+Phreak&lt;/a&gt; en mi directorio de
+descargas, asi que voy a descomprimir el paquete zip:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ unzip VideoPhreak.zip 
+Archive:  VideoPhreak.zip
+  inflating: VideoPhreak.ttf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como podemos ver, se trata de una fuete TrueType (.ttf). La moveremos a un
+directorio llamado &lt;strong&gt;truetype&lt;/strong&gt; dentro de &lt;strong&gt;/usr/local/fonts/&lt;/strong&gt;, por mantener
+separadas las fuentes por tipos, asi que ejecutaremos lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir /usr/local/fonts/truetype
+$ sudo cp VideoPhreak.ttf /usr/local/fonts/truetype
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El siguiente paso será crear &lt;strong&gt;los ficheros de resumen&lt;/strong&gt; que describen las
+fuentes que vamos a instalar. Estos ficheros se llaman &lt;strong&gt;fonts.dir&lt;/strong&gt; y
+&lt;strong&gt;fonts.scale&lt;/strong&gt; y pueden tener un contenido como el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;10x20-ISO8859-1.pcf.gz -misc-fixed-medium-r-normal--20-200-75-75-c-100-iso8859-1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esta linea por sí sola ya da miedo. Pero tranquilos porque no vamos a tener que
+escribir esta linea manualmente. Para automatizar la creación de estos ficheros
+existen dos comandos: &lt;strong&gt;mkfontdir&lt;/strong&gt; y &lt;strong&gt;mkfontscale&lt;/strong&gt;. Asi que el siguiente
+paso será movernos al directorio &lt;strong&gt;/usr/local/fonts/truetype&lt;/strong&gt; y ejecutar cada
+uno de estos comandos, para generar los ficheros &lt;strong&gt;fonts.scale&lt;/strong&gt; y
+&lt;strong&gt;fonts.dir&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo cd /usr/local/fonts/truetype
+$ sudo mkfontscale
+$ sudo mkfontdir
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Estos dos comandos no generan ninguna salida, asi que si todo ha ido bien,
+deberemos tener los dos ficheros anteriormente comentados. En mi caso se han
+generado con el siguiente contenido:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ cat fonts.dir 
+1
+VideoPhreak.ttf -macromedia-videophreak-medium-r-normal--0-0-0-0-p-0-iso10646-1
+$ cat fonts.scale 
+1
+VideoPhreak.ttf -macromedia-videophreak-medium-r-normal--0-0-0-0-p-0-iso10646-1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Ya tenemos nuestro directorio de fuentes preparado!&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;Añadir el directorio de fuentes al listado de fuentes de X&lt;/h2&gt;
+
+&lt;p&gt;El siguiente paso será añadir la ruta &lt;strong&gt;/usr/local/fonts/truetype&lt;/strong&gt; en la
+sección &lt;strong&gt;Files&lt;/strong&gt; del fichero de configuración de nuestro servidor X, en mi
+caso es el fichero &lt;strong&gt;/etc/X11/xorg.conf&lt;/strong&gt;. Para ello añadiremos la siguiente
+linea al final de la sección &lt;strong&gt;Files&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        FontPath     &amp;quot;/usr/local/fonts/truetype&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_5&#34;&gt;Aplicar la configuración&lt;/h2&gt;
+
+&lt;p&gt;Ya está todo hecho, así que el último paso es recargar la configuración. Es
+posible hacerlo de dos maneras: la menos elegante sería parar el servidor X y
+volverlo a ejecutar, pero eso implica que tendríamos que dejar de utilizar el
+entorno gráfico por unos momentos y por tanto, obligando el cierre de todos los
+programas de los que estemos haciendo uso en ese momento o incluso más,
+desconectar a usuarios que esté conectados remotamente a sesiones gráficas de
+nuestro servidor X. La forma más elegante consiste en utilizar el comando
+&lt;strong&gt;xset&lt;/strong&gt;. Si no está instalado en el sistema es posible conseguirlo instalando
+el paquete &lt;strong&gt;x11-xserver-utils&lt;/strong&gt;, al menos en Debian.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo apt-get install x11-xserver-utils
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El comando &lt;strong&gt;xset&lt;/strong&gt; nos permitirá añadir nuestro directorio de fuentes mientras
+se ejecuta el servidor X, no es necesario parar su ejecución en ningún momento;
+ejecutando la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo xset fp+ /usr/local/fonts/truetype
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esta instrucción añade el directorio indicado al final de la lista de
+directorios que hemos visto antes. Es posible añadirla al principio de la lista
+cambiando &lt;strong&gt;fp+&lt;/strong&gt; por &lt;strong&gt;+fp&lt;/strong&gt;. Y por último tendremos que indicar al servidor X
+que vuelva a examinar todos los directorios de fuentes, con la siguiente
+instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo xset fp rehash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;Comprobar el resultado&lt;/h2&gt;
+
+&lt;p&gt;El resultado de todo esto es que deberiamos tener a nuestra disposición la
+nueva fuente instalado. Hay una utilidad llamada &lt;strong&gt;xfontsel&lt;/strong&gt; que viene en el
+paquete &lt;strong&gt;x11-utils&lt;/strong&gt;, y que seguramente ya tendréis instalado. &lt;strong&gt;xfontsel&lt;/strong&gt; es
+una aplicación bastante arcaica y tosca, pero bueno, puede servir para ver si
+la instalación ha sido satisfactoria.&lt;/p&gt;
+
+&lt;p&gt;Aun así, es posible que no podais visualizar la nueva fuente instalada en el
+sistema. Esto es debido a que muchas aplicaciones no reconocen el formato de
+las fuentes o simplemente no las encuentran. Las fuentes básicas tampoco
+incluyen antialiasing, es decir, el suavizado de fuentes, etc.&lt;/p&gt;
+
+&lt;p&gt;Para solucionar esto, contamos con el sistema Xft.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_7&#34;&gt;¿Qué es el sistema Xft?&lt;/h2&gt;
+
+&lt;p&gt;El sistema Xft es una biblioteca de código abierto para el renderizado de
+fuentes TrueType y Type1. Xft es un sistema en el lado del cliente, es decir,
+que accede a las fuentes instaladas en el sistema local y además permite el
+suavizado de fuentes o antialiasing, además de otras funcionalidades. Por
+suerte, los directorios de fuentes son compartidos, o mejor dicho, son los
+mismos que los del servidor X. Lo único que tenemos que hacer es añadir nuestro
+directorio de fuentes particular al fichero de configuración de fuentes Xft,
+que se encuentra en &lt;strong&gt;/etc/fonts/fonts.conf&lt;/strong&gt; (al menos en Debian). Se trata de
+un fichero XML, así que deberemos buscar un bloque de configuración como el
+siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;!-- Font directory list --&amp;gt;
+
+        &amp;lt;dir&amp;gt;/usr/share/fonts&amp;lt;/dir&amp;gt;
+        &amp;lt;dir&amp;gt;/usr/X11R6/lib/X11/fonts&amp;lt;/dir&amp;gt; &amp;lt;dir&amp;gt;/usr/local/share/fonts&amp;lt;/dir&amp;gt;
+        &amp;lt;dir&amp;gt;~/.fonts&amp;lt;/dir&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como podeis observar, hay menos directorios listados que en el fichero
+&lt;strong&gt;/etc/X11/xorg.conf&lt;/strong&gt; y es debido a que el sistema Xft permite añadir el
+directorio padre que contiene todas las fuentes. En nuestro caso, sólo bastará
+con añadir a la lista el directorio &lt;strong&gt;/usr/local/fonts&lt;/strong&gt;, de la siguiente
+forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        &amp;lt;dir&amp;gt;/usr/local/fonts&amp;lt;/dir&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez hecho esto, tendremos que indicar al sistema Xft que vuelva a recorrer
+todos los directorios para crear la lista de fuentes. Así que ejecutaremos el
+comando &lt;strong&gt;fc-cache&lt;/strong&gt; con privilegios de superusuario o &lt;strong&gt;root&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo fc-cache
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Tras la ejecución del comando, deberíamos tener disponible la fuente en todos
+nuestros programas tipo Gimp, editores de texto, etc.&lt;/p&gt;
+
+&lt;p&gt;Espero que os sirva de ayuda o simplemente para aprender algo nuevo, como me ha
+pasado a mi :-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Actualizate a la nueva versión de OS X</title>
+      <link>http://blog.manuelviera.es/blog/actualizate-a-la-nueva-version-de-os-x/</link>
+      <pubDate>Tue, 03 Jul 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/actualizate-a-la-nueva-version-de-os-x/</guid>
+      <description>
+
+&lt;p&gt;Aunque mi sistema operativo favorito es GNU/Linux, y es el que uso a diario;
+también suelo usar OS X para temas multimedia, retoque fotográfico, creación
+de vídeos caseros, etc.&lt;/p&gt;
+
+&lt;p&gt;Hace algún tiempo me prestaron el DVD de actualización de Snow Leopard, y me
+actualicé para probar las nuevas features del sistema operativo de la
+manzanita. El caso es que hace no mucho tiempo decidí reinstalar el sistema de
+mi Mac, y claro, ya no tenía el DVD de Snow Leopard que me prestaron, así que
+tuve que volver a la versión de OS X que tenía, Leopard.&lt;/p&gt;
+
+&lt;p&gt;Para mi sorpresa, tras reinstalar el sistema operativo e intentar instalar el
+paquete iLife &amp;lsquo;11, me aparece un mensaje de aviso informándome que mi versión
+de OS X no es compatible con la versión de iLife &amp;lsquo;11. El mensaje que aparece es
+el siguiente:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;/images/blog/ilife11.jpg&#34;&gt;&lt;img src=&#34;/images/blog/ilife11.jpg&#34; alt=&#34;&#34; /&gt;
+&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora mismo actualizar a OS X Mountain Lion cuesta unos 15,99€ según Mac App
+Store o 23,99€ si actualizas a OS X Lion a través de GoldenMac, tienda
+especializada en productos Apple en España. Así que al parecer, la única
+solución es actualizarte a las nuevas versiones de OS X si quieres seguir
+disfrutando de las versiones más recientes del software que sueles utilizar&amp;hellip;
+Pero hoy he descubierto una forma muy fácil de burlar esta comprobación de
+versión y poder instalar el paquete iLife 11 aun no teniendo la versión 10.6.3
+que especifica el mensaje de información.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;Cómo cambiar la versión de tu Mac OS X&lt;/h2&gt;
+
+&lt;p&gt;La solución es bastante sencilla, solamente hay que conocer la existencia del
+fichero &lt;strong&gt;/System/Library/CoreServices/SystemVersion.plist&lt;/strong&gt;. El contenido de
+este fichero en mi sistema era el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;!DOCTYPE plist PUBLIC &amp;quot;-//Apple//DTD PLIST 1.0//EN&amp;quot; &amp;quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&amp;quot;&amp;gt;
+&amp;lt;plist version=&amp;quot;1.0&amp;quot;&amp;gt;
+&amp;lt;dict&amp;gt;
+        &amp;lt;key&amp;gt;ProductBuildVersion&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;9L31a&amp;lt;/string&amp;gt;
+        &amp;lt;key&amp;gt;ProductCopyright&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;1983-2009 Apple Inc.&amp;lt;/string&amp;gt;
+        &amp;lt;key&amp;gt;ProductName&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;Mac OS X&amp;lt;/string&amp;gt;
+        &amp;lt;key&amp;gt;ProductUserVisibleVersion&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;10.5.8&amp;lt;/string&amp;gt;
+        &amp;lt;key&amp;gt;ProductVersion&amp;lt;/key&amp;gt;
+        &amp;lt;string&amp;gt;10.5.8&amp;lt;/string&amp;gt;
+&amp;lt;/dict&amp;gt;
+&amp;lt;/plist&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si prestamos atención, se puede ver que se trata de un fichero en formato XML
+que tiene dos parámetros de configuración bastante llamativos:
+&lt;strong&gt;ProductUserVisibleVersion&lt;/strong&gt;, que se trata de la versión del producto visible
+por el usuario; y &lt;strong&gt;ProductVersion&lt;/strong&gt;, la versión del producto, es decir, del
+sistema operativo.&lt;/p&gt;
+
+&lt;p&gt;Pues bien, para poder instalar el paquete iLife 11 ha sido tan fácil como
+editar el valor del parámetro &lt;strong&gt;ProductVersion&lt;/strong&gt; y cambiarlo por &lt;strong&gt;10.6.3&lt;/strong&gt;. Es
+posible editarlo desde una Terminal utilizando &lt;strong&gt;sudo&lt;/strong&gt; o estableciendo
+&lt;strong&gt;permisos&lt;/strong&gt; de &lt;strong&gt;escritura y lectura&lt;/strong&gt; en las propiedades del fichero,
+haciendo click derecho y seleccionando &lt;strong&gt;Obtener información&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Tras guardar los cambios realizados en el fichero &lt;strong&gt;SystemVersion.plist&lt;/strong&gt;, la
+instalación del paquete iLife 11 se ha llevado a cabo sin problema alguno.
+Después he ejecutado iMovie y GarageBand, que son los que uso; y ambos
+funcionan sin problemas.&lt;/p&gt;
+
+&lt;p&gt;Esto es lo que tiene utilizar un sistema operativo propietario, que te obligan
+en cierta manera, a ir actualizando el sistema operativo si quieres seguir
+estando en la ola de las nuevas aplicaciones que vayan surgiendo, en este caso
+parece ser solamente por un número, la retrocompatibilidad brilla por su
+ausencia; y claro, conociendo a Apple, en la mayoría de los casos los precios
+no son nada baratos&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;Espero que os sirva como me ha servido a mi!&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manuel Viera.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Entendiendo umask</title>
+      <link>http://blog.manuelviera.es/blog/entendiendo-umask/</link>
+      <pubDate>Fri, 01 Jun 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/entendiendo-umask/</guid>
+      <description>
+
+&lt;p&gt;Ahora mismo estoy preparándome para obtener la certificación
+&lt;a href=&#34;http://www.lpi.org/content/exam-101-objective-changes-july-2-2012&#34;&gt;LPIC-1&lt;/a&gt; y
+uno de los objetivos del tema que estoy estudiando es conocer y saber utilizar
+&lt;strong&gt;umask&lt;/strong&gt;, pero me ha parecido que la documentación no es muy clara, al menos
+en el libro &lt;a href=&#34;http://www.amazon.com/LPIC-1-Professional-
+Institute-Certification-Examenes/dp/8441527830&#34;&gt;LPIC-1: Linux Professional Institute Certification: Guia de
+estudio: Examenes 101 y 102&lt;/a&gt;, que es el que estoy leyendo.&lt;/p&gt;
+
+&lt;p&gt;He buscado en otros libros de GNU/Linux y administración de sistemas que tengo,
+y tampoco me ha dejado satisfecho. Así que he decidido escribir este post con
+lo que se acerca de &lt;strong&gt;umask&lt;/strong&gt; y aportar mi humilde granito de arena.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;¿Qué es umask?&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;umask&lt;/strong&gt; o &lt;strong&gt;u&lt;/strong&gt;ser &lt;strong&gt;mask&lt;/strong&gt;, la máscara de usuario usada para establecer los
+permisos a un fichero o directorio recién creado.&lt;/p&gt;
+
+&lt;p&gt;Hagamos una prueba, crearé un fichero nuevo y veremos qué permisos tiene:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ ls -l file.txt
+-rw-r--r-- 1 mviera users 0 jun  1 15:01 file.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podemos observar que el fichero ha sido creado con permisos &lt;strong&gt;0644&lt;/strong&gt;, es decir,
+lectura y escritura para el propietario y lectura para el grupo y para el resto
+de usuarios.&lt;/p&gt;
+
+&lt;p&gt;Ahora crearé un directorio y mostraré los permisos como en el ejemplo anterior:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ ls -l |grep umask
+drwxr-xr-x  2 mviera users       4096 jun  1 15:04 umask-test/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Se puede apreciar que los permisos para los directorios son diferentes, en este
+caso &lt;strong&gt;0755&lt;/strong&gt;, o lo que es lo mismo, lectura, escritura y ejecución para el
+propietario; y lectura y ejecución para el grupo y para el resto de usuarios.&lt;/p&gt;
+
+&lt;p&gt;Es posible que ahora mismo nos surjan varias preguntas, ¿por qué estos permisos
+y no otros?¿Dónde está definido este comportamiento? La respuesta, &lt;strong&gt;umask&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Conociendo más a umask&lt;/h2&gt;
+
+&lt;p&gt;Antes de seguir, lo primero que debemos saber es el valor de umask configurado
+en nuestro sistema. Normalmente su valor suele ser 022. Podemos averiguarlo
+ejecutando el comando &lt;code&gt;umask&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ umask
+022
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El valor devuelto se encuentra en formato octal, es decir, como cuando se
+definen los permisos de un fichero con &lt;code&gt;chmod 755 file&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Es posible modificar el valor ejecutando &lt;code&gt;umask&lt;/code&gt; y especificando el nuevo valor
+a continuación, como en el siguiente ejemplo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ umask 002
+mviera@leonopteryx:~$ umask
+002
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por tanto, si creamos ahora un fichero, veremos que los permisos iniciales
+serán diferentes a los del ejemplo anterior:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mviera@leonopteryx:~$ touch file2.txt
+mviera@leonopteryx:~$ ls -l file2.txt
+-rw-rw-r-- 1 mviera users 0 jun  1 18:03 file2.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Hay que tener en cuenta que si modificamos el valor de umask desde la consola,
+este cambio solo estará vigente en la sesión actual. Es decir, si abrimos una
+nueva consola el valor de umask se habrá restablecido al valor por defecto (que
+suele ser 022).&lt;/p&gt;
+
+&lt;p&gt;Para modificar el valor de umask de forma permanente será necesario incluir
+dicha configuración en &lt;code&gt;/etc/profile&lt;/code&gt; o &lt;code&gt;/etc/bash.bashrc&lt;/code&gt; afectando el cambio
+a todo el sistema; o en los ficheros &lt;code&gt;~/.profile&lt;/code&gt; o &lt;code&gt;~/.bashrc&lt;/code&gt; si se quiere
+aplicar el cambio para un usuario en concreto.&lt;/p&gt;
+
+&lt;p&gt;Pero&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Cómo funciona umask&lt;/h2&gt;
+
+&lt;p&gt;Los ficheros y directorios tienen definidos por defecto unos permisos base, 666
+para los ficheros y 777 para los directorios.&lt;/p&gt;
+
+&lt;p&gt;El valor de umask es un valor octal que representa los bits a eliminar de los
+permisos base, así que para determinar el permiso inicial que obtendrá un
+fichero o directorio habrá que restar el valor de umask al permiso base.&lt;/p&gt;
+
+&lt;p&gt;Por eso, cuando creamos un fichero, el permiso inicial de éste será 644
+(-rw-r&amp;ndash;r&amp;ndash;), valor resultante de realizar la operación 666 - 022. Al igual que
+cuando creamos un directorio, el permiso inicial será 755 (drwxr-xr-x),
+resultado de 777 - 022.&lt;/p&gt;
+
+&lt;p&gt;Pero ojo! no se trata de una operación decimal, es decir, no es una resta de un
+número con otro, es una &lt;strong&gt;diferencia a nivel de bits&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;umask&lt;/strong&gt; realiza la &lt;strong&gt;diferencia a nivel de bits&lt;/strong&gt; utilizando el operador
+&lt;strong&gt;AND&lt;/strong&gt;. Para aclararlo, veamos un ejemplo con los permisos de un fichero:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Los permisos base para un fichero son 666 y el valor de umask, por defecto,
+es 022. Estos son valores en &lt;strong&gt;formato octal&lt;/strong&gt;, pero el kernel opera a nivel de
+bits, es decir, en binario. Así que traduciremos estos valores a binario:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;666 = 110 110 110
+022 = 000 010 010
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Para hacer la diferencia con el operador &lt;strong&gt;AND&lt;/strong&gt; tendremos que invertir el
+valor de 022 con &lt;strong&gt;Not&lt;/strong&gt;, quedando el siguiente valor:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Not 022 = 111 101 101
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Aplicamos el operador &lt;strong&gt;AND&lt;/strong&gt; entre ambos valores:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    666 = 110 110 110
+Not 022 = 111 101 101  AND
+--------------------------
+          110 100 100
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;El valor resultante es &lt;code&gt;111 100 100&lt;/code&gt; que si lo volvemos a traducir a octal
+resulta ser 644.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Espero que os sirva de ayuda, a mi me ha servido para afianzar conocimientos
+:-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo, Manu.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Autenticando con certificado digital tras un proxy reverso</title>
+      <link>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</link>
+      <pubDate>Sun, 15 Apr 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</guid>
+      <description>&lt;p&gt;Hace ya algún tiempo, trabajando en &lt;a title=&#34;Yaco Sistemas&#34;
+href=&#34;http://www.yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;, me encontré con un contratiempo
+tras desplegar una aplicación web y hoy he decidido compartir con vosotros la
+experiencia. Así que voy a ello.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Escenario&lt;/h2&gt;
+Como apunte inicial, comenzaré diciendo que este post trata la autenticación
+con certificado digital x509 entre Apache y Tomcat y el escenario en el que nos
+movemos sería, a grandes rasgos, como el que muestra la imagen a continuación.&lt;/p&gt;
+
+&lt;p style=&#34;text-align: center;&#34;&gt;&lt;a
+href=&#34;/images/blog/apache-tomcat-escenario.png&#34;&gt;&lt;img class=&#34;size-full
+wp-image-510 aligncenter&#34; title=&#34;apache-tomcat-escenario&#34; src=&#34;/images/blog/apache-tomcat-escenario.png&#34; alt=&#34;Escenario autenticacion Apache Tomcat&#34; width=&#34;513&#34; height=&#34;222&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Bien, empecemos por el principio. Tenemos un usuario el cual ya tiene un
+certificado digital x509 configurado en su navegador con el cual se le permite
+autenticar en una aplicación web que se encuentra desplegada en un servidor
+&lt;strong&gt;Tomcat con el conector AJP debidamente configurado&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Con todo esto, si el usuario lanzara la petición de autenticación directamente
+al servidor Tomcat, éste le pediría un certificado válido al usuario, y tras
+recibirlo y validar que es correcto, realizaría la autenticación sin problemas.&lt;/p&gt;
+
+&lt;p&gt;Pero nuestro escenario no es tan idílico, ya que para poder llegar al servidor
+Tomcat, antes pasaremos por un servidor Apache que actuará como proxy reverso
+(Reverse Proxy) y aquí es donde se complican las cosas, obteniendo el resultado
+que muestra la siguiente imagen.&lt;/p&gt;
+
+&lt;p style=&#34;text-align: center;&#34;&gt;&lt;a
+href=&#34;/images/blog/apache-tomcat-fail-request.png&#34;&gt;&lt;img class=&#34;size-full
+wp-image-516 aligncenter&#34; title=&#34;apache-tomcat-fail-request&#34; src=&#34;/images/blog/apache-tomcat-fail-request.png&#34; alt=&#34;Apache Tomcat autenticacion fallida&#34; width=&#34;513&#34; height=&#34;222&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;El usuario accede a la aplicación intentando autenticar con certificado
+digital, pero no obtiene la respuesta esperada sino un error indicando que no
+se ha ofrecido ningún certificado. ¿Por qué ha pasado esto?&lt;/p&gt;
+
+&lt;p&gt;Lo que ha ocurrido es que la petición del usuario ha llegado al proxy reverso
+(Apache2) y éste inicia una petición similar, &lt;strong&gt;pero nueva&lt;/strong&gt;,
+hacia la aplicación web en Tomcat. Es decir, realiza una petición similar,
+creando una nueva petición, pero &lt;strong&gt;no&lt;/strong&gt; manteniendo la anterior;
+con lo cual, la aplicación web (Tomcat) pide un certificado digital al proxy
+reverso (Apache2), originando un error e imposibilitando la autenticación, pues
+el proxy reverso no tiene configurado ningún certificado.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Solución&lt;/h2&gt;
+Y aquí es donde viene la magia y lo que me salvó de la tragedia aquel día. Se
+trata de una opción especial en SSL
+llamada &lt;strong&gt;+ExportCertData&lt;/strong&gt;. Sí sí, a mi también me
+pareció increíble, pero esta opción lo arregla todo en la comunicación entre
+nuestro usuario y la aplicación final.&lt;/p&gt;
+
+&lt;p&gt;En la configuración HTTPS de nuestro proxy reverso, es decir Apache2, deberemos
+incluir la siguiente opción SSL:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;SSLOptions +ExportCertData
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Un ejemplo de configuración HTTPS para el proxy reverso podría ser la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Listen 443
+NameVirtualHost *:443
+&amp;lt;VirtualHost *:443&amp;gt;
+   ServerName localhost
+
+   ErrorLog /var/log/apache2/https-error.log
+   CustomLog /var/log/apache2/https-access.log combined
+
+   SSLEngine On
+   SSLCertificateFile    /etc/apache2/ssl/server.crt
+   SSLCertificateKeyFile /etc/apache2/ssl/server.key
+
+   SSLCACertificateFile /etc/apache2/ssl/client-accepted-ca-chain.crt
+   SSLVerifyClient require
+   SSLVerifyDepth 2
+
+   SSLOptions +ExportCertData
+
+   &amp;lt;Proxy *&amp;gt;
+     AddDefaultCharset Off
+     Order deny,allow
+     Allow from all
+   &amp;lt;/Proxy&amp;gt;
+
+   ProxyPass / ajp://tomcat:8009/
+   ProxyPassReverse / ajp://tomcat:8009/
+
+&amp;lt;/VirtualHost&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Bien! Ya tenemos el proxy reverso configurado correctamente! Rápidamente
+comprobamos que la sintaxis sea correcta y reiniciamos el servicio para que los
+cambios se hagan al fin efectivos.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# apachectl -t
+Syntax OK
+# apachectl graceful
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Comprobando el resultado&lt;/h2&gt;
+Hecho todo esto, ahora la autenticación debería realizarse sin problemas. El
+esquema de la comunicación entre el usuario y la aplicación final sería algo
+como lo que muestra la imagen que sigue:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;/images/blog/apache-tomcat-cert-ok.png&#34;&gt;&lt;img src=&#34;/images/blog/apache-tomcat-cert-ok.png&#34; alt=&#34;Apache Tomcat autenticación correcta&#34; title=&#34;apache-tomcat-cert-ok&#34; width=&#34;513&#34; height=&#34;222&#34; class=&#34;aligncenter size-full wp-image-521&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;El usuario inicia la petición de autenticación a la aplicación web haciendo uso
+de su navegador. La petición viaja a través del proxy reverso (Apache2) que
+ahora, al contar con la opción especial &lt;strong&gt;+ExportCertData&lt;/strong&gt;, éste
+no inicia una nueva petición, sino que &amp;ldquo;retransmite&amp;rdquo; la petición iniciada por
+el usuario y los datos del certificado, haciendo posible la autenticación.&lt;/p&gt;
+
+&lt;p&gt;Pues esto es todo. Espero que a alguien le sirva de ayuda en caso de tener el
+mismo problema, a mi &lt;strong&gt;+ExportCertData&lt;/strong&gt; &amp;ldquo;me salvó el día&amp;rdquo; :-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Actualizando CentOS a una release concreta</title>
+      <link>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</link>
+      <pubDate>Tue, 06 Mar 2012 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</guid>
+      <description>&lt;p&gt;Ya hacía bastante tiempo que no paraba por aquí para escribir un artículo, así
+que hoy me voy a tomar mi tiempo y voy a escribir acerca de CentOS.&lt;/p&gt;
+
+&lt;p&gt;¿Y por qué sobre CentOS? Pues resulta que hoy trabajando en &lt;a title=&#34;Yaco
+Sistemas&#34; href=&#34;http://www.yaco.es&#34; target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt;, mi
+compañero &lt;a title=&#34;@sepu66&#34; href=&#34;http://twitter.com/sepu66&#34;
+target=&#34;_blank&#34;&gt;@sepu66&lt;/a&gt; necesitaba varias máquinas virtuales con CentOS
+5.6, aunque la template de la que disponía era de CentOS 5.5.&lt;/p&gt;
+
+&lt;p&gt;Fácil, pensé, creo la máquina virtual con CentOS 5.5 y actualizo la
+distribución con &lt;code&gt;yum update&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Y claro, pasados unos minutos actualizando paquetes, compruebo la release de la
+distribución y, para mi sorpresa, observo que se ha actualizado a la última
+release de CentOS 5, es decir, a CentOS 5.7:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
+
+CentOS release 5.7 (Final)
+Kernel \r on an \m
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;FAIL!, pensé (últimamente pienso mucho). Esto ya lo había yo solucionado antes,
+pero no lo recordaba bien. Es una de esas tareas que haces una vez en muchos
+meses y que al final terminas olvidando, así que por eso he decidido hacer un
+volcado de conocimiento en este artículo :-)&lt;/p&gt;
+
+&lt;p&gt;Tras un rato buscando alguna solución en internet, sin éxito por cierto, ya que
+todos los artículos que encontraba eran acerca de &amp;ldquo;Cómo actualizar CentOS de
+5.4 a 5.5&amp;rdquo; o &amp;ldquo;Cómo actualizar CentOS de 5.5 a 5.6&amp;rdquo;, en resumen, todos los
+artículos que encontraba eran actualizaciones a la release inmediatamente
+superior, así que se resumían en ejecutar &lt;code&gt;yum update&lt;/code&gt; y listo&amp;hellip;
+Pero mi idea era decidir yo a qué release concreta a actualizar.&lt;/p&gt;
+
+&lt;p&gt;Para solucionar este tema, volví a regenerar la máquina virtual con CentOS 5.5 y empecé a modificar la configuración de los repositorios.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Configurando los repositorios&lt;/h2&gt;
+En CentOS normalmente los repositorios se encuentran configurados en ficheros
+que terminan en &lt;code&gt;.repo&lt;/code&gt; en el directorio
+&lt;code&gt;/etc/yum.repos.d/&lt;/code&gt;. En mi caso los repositorios configurados por
+defecto se encuentran en el fichero
+&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, así que lo primero que hice fue
+editar dicho fichero y deshabilitar los repositorios por defecto, añadiendo la
+siguiente linea en cada parte de configuración de cada repositorio:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;enabled=0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Dicha linea indica a &lt;code&gt;yum&lt;/code&gt; que el repositorio en cuestión se
+encuentra deshabilitado y no queremos que se utilice. Otra forma de
+deshabilitar los repositorios por defecto sería eliminando el fichero
+&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, pero no me parece un solución
+muy elegante.&lt;/p&gt;
+
+&lt;p&gt;Hecho esto, creé un nuevo fichero llamado
+&lt;code&gt;/etc/yum.repos.d/CentOS-Vault.repo&lt;/code&gt; en el que añadí lo siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#---- Packages previously released as 5.6, and its updates
+[C5.6-base]
+name=CentOS-5.6 - Base
+baseurl=http://vault.centos.org/5.6/os/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+
+[C5.6-updates]
+name=CentOS-5.6 - Updates
+baseurl=http://vault.centos.org/5.6/updates/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+
+[C5.6-extras]
+name=CentOS-5.6 - Extras
+baseurl=http://vault.centos.org/5.6/extras/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+enabled=1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¿Dónde está el truco? El secreto se encuentra en el dominio utilizado en la
+URL, &lt;code&gt;vault.centos.org&lt;/code&gt; que se trata de un sitio perteneciente a
+CentOS donde se pueden encontrar los paquetes de releases antiguas de CentOS.
+Destacar como segundo truco que he fijado la versión de la release a 5.6 en la
+URL, por tanto esta distribución no pasará a una release posterior.&lt;/p&gt;
+
+&lt;p&gt;Importante también marcar los repositorios como activos especificando:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;enabled=1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Listando los repositorios disponibles&lt;/h2&gt;
+Una vez configurado los repositorios a utilizar, podemos listarlos ejecutando
+&lt;code&gt;yum repolist&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# yum repolist
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+repo id                                                                     repo name
+C5.6-base                                                                   CentOS-5.6 - Base
+C5.6-centosplus                                                             CentOS-5.6 - Plus
+C5.6-extras                                                                 CentOS-5.6 - Extras
+C5.6-updates                                                                CentOS-5.6 - Updates
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Actualizando la distribución&lt;/h2&gt;
+Hecho esto, ya sólo nos queda forzar la actualización del sistema completo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y pasados unos minutos actualizando los paquetes del sistema, deberíamos tener
+nuestra distribución en la versión deseada, en mi caso, CentOS 5.6:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
+CentOS release 5.6 (Final)
+Kernel \r on an \m
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Espero que os sea de utilidad, a mi seguro que no se me vuelve a olvidar :-D
+Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Desplegando Trac con Gunicorn</title>
+      <link>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</link>
+      <pubDate>Fri, 02 Sep 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</guid>
+      <description>&lt;p&gt;En &lt;a title=&#34;mi anterior post&#34;
+href=&#34;/blog/gunicorn/&#34; target=&#34;_blank&#34;&gt;mi anterior
+post&lt;/a&gt; hablé sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org&#34;
+target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, un servidor HTTP WSGI para Python, y terminé
+diciendo que en el próximo articulo iba a explicar cómo desplegar Trac con
+Gunicorn y como lo prometido es deuda, vamos a ello&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Preparando el entorno&lt;/h2&gt;
+Antes de nada, vamos a crear un directorio de
+trabajo, donde se alojará todo. Se me ocurre llamarlo
+&lt;code&gt;testing-gunicorn&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkdir testing-gunicorn
+$ cd testing-gunicorn
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Antes de comenzar a instalar Trac y Gunicorn, vamos a crear un virtualenv en el
+directorio &lt;code&gt;testing-gunicorn&lt;/code&gt;, dentro del cual instalaremos todos
+los modulos de Python necesarios:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ virtualenv --no-site-packages --distribute .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y activamos el virtualenv:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ source bin/activate
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Instalando Trac y Gunicorn&lt;/h2&gt;
+La instalación es realmente sencilla. Al igual que para instalar cualquier otro
+módulo de Python, utilizaremos &lt;code&gt;easy_install&lt;/code&gt; o &lt;code&gt;pip&lt;/code&gt;. Yo
+opto por utilizar &lt;code&gt;pip&lt;/code&gt;, así que ejecutamos las siguientes
+instrucciones:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pip install Trac
+$ pip install gunicorn
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez hecho esto, deberemos tener instalado Trac y Gunicorn dentro de nuestro
+virtualenv, el mismo que tenemos activado.&lt;/p&gt;
+
+&lt;p&gt;Para comprobar que la instalación se ha realizado correctamente, abriremos una
+shell de Python e importaremos los dos módulos instalados:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ python
+Python 2.7.1+ (r271:86832, Apr 11 2011, 18:13:53) 
+[GCC 4.5.2] on linux2
+Type &amp;quot;help&amp;quot;, &amp;quot;copyright&amp;quot;, &amp;quot;credits&amp;quot; or &amp;quot;license&amp;quot; for more information.
+&amp;gt;&amp;gt;&amp;gt; 
+&amp;gt;&amp;gt;&amp;gt; import trac
+&amp;gt;&amp;gt;&amp;gt; import gunicorn
+&amp;gt;&amp;gt;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Esto quiere decir que la instalación se ha realizado correctamente. En caso
+contrario, obtendriamos un error al intentar importar el módulo, y se mostraría
+un error como el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt; import trac
+Traceback (most recent call last):
+  File &amp;quot;&amp;quot;, line 1, in 
+ImportError: No module named trac&amp;lt;/pre&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pero no es nuestro caso, asi que sigamos adelante :-)&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Creando un Trac de ejemplo&lt;/h2&gt; Tenemos Trac instalado, así que el
+siguiente paso será crear una instancia de Trac.&lt;/p&gt;
+
+&lt;p&gt;Crearemos un directorio llamado &amp;lsquo;projects&amp;rsquo; donde crearemos nuestras instancias
+de Trac:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ mkdir projects
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y finalmente crearemos la instancia de Trac llamada demo, haciendo uso de la
+utilidad &lt;code&gt;trac-admin&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ trac-admin projects/demo initenv demo sqlite:db/trac.db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A modo de resumen, le hemos especificado a trac-admin que cree una instancia de
+Trac en el directorio &lt;code&gt;projects/demo&lt;/code&gt; con la opción
+&lt;code&gt;initenv&lt;/code&gt;, cuyo nombre es &amp;ldquo;demo&amp;rdquo; y siendo la base de datos de tipo
+sqlite, que se encontrará en &lt;code&gt;db/trac.db&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Hecho esto, tendremos nuestra instancia de Trac creada con una estructura como la siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;projects/
+└── demo
+    ├── attachments
+    ├── conf
+    │   ├── trac.ini
+    │   └── trac.ini.sample
+    ├── db
+    │   └── trac.db
+    ├── htdocs
+    ├── log
+    ├── plugins
+    ├── README
+    ├── templates
+    │   └── site.html.sample
+    └── VERSION
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Configurando Gunicorn&lt;/h2&gt; Como comenté en &lt;a title=&#34;el anterior post&#34;
+href=&#34;http://blog.manuelviera.es/2011/09/gunicorn/&#34; target=&#34;_blank&#34;&gt;el anterior
+post&lt;/a&gt;, la configuración de Gunicorn la realizaremos creando un fichero
+Python.&lt;/p&gt;
+
+&lt;p&gt;Nuestro fichero de configuración se llamará &lt;code&gt;trac_launcher.py&lt;/code&gt; y su
+contenido debe ser el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#!/usr/bin/env python                                                                          
+import sys                                                                                     
+import os
+import trac.web.main
+
+sys.stdout = sys.stderr                                                                        
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+os.environ[&#39;TRAC_ENV_PARENT_DIR&#39;] = os.path.join(PROJECT_ROOT,&#39;projects&#39;)
+os.environ[&#39;PYTHON_EGG_CACHE&#39;] = os.path.join(PROJECT_ROOT, &#39;.egg-cache&#39;)
+application = trac.web.main.dispatch_request
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Básicamente el fichero de configuración está compuesto por:
+&lt;ol&gt;
+    &lt;li&gt;Importaciones de los módulos &lt;code&gt;sys&lt;/code&gt;, &lt;code&gt;os&lt;/code&gt; y &lt;code&gt;trac.web.main&lt;/code&gt;.&lt;/li&gt;
+    &lt;li&gt;Creación de dos variables de entorno:
+&lt;ul&gt;
+    &lt;li&gt;&lt;code&gt;TRAC_ENV_PARENT_DIR&lt;/code&gt;: directorio donde se alojan las instancias de Trac.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;PYTHON_EGG_CACHE&lt;/code&gt;: directorio de caché de los huevos de Python.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+    &lt;li&gt;Instancia de la funcion &lt;code&gt;trac.web.main.dispatch_request&lt;/code&gt; en la variable &lt;code&gt;application&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;&lt;/p&gt;
+
+&lt;p&gt;Antes de seguir hagamos un breve repaso:
+&lt;ul&gt;
+    &lt;li&gt;Nos encontramos en el directorio &lt;code&gt;testing-gunicorn&lt;/code&gt;.&lt;/li&gt;
+    &lt;li&gt;Tenemos nuestra instancia de Trac en &lt;code&gt;projects/demo&lt;/code&gt;.&lt;/li&gt;
+    &lt;li&gt;Hemos creado en el directorio actual el fichero de configuración para Gunicorn, llamado &lt;code&gt;trac_launcher.py&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;El siguiente paso será ejecutar Gunicorn!&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Ejecutando Gunicorn&lt;/h2&gt;
+Tan fácil como ejecutar la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn trac_launcher:application
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;¡Guay! Ya deberíamos tener nuestro proyecto Trac accesible en
+&lt;a href=&#34;http://localhost:8000&#34;&gt;http://localhost:8000&lt;/a&gt; :-D&lt;/p&gt;
+
+&lt;p&gt;Por defecto Gunicorn arranca un solo worker, pero podemos indicarle que
+arranque más de uno, un número máximo de peticiones por worker y un fichero de
+log, por ejemplo:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn trac_launcher:application \
+--workers 2 \
+--worker-connections 100 \
+--log-file gunicorn.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como hemos podido observar, Gunicorn abre por defecto el puerto 8000 en nuestro
+sistema, pero si por el contrario la comunicación la queremos hacer a través de
+un socket, deberemos indicarle la opción &lt;code&gt;&amp;ndash;bind
+unix:///home/mviera/testing-gunicorn/gunicorn.sock&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Por último y para terminar el despliegue, deberíamos instalar un servidor web
+que actuara de proxy, ya sea hacia &lt;code&gt;HOST:PUERTO&lt;/code&gt; o hacia el fichero
+de socket.&lt;/p&gt;
+
+&lt;p&gt;Y eso esto todo amig@s! Espero que os haya gustado y gracias por leerme!&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Gunicorn</title>
+      <link>http://blog.manuelviera.es/blog/gunicorn/</link>
+      <pubDate>Thu, 01 Sep 2011 00:00:00 UTC</pubDate>
+      
+      <guid>http://blog.manuelviera.es/blog/gunicorn/</guid>
+      <description>&lt;p&gt;Hace no mucho que empecé a escuchar sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, creo que allá por Marzo cuando &lt;a title=&#34;Lorenzo Gil&#34; href=&#34;http://www.lorenzogil.com/&#34; target=&#34;_blank&#34;&gt;Lorenzo Gil&lt;/a&gt; se encontraba en la PyCon 2011, pero no me había propuesto probarlo hasta hace unos días. Pero bueno, empecemos por el principio&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;¿Qué es Gunicorn?&lt;/h2&gt;
+&lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, también conocido como Green Unicorn (Unicornio Verde), es un servidor WSGI HTTP para Python. Es un pre-fork del proyecto Unicorn de Ruby.
+Gunicorn es compatible con varios web frameworks, soporta WSGI, Django y Paster de forma nativa; consume pocos recursos en ejecución y es bastante rápido.&lt;/p&gt;
+
+&lt;p&gt;Como he comentado en el párrafo anterior, soporta nativamente WSGI, Django y Paster; administra los workers de forma automática, permite establecer hooks para hacerlo más extensible, compatible con Python 2.5 o superior.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Instalando Gunicorn&lt;/h2&gt;
+Su instalación es realmente sencilla, justo como cualquier otro módulo de Python.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pip install gunicorn
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;o si lo preferimos, podemos obtener el código con git e instalarlo como cualquier otra aplicación en Python.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ git clone git://github.com/benoitc/gunicorn.git
+$ cd gunicorn
+$ python setup.py install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Una vez instalado Gunicorn tendremos a nuestra disposición tres comandos con los que servir diferentes web frameworks.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Ejecutando Gunicorn&lt;/h2&gt;
+Los comandos disponibles en Gunicorn son:
+&lt;ul&gt;
+    &lt;li&gt;&lt;strong&gt;gunicorn&lt;/strong&gt;: utilizado para servir aplicaciones WSGI.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;gunicorn_django&lt;/strong&gt;: utilizado para servir aplicaciones Django.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;gunicorn_paster&lt;/strong&gt;: para frameworks compatibles con Paster como Pylons, TurboGears 2, &amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;En este post me centraré en el comando &lt;strong&gt;gunicorn&lt;/strong&gt; pero podeis encontrar más información de cada uno de ellos en &lt;a title=&#34;la documentación oficial de Gunicorn&#34; href=&#34;http://gunicorn.org/run.html&#34; target=&#34;_blank&#34;&gt;la documentación oficial de Gunicorn&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Configurando Gunicorn&lt;/h2&gt;
+La configuración de Gunicorn también es muy sencilla, básicamente consiste en un fichero Python que tenga permisos de lectura en el sistema de ficheros, excepto que nuestra aplicación haya sido desarrollada utilizando Paster, en este caso haremos uso de un fichero INI.&lt;/p&gt;
+
+&lt;p&gt;Su sintaxis de uso es:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn [OPTIONS] APP_MODULE
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Donde APP_MODULE está compuesto por $(MODULE_NAME):$(VARIABLE_NAME). Un ejemplo de uso sería el siguiente:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn --workers 2 prueba:aplicacion
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Gunicorn buscará el módulo, es decir, el fichero prueba.py, y el nombre de la variable (aplicacion) debe hacer referencia a una función, normalmente a la función main de nuestra aplicación, que debe encontrarse especificada en el módulo.&lt;/p&gt;
+
+&lt;p&gt;El comando &lt;strong&gt;gunicorn&lt;/strong&gt; ofrece una extensa lista de opciones para configurar su comportamiento, pero las que he utilizado y que me han parecido más interesantes son:
+&lt;ul&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;config FILE&lt;/code&gt;: ruta hacia el fichero de configuración.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;bind ADDRESS&lt;/code&gt;: es posible especificar tanto &lt;code&gt;HOST:PUERTO&lt;/code&gt; como la ruta a un socket con &lt;code&gt;unix:RUTA_SOCKET&lt;/code&gt;.
+Ejemplo: &lt;code&gt;&amp;ndash;bind unix:///home/mviera/gunicorn/gunicorn.sock&lt;/code&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;workers INT&lt;/code&gt;: número de procesos workers que se arrancarán para servir las peticiones.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;max-requests INT&lt;/code&gt;: número máximo de peticiones que servirá un worker antes de ser reiniciado.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;debug&lt;/code&gt;: activa el debug en el servidor.&lt;/li&gt;
+    &lt;li&gt;&lt;code&gt;&amp;ndash;log-file&lt;/code&gt;: fichero de log.&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;Un ejemplo de ejecución sería:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ gunicorn modulo:application --workers 2 \
+--bind unix:///home/mviera/gunicorn/gunicorn.sock \
+--max-requets 1000 --log-file /home/mviera/gunicorn/gunicorn.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Podeis consultar el resto de opciones en &lt;a title=&#34;la documentación de configuración de Gunicorn&#34; href=&#34;http://gunicorn.org/configure.html&#34; target=&#34;_blank&#34;&gt;la documentación de configuración de Gunicorn&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Por último y para terminar con el despliegue, una vez que tengamos a Gunicorn sirviendo nuestra aplicación lo correcto sería instalar un servidor web que actúe como proxy HTTP hacia nuestra aplicación, yo como siempre recomiendo utilizar Nginx :-)&lt;/p&gt;
+
+&lt;p&gt;Y hasta aquí lo que he aprendido sobre Gunicorn, un breve resumen de la documentación oficial.&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Conclusiones&lt;/h2&gt;
+Gunicorn me ha sorprendido no solo por su fácil instalación, a diferencia de &lt;a title=&#34;uWSGI&#34; href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt; que necesita ser compilado; sino también por su fácil configuración y uso.&lt;/p&gt;
+
+&lt;p&gt;Como dije al principio, cuenta con una serie de hooks que permite ejecutar código Python en los diferentes puntos de ejecución: &lt;code&gt;on_start&lt;/code&gt;, &lt;code&gt;when_ready&lt;/code&gt;, &lt;code&gt;on_reload&lt;/code&gt;, &lt;code&gt;pre_fork&lt;/code&gt;, &lt;code&gt;post_fork&lt;/code&gt;, etc. Esto también me ha gustado mucho, aunque no los he llegado a probar.&lt;/p&gt;
+
+&lt;p&gt;La verdad es que Gunicorn me ha dejado con un muy buen sabor de boca aunque no he llegado a probarlo en un entorno real de producción para ver cómo se comporta. De momento seguiré con &lt;a title=&#34;uWSGI&#34; href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt; hasta que tenga la ocasión de utilizar Gunicorn ;-)&lt;/p&gt;
+
+&lt;p&gt;Un saludo.&lt;/p&gt;
+
+&lt;p&gt;PD: En el próximo post explicaré cómo desplegar Trac utilizando Gunicorn!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

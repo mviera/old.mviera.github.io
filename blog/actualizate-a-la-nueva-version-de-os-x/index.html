@@ -1,0 +1,295 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      
+        Actualizate a la nueva versión de OS X
+      
+    </title>
+    <link
+    href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://blog.manuelviera.es/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://blog.manuelviera.es">
+    <link rel="canonical" href="http://blog.manuelviera.es">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://blog.manuelviera.es"/>
+    <meta property="og:image" content="http://blog.manuelviera.es/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2012-07-03" title="2012-07-03">July 03, 2012</time>
+            </div>
+            <h1 class="title">Actualizate a la nueva versión de OS X</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/osx">#osx</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>Aunque mi sistema operativo favorito es GNU/Linux, y es el que uso a diario;
+también suelo usar OS X para temas multimedia, retoque fotográfico, creación
+de vídeos caseros, etc.</p>
+
+<p>Hace algún tiempo me prestaron el DVD de actualización de Snow Leopard, y me
+actualicé para probar las nuevas features del sistema operativo de la
+manzanita. El caso es que hace no mucho tiempo decidí reinstalar el sistema de
+mi Mac, y claro, ya no tenía el DVD de Snow Leopard que me prestaron, así que
+tuve que volver a la versión de OS X que tenía, Leopard.</p>
+
+<p>Para mi sorpresa, tras reinstalar el sistema operativo e intentar instalar el
+paquete iLife &lsquo;11, me aparece un mensaje de aviso informándome que mi versión
+de OS X no es compatible con la versión de iLife &lsquo;11. El mensaje que aparece es
+el siguiente:</p>
+
+<p><a href="/images/blog/ilife11.jpg"><img src="/images/blog/ilife11.jpg" alt="" />
+</a></p>
+
+<p>Ahora mismo actualizar a OS X Mountain Lion cuesta unos 15,99€ según Mac App
+Store o 23,99€ si actualizas a OS X Lion a través de GoldenMac, tienda
+especializada en productos Apple en España. Así que al parecer, la única
+solución es actualizarte a las nuevas versiones de OS X si quieres seguir
+disfrutando de las versiones más recientes del software que sueles utilizar&hellip;
+Pero hoy he descubierto una forma muy fácil de burlar esta comprobación de
+versión y poder instalar el paquete iLife 11 aun no teniendo la versión 10.6.3
+que especifica el mensaje de información.</p>
+
+<h2 id="toc_0">Cómo cambiar la versión de tu Mac OS X</h2>
+
+<p>La solución es bastante sencilla, solamente hay que conocer la existencia del
+fichero <strong>/System/Library/CoreServices/SystemVersion.plist</strong>. El contenido de
+este fichero en mi sistema era el siguiente:</p>
+
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+        &lt;key&gt;ProductBuildVersion&lt;/key&gt;
+        &lt;string&gt;9L31a&lt;/string&gt;
+        &lt;key&gt;ProductCopyright&lt;/key&gt;
+        &lt;string&gt;1983-2009 Apple Inc.&lt;/string&gt;
+        &lt;key&gt;ProductName&lt;/key&gt;
+        &lt;string&gt;Mac OS X&lt;/string&gt;
+        &lt;key&gt;ProductUserVisibleVersion&lt;/key&gt;
+        &lt;string&gt;10.5.8&lt;/string&gt;
+        &lt;key&gt;ProductVersion&lt;/key&gt;
+        &lt;string&gt;10.5.8&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+<p>Si prestamos atención, se puede ver que se trata de un fichero en formato XML
+que tiene dos parámetros de configuración bastante llamativos:
+<strong>ProductUserVisibleVersion</strong>, que se trata de la versión del producto visible
+por el usuario; y <strong>ProductVersion</strong>, la versión del producto, es decir, del
+sistema operativo.</p>
+
+<p>Pues bien, para poder instalar el paquete iLife 11 ha sido tan fácil como
+editar el valor del parámetro <strong>ProductVersion</strong> y cambiarlo por <strong>10.6.3</strong>. Es
+posible editarlo desde una Terminal utilizando <strong>sudo</strong> o estableciendo
+<strong>permisos</strong> de <strong>escritura y lectura</strong> en las propiedades del fichero,
+haciendo click derecho y seleccionando <strong>Obtener información</strong>.</p>
+
+<p>Tras guardar los cambios realizados en el fichero <strong>SystemVersion.plist</strong>, la
+instalación del paquete iLife 11 se ha llevado a cabo sin problema alguno.
+Después he ejecutado iMovie y GarageBand, que son los que uso; y ambos
+funcionan sin problemas.</p>
+
+<p>Esto es lo que tiene utilizar un sistema operativo propietario, que te obligan
+en cierta manera, a ir actualizando el sistema operativo si quieres seguir
+estando en la ola de las nuevas aplicaciones que vayan surgiendo, en este caso
+parece ser solamente por un número, la retrocompatibilidad brilla por su
+ausencia; y claro, conociendo a Apple, en la mayoría de los casos los precios
+no son nada baratos&hellip;</p>
+
+<p>Espero que os sirva como me ha servido a mi!</p>
+
+<p>Un saludo, Manuel Viera.</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Actualizate a la nueva versión de OS X [3 min read] #blog" data-related="mviera" data-url="http://blog.manuelviera.es/blog/actualizate-a-la-nueva-version-de-os-x/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+                <p>Written by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+
+
+
+
+  
+
+</body>
+</html>
+
