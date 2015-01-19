@@ -3,7 +3,7 @@
   <channel>
       <title>Apache2 on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/apache2/index.xml/</link>
+    <link>http://mviera.io/tags/apache2/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Autenticando con certificado digital tras un proxy reverso</title>
-      <link>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</link>
+      <link>http://mviera.io/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</link>
       <pubDate>Sun, 15 Apr 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</guid>
+      <guid>http://mviera.io/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</guid>
       <description>&lt;p&gt;Hace ya algún tiempo, trabajando en &lt;a title=&#34;Yaco Sistemas&#34;
 href=&#34;http://www.yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;, me encontré con un contratiempo
 tras desplegar una aplicación web y hoy he decidido compartir con vosotros la

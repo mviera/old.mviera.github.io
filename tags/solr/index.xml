@@ -3,7 +3,7 @@
   <channel>
       <title>Solr on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/solr/index.xml/</link>
+    <link>http://mviera.io/tags/solr/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Instalar Solr en Jetty</title>
-      <link>http://blog.manuelviera.es/blog/instalar-solr-en-jetty/</link>
+      <link>http://mviera.io/blog/instalar-solr-en-jetty/</link>
       <pubDate>Mon, 29 Apr 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/instalar-solr-en-jetty/</guid>
+      <guid>http://mviera.io/blog/instalar-solr-en-jetty/</guid>
       <description>
 
 &lt;p&gt;Hace ya más de un mes que no pasaba por aquí más que para ver las estadísticas

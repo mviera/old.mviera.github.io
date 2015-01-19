@@ -3,7 +3,7 @@
   <channel>
       <title>Nginx on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/nginx/index.xml/</link>
+    <link>http://mviera.io/tags/nginx/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Nginx como proxy HTTP</title>
-      <link>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</link>
+      <link>http://mviera.io/blog/nginx-como-proxy-http/</link>
       <pubDate>Sun, 06 Jan 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</guid>
+      <guid>http://mviera.io/blog/nginx-como-proxy-http/</guid>
       <description>
 
 &lt;p&gt;De regalo de Reyes os traigo un post bastante sencillo sobre Nginx. Se trata de
@@ -248,10 +248,10 @@ se dispone de un servidor web interno que sirva una aplicación web.&lt;/p&gt;
     
     <item>
       <title>Nginx</title>
-      <link>http://blog.manuelviera.es/blog/nginx/</link>
+      <link>http://mviera.io/blog/nginx/</link>
       <pubDate>Fri, 23 Nov 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/nginx/</guid>
+      <guid>http://mviera.io/blog/nginx/</guid>
       <description>
 
 &lt;p&gt;Hace bastante tiempo que tengo en mente escribir un post sobre Nginx

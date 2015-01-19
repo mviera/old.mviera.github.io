@@ -3,7 +3,7 @@
   <channel>
       <title>Offtopic on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/offtopic/index.xml/</link>
+    <link>http://mviera.io/tags/offtopic/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Adiós 2012, Hello 2013!</title>
-      <link>http://blog.manuelviera.es/blog/adios-2012-hello-2013/</link>
+      <link>http://mviera.io/blog/adios-2012-hello-2013/</link>
       <pubDate>Mon, 31 Dec 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/adios-2012-hello-2013/</guid>
+      <guid>http://mviera.io/blog/adios-2012-hello-2013/</guid>
       <description>&lt;p&gt;Bueno pues el 2012 ya está a punto de terminar, ya solo quedan horas. Llevo ya
 un buen rato pensando, intentando resumir lo que ha sido mi 2012 y no se si es
 que han pasado muchas cosas, pocas o es que estoy empezando a perder la memoria
@@ -61,10 +61,10 @@ siguen &amp;ldquo;estando&amp;rdquo;&amp;hellip;&lt;/p&gt;
     
     <item>
       <title>Retomando el blog</title>
-      <link>http://blog.manuelviera.es/blog/retomando-el-blog/</link>
+      <link>http://mviera.io/blog/retomando-el-blog/</link>
       <pubDate>Sat, 20 Aug 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/retomando-el-blog/</guid>
+      <guid>http://mviera.io/blog/retomando-el-blog/</guid>
       <description>&lt;p&gt;Es muy probable que nadie haya echado en falta mi blog, pero sí, llevo desde
 febrero si escribir absolutamente nada en él, asi que -10 para mí :-(&lt;/p&gt;
 

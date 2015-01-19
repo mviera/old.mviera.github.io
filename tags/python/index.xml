@@ -3,7 +3,7 @@
   <channel>
       <title>Python on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/python/index.xml/</link>
+    <link>http://mviera.io/tags/python/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Desplegando Trac con Gunicorn</title>
-      <link>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</link>
+      <link>http://mviera.io/blog/desplegando-trac-con-gunicorn/</link>
       <pubDate>Fri, 02 Sep 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</guid>
+      <guid>http://mviera.io/blog/desplegando-trac-con-gunicorn/</guid>
       <description>&lt;p&gt;En &lt;a title=&#34;mi anterior post&#34;
 href=&#34;/blog/gunicorn/&#34; target=&#34;_blank&#34;&gt;mi anterior
 post&lt;/a&gt; hablé sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org&#34;
@@ -198,10 +198,10 @@ de socket.&lt;/p&gt;
     
     <item>
       <title>Gunicorn</title>
-      <link>http://blog.manuelviera.es/blog/gunicorn/</link>
+      <link>http://mviera.io/blog/gunicorn/</link>
       <pubDate>Thu, 01 Sep 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/gunicorn/</guid>
+      <guid>http://mviera.io/blog/gunicorn/</guid>
       <description>&lt;p&gt;Hace no mucho que empecé a escuchar sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, creo que allá por Marzo cuando &lt;a title=&#34;Lorenzo Gil&#34; href=&#34;http://www.lorenzogil.com/&#34; target=&#34;_blank&#34;&gt;Lorenzo Gil&lt;/a&gt; se encontraba en la PyCon 2011, pero no me había propuesto probarlo hasta hace unos días. Pero bueno, empecemos por el principio&amp;hellip;&lt;/p&gt;
 
 &lt;p&gt;&lt;h2&gt;¿Qué es Gunicorn?&lt;/h2&gt;
@@ -289,10 +289,10 @@ Gunicorn me ha sorprendido no solo por su fácil instalación, a diferencia de &
     
     <item>
       <title>Automatizando con Tox</title>
-      <link>http://blog.manuelviera.es/blog/automatizando-con-tox/</link>
+      <link>http://mviera.io/blog/automatizando-con-tox/</link>
       <pubDate>Tue, 23 Aug 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/automatizando-con-tox/</guid>
+      <guid>http://mviera.io/blog/automatizando-con-tox/</guid>
       <description>&lt;p&gt;Hace unos días me encontré con &lt;a title=&#34;Tox&#34; href=&#34;https://bitbucket.org/hpk42/tox&#34;&gt;Tox&lt;/a&gt; y realmente me llamó la atención, pero&amp;hellip;&lt;/p&gt;
 
 &lt;p&gt;&lt;h2&gt;¿Qué es Tox?&lt;/h2&gt;

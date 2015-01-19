@@ -3,7 +3,7 @@
   <channel>
       <title>Yaco on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/yaco/index.xml/</link>
+    <link>http://mviera.io/tags/yaco/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Autenticando con certificado digital tras un proxy reverso</title>
-      <link>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</link>
+      <link>http://mviera.io/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</link>
       <pubDate>Sun, 15 Apr 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</guid>
+      <guid>http://mviera.io/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</guid>
       <description>&lt;p&gt;Hace ya algún tiempo, trabajando en &lt;a title=&#34;Yaco Sistemas&#34;
 href=&#34;http://www.yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;, me encontré con un contratiempo
 tras desplegar una aplicación web y hoy he decidido compartir con vosotros la
@@ -135,10 +135,10 @@ mismo problema, a mi &lt;strong&gt;+ExportCertData&lt;/strong&gt; &amp;ldquo;me 
     
     <item>
       <title>Actualizando CentOS a una release concreta</title>
-      <link>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</link>
+      <link>http://mviera.io/blog/centos-a-una-release-concreta/</link>
       <pubDate>Tue, 06 Mar 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</guid>
+      <guid>http://mviera.io/blog/centos-a-una-release-concreta/</guid>
       <description>&lt;p&gt;Ya hacía bastante tiempo que no paraba por aquí para escribir un artículo, así
 que hoy me voy a tomar mi tiempo y voy a escribir acerca de CentOS.&lt;/p&gt;
 
@@ -268,10 +268,10 @@ Un saludo!&lt;/p&gt;
     
     <item>
       <title>Desplegando Trac con Gunicorn</title>
-      <link>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</link>
+      <link>http://mviera.io/blog/desplegando-trac-con-gunicorn/</link>
       <pubDate>Fri, 02 Sep 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</guid>
+      <guid>http://mviera.io/blog/desplegando-trac-con-gunicorn/</guid>
       <description>&lt;p&gt;En &lt;a title=&#34;mi anterior post&#34;
 href=&#34;/blog/gunicorn/&#34; target=&#34;_blank&#34;&gt;mi anterior
 post&lt;/a&gt; hablé sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org&#34;
@@ -455,10 +455,10 @@ de socket.&lt;/p&gt;
     
     <item>
       <title>Gunicorn</title>
-      <link>http://blog.manuelviera.es/blog/gunicorn/</link>
+      <link>http://mviera.io/blog/gunicorn/</link>
       <pubDate>Thu, 01 Sep 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/gunicorn/</guid>
+      <guid>http://mviera.io/blog/gunicorn/</guid>
       <description>&lt;p&gt;Hace no mucho que empecé a escuchar sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, creo que allá por Marzo cuando &lt;a title=&#34;Lorenzo Gil&#34; href=&#34;http://www.lorenzogil.com/&#34; target=&#34;_blank&#34;&gt;Lorenzo Gil&lt;/a&gt; se encontraba en la PyCon 2011, pero no me había propuesto probarlo hasta hace unos días. Pero bueno, empecemos por el principio&amp;hellip;&lt;/p&gt;
 
 &lt;p&gt;&lt;h2&gt;¿Qué es Gunicorn?&lt;/h2&gt;
@@ -546,10 +546,10 @@ Gunicorn me ha sorprendido no solo por su fácil instalación, a diferencia de &
     
     <item>
       <title>Automatizando con Tox</title>
-      <link>http://blog.manuelviera.es/blog/automatizando-con-tox/</link>
+      <link>http://mviera.io/blog/automatizando-con-tox/</link>
       <pubDate>Tue, 23 Aug 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/automatizando-con-tox/</guid>
+      <guid>http://mviera.io/blog/automatizando-con-tox/</guid>
       <description>&lt;p&gt;Hace unos días me encontré con &lt;a title=&#34;Tox&#34; href=&#34;https://bitbucket.org/hpk42/tox&#34;&gt;Tox&lt;/a&gt; y realmente me llamó la atención, pero&amp;hellip;&lt;/p&gt;
 
 &lt;p&gt;&lt;h2&gt;¿Qué es Tox?&lt;/h2&gt;
@@ -632,10 +632,10 @@ Bastaría con ejecutar la siguiente instrucción:&lt;/p&gt;
     
     <item>
       <title>Cambiar contraseñas en OS X sin un CD de OS X</title>
-      <link>http://blog.manuelviera.es/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</link>
+      <link>http://mviera.io/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</link>
       <pubDate>Sun, 21 Aug 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</guid>
+      <guid>http://mviera.io/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</guid>
       <description>&lt;p&gt;Hace no mucho una amiga que tiene un Macbook me comentó que por alguna extraña
 razón no podía acceder a su cuenta de usuario. Ella aseguraba no haber cambiado
 la contraseña y que la que estaba introduciendo era la contraseña correcta. Y
@@ -682,10 +682,10 @@ configurado, si no, se muestra la bienvenida a OS X.&lt;/p&gt;
     
     <item>
       <title>EasyTrac, un despliegue automatizado de Trac</title>
-      <link>http://blog.manuelviera.es/blog/easytrac-un-despliegue-automatizado-de-trac/</link>
+      <link>http://mviera.io/blog/easytrac-un-despliegue-automatizado-de-trac/</link>
       <pubDate>Tue, 01 Feb 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/easytrac-un-despliegue-automatizado-de-trac/</guid>
+      <guid>http://mviera.io/blog/easytrac-un-despliegue-automatizado-de-trac/</guid>
       <description>&lt;p&gt;Como ya comenté en posts anteriores, en &lt;a href=&#34;http://www.yaco.es&#34;
 target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt; trabajamos a diario con Trac, todas nuestras
 tareas están en Trac, incluyendo documentación de proyectos, etc; en &lt;a

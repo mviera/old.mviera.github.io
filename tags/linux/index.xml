@@ -3,7 +3,7 @@
   <channel>
       <title>Linux on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/linux/index.xml/</link>
+    <link>http://mviera.io/tags/linux/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Qué es un sparse file</title>
-      <link>http://blog.manuelviera.es/blog/que-es-un-sparse-file/</link>
+      <link>http://mviera.io/blog/que-es-un-sparse-file/</link>
       <pubDate>Thu, 17 Jan 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/que-es-un-sparse-file/</guid>
+      <guid>http://mviera.io/blog/que-es-un-sparse-file/</guid>
       <description>
 
 &lt;p&gt;Hoy me he encontrado con el término &lt;em&gt;sparse file&lt;/em&gt; y realmente no lo conocía,
@@ -259,10 +259,10 @@ Tamariz&lt;/a&gt;:&lt;/p&gt;
     
     <item>
       <title>Nginx como proxy HTTP</title>
-      <link>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</link>
+      <link>http://mviera.io/blog/nginx-como-proxy-http/</link>
       <pubDate>Sun, 06 Jan 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</guid>
+      <guid>http://mviera.io/blog/nginx-como-proxy-http/</guid>
       <description>
 
 &lt;p&gt;De regalo de Reyes os traigo un post bastante sencillo sobre Nginx. Se trata de
@@ -496,10 +496,10 @@ se dispone de un servidor web interno que sirva una aplicación web.&lt;/p&gt;
     
     <item>
       <title>Nginx</title>
-      <link>http://blog.manuelviera.es/blog/nginx/</link>
+      <link>http://mviera.io/blog/nginx/</link>
       <pubDate>Fri, 23 Nov 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/nginx/</guid>
+      <guid>http://mviera.io/blog/nginx/</guid>
       <description>
 
 &lt;p&gt;Hace bastante tiempo que tengo en mente escribir un post sobre Nginx
@@ -799,10 +799,10 @@ Nginx en &lt;a href=&#34;http://wiki.nginx.org/Main&#34;&gt;http://wiki.nginx.or
     
     <item>
       <title>Añadir nuevas fuentes en Linux</title>
-      <link>http://blog.manuelviera.es/blog/anadir-nuevas-fuentes-en-linux/</link>
+      <link>http://mviera.io/blog/anadir-nuevas-fuentes-en-linux/</link>
       <pubDate>Mon, 27 Aug 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/anadir-nuevas-fuentes-en-linux/</guid>
+      <guid>http://mviera.io/blog/anadir-nuevas-fuentes-en-linux/</guid>
       <description>
 
 &lt;p&gt;Añadir nuevas fuentes a mi sistema Linux siempre ha sido una incógnita, al
@@ -1084,10 +1084,10 @@ pasado a mi :-)&lt;/p&gt;
     
     <item>
       <title>Entendiendo umask</title>
-      <link>http://blog.manuelviera.es/blog/entendiendo-umask/</link>
+      <link>http://mviera.io/blog/entendiendo-umask/</link>
       <pubDate>Fri, 01 Jun 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/entendiendo-umask/</guid>
+      <guid>http://mviera.io/blog/entendiendo-umask/</guid>
       <description>
 
 &lt;p&gt;Ahora mismo estoy preparándome para obtener la certificación
@@ -1227,10 +1227,10 @@ resulta ser 644.&lt;/p&gt;&lt;/li&gt;
     
     <item>
       <title>Actualizando CentOS a una release concreta</title>
-      <link>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</link>
+      <link>http://mviera.io/blog/centos-a-una-release-concreta/</link>
       <pubDate>Tue, 06 Mar 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</guid>
+      <guid>http://mviera.io/blog/centos-a-una-release-concreta/</guid>
       <description>&lt;p&gt;Ya hacía bastante tiempo que no paraba por aquí para escribir un artículo, así
 que hoy me voy a tomar mi tiempo y voy a escribir acerca de CentOS.&lt;/p&gt;
 

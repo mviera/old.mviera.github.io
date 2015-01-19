@@ -3,7 +3,7 @@
   <channel>
       <title>Cron on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/cron/index.xml/</link>
+    <link>http://mviera.io/tags/cron/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Crontab</title>
-      <link>http://blog.manuelviera.es/blog/crontab/</link>
+      <link>http://mviera.io/blog/crontab/</link>
       <pubDate>Thu, 27 Jan 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/crontab/</guid>
+      <guid>http://mviera.io/blog/crontab/</guid>
       <description>&lt;p&gt;Hoy trabajando en &lt;a href=&#34;http://www.yaco.es&#34; target=&#34;_blank&#34;&gt;Yaco
 Sistemas&lt;/a&gt; he aprendido algo nuevo sobre cron. Seguramente muchos de los que
 os moveis entre GNU/Linux y similares, conoceréis el demonio cron.&lt;/p&gt;

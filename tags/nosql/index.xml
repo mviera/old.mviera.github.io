@@ -3,7 +3,7 @@
   <channel>
       <title>Nosql on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/nosql/index.xml/</link>
+    <link>http://mviera.io/tags/nosql/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Empezando con MongoDB Part.II</title>
-      <link>http://blog.manuelviera.es/blog/empezando-con-mongodb-part-ii/</link>
+      <link>http://mviera.io/blog/empezando-con-mongodb-part-ii/</link>
       <pubDate>Sat, 02 Mar 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/empezando-con-mongodb-part-ii/</guid>
+      <guid>http://mviera.io/blog/empezando-con-mongodb-part-ii/</guid>
       <description>
 
 &lt;p&gt;En mi &lt;a href=&#34;/blog/empezando-con-mongodb/&#34;&gt;anterior post&lt;/a&gt; hablaba sobre &lt;a href=&#34;/blog/empezando-con-mongodb/&#34;&gt;cómo empezar
@@ -475,10 +475,10 @@ lo básico, lo mejor está por llegar: ReplicaSets, Indexes, Shardings, etc.&lt;
     
     <item>
       <title>Empezando con MongoDB</title>
-      <link>http://blog.manuelviera.es/blog/empezando-con-mongodb/</link>
+      <link>http://mviera.io/blog/empezando-con-mongodb/</link>
       <pubDate>Wed, 06 Feb 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/empezando-con-mongodb/</guid>
+      <guid>http://mviera.io/blog/empezando-con-mongodb/</guid>
       <description>
 
 &lt;p&gt;Normalmente muchos de los que nos dedicamos a la informática, cuando escuchamos

@@ -3,7 +3,7 @@
   <channel>
       <title>Voip on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/voip/index.xml/</link>
+    <link>http://mviera.io/tags/voip/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Configurando los clientes SIP</title>
-      <link>http://blog.manuelviera.es/blog/configurando-los-clientes-sip/</link>
+      <link>http://mviera.io/blog/configurando-los-clientes-sip/</link>
       <pubDate>Sat, 22 Jan 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/configurando-los-clientes-sip/</guid>
+      <guid>http://mviera.io/blog/configurando-los-clientes-sip/</guid>
       <description>&lt;p style=&#34;text-align: left;&#34;&gt;Bueno, vamos a empezar por el principio. Deberemos
 tener presente el diagrama de red que presenté en el &lt;a
 href=&#34;/blog/diagrama-y-componentes-de-red-con-asterisk/&#34;
@@ -206,10 +206,10 @@ de marcado o dialplan. Pero esto ya es tema para otro post ;-)&lt;/p&gt;
     
     <item>
       <title>Diagrama y componentes de red con Asterisk</title>
-      <link>http://blog.manuelviera.es/blog/diagrama-y-componentes-de-red-con-asterisk/</link>
+      <link>http://mviera.io/blog/diagrama-y-componentes-de-red-con-asterisk/</link>
       <pubDate>Wed, 19 Jan 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/diagrama-y-componentes-de-red-con-asterisk/</guid>
+      <guid>http://mviera.io/blog/diagrama-y-componentes-de-red-con-asterisk/</guid>
       <description>&lt;p&gt;Qué ganas tenía de encontrar un rato para seguir posteando :-) Mi idea es
 enseñaros una configuración básica en Asterisk y para ello he hecho un diagrama
 de red, concretamente el que tengo ahora mismo en casa y con el que estoy

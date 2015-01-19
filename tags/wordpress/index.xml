@@ -3,7 +3,7 @@
   <channel>
       <title>Wordpress on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/wordpress/index.xml/</link>
+    <link>http://mviera.io/tags/wordpress/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Migrando de Wordpress a Ghost</title>
-      <link>http://blog.manuelviera.es/blog/migrando-de-wordpress-a-ghost/</link>
+      <link>http://mviera.io/blog/migrando-de-wordpress-a-ghost/</link>
       <pubDate>Sat, 28 Dec 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/migrando-de-wordpress-a-ghost/</guid>
+      <guid>http://mviera.io/blog/migrando-de-wordpress-a-ghost/</guid>
       <description>
 
 &lt;p&gt;¡Hola!&lt;/p&gt;

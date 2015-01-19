@@ -3,7 +3,7 @@
   <channel>
       <title>Osx on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/tags/osx/index.xml/</link>
+    <link>http://mviera.io/tags/osx/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Actualizate a la nueva versión de OS X</title>
-      <link>http://blog.manuelviera.es/blog/actualizate-a-la-nueva-version-de-os-x/</link>
+      <link>http://mviera.io/blog/actualizate-a-la-nueva-version-de-os-x/</link>
       <pubDate>Tue, 03 Jul 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/actualizate-a-la-nueva-version-de-os-x/</guid>
+      <guid>http://mviera.io/blog/actualizate-a-la-nueva-version-de-os-x/</guid>
       <description>
 
 &lt;p&gt;Aunque mi sistema operativo favorito es GNU/Linux, y es el que uso a diario;
@@ -100,10 +100,10 @@ no son nada baratos&amp;hellip;&lt;/p&gt;
     
     <item>
       <title>Cambiar contraseñas en OS X sin un CD de OS X</title>
-      <link>http://blog.manuelviera.es/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</link>
+      <link>http://mviera.io/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</link>
       <pubDate>Sun, 21 Aug 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</guid>
+      <guid>http://mviera.io/blog/cambiar-contrasenas-en-os-x-sin-un-cd-de-os-x/</guid>
       <description>&lt;p&gt;Hace no mucho una amiga que tiene un Macbook me comentó que por alguna extraña
 razón no podía acceder a su cuenta de usuario. Ella aseguraba no haber cambiado
 la contraseña y que la que estaba introduciendo era la contraseña correcta. Y

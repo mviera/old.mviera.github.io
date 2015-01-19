@@ -3,7 +3,7 @@
   <channel>
       <title>Recent Content on Manuel Viera </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://blog.manuelviera.es/index.xml/</link>
+    <link>http://mviera.io/index.xml/</link>
     <language>es-es</language>
     
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>About</title>
-      <link>http://blog.manuelviera.es/about/</link>
+      <link>http://mviera.io/about/</link>
       <pubDate>Sun, 04 Jan 2015 15:04:39 CET</pubDate>
       
-      <guid>http://blog.manuelviera.es/about/</guid>
+      <guid>http://mviera.io/about/</guid>
       <description>&lt;p&gt;Hola,&lt;/p&gt;
 
 &lt;p&gt;Soy Senior Sysadmin en &lt;a href=&#34;http://crononauta.com&#34;&gt;Crononauta&lt;/a&gt; actualmente.
@@ -35,10 +35,10 @@ Moleskine, tocar la guitarra y la edición / posproducción de video :-)&lt;/p&g
     
     <item>
       <title>Migrando de Wordpress a Ghost</title>
-      <link>http://blog.manuelviera.es/blog/migrando-de-wordpress-a-ghost/</link>
+      <link>http://mviera.io/blog/migrando-de-wordpress-a-ghost/</link>
       <pubDate>Sat, 28 Dec 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/migrando-de-wordpress-a-ghost/</guid>
+      <guid>http://mviera.io/blog/migrando-de-wordpress-a-ghost/</guid>
       <description>
 
 &lt;p&gt;¡Hola!&lt;/p&gt;
@@ -463,10 +463,10 @@ Manu.&lt;/p&gt;
     
     <item>
       <title>Instalar Solr en Jetty</title>
-      <link>http://blog.manuelviera.es/blog/instalar-solr-en-jetty/</link>
+      <link>http://mviera.io/blog/instalar-solr-en-jetty/</link>
       <pubDate>Mon, 29 Apr 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/instalar-solr-en-jetty/</guid>
+      <guid>http://mviera.io/blog/instalar-solr-en-jetty/</guid>
       <description>
 
 &lt;p&gt;Hace ya más de un mes que no pasaba por aquí más que para ver las estadísticas
@@ -666,10 +666,10 @@ directorio &lt;code&gt;example&lt;/code&gt;:&lt;/p&gt;
     
     <item>
       <title>Empezando con MongoDB Part.II</title>
-      <link>http://blog.manuelviera.es/blog/empezando-con-mongodb-part-ii/</link>
+      <link>http://mviera.io/blog/empezando-con-mongodb-part-ii/</link>
       <pubDate>Sat, 02 Mar 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/empezando-con-mongodb-part-ii/</guid>
+      <guid>http://mviera.io/blog/empezando-con-mongodb-part-ii/</guid>
       <description>
 
 &lt;p&gt;En mi &lt;a href=&#34;/blog/empezando-con-mongodb/&#34;&gt;anterior post&lt;/a&gt; hablaba sobre &lt;a href=&#34;/blog/empezando-con-mongodb/&#34;&gt;cómo empezar
@@ -1130,10 +1130,10 @@ lo básico, lo mejor está por llegar: ReplicaSets, Indexes, Shardings, etc.&lt;
     
     <item>
       <title>Empezando con MongoDB</title>
-      <link>http://blog.manuelviera.es/blog/empezando-con-mongodb/</link>
+      <link>http://mviera.io/blog/empezando-con-mongodb/</link>
       <pubDate>Wed, 06 Feb 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/empezando-con-mongodb/</guid>
+      <guid>http://mviera.io/blog/empezando-con-mongodb/</guid>
       <description>
 
 &lt;p&gt;Normalmente muchos de los que nos dedicamos a la informática, cuando escuchamos
@@ -1678,10 +1678,10 @@ en &lt;a href=&#34;https://education.10gen.com&#34;&gt;https://education.10gen.c
     
     <item>
       <title>Qué es un sparse file</title>
-      <link>http://blog.manuelviera.es/blog/que-es-un-sparse-file/</link>
+      <link>http://mviera.io/blog/que-es-un-sparse-file/</link>
       <pubDate>Thu, 17 Jan 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/que-es-un-sparse-file/</guid>
+      <guid>http://mviera.io/blog/que-es-un-sparse-file/</guid>
       <description>
 
 &lt;p&gt;Hoy me he encontrado con el término &lt;em&gt;sparse file&lt;/em&gt; y realmente no lo conocía,
@@ -1926,10 +1926,10 @@ Tamariz&lt;/a&gt;:&lt;/p&gt;
     
     <item>
       <title>Nginx como proxy HTTP</title>
-      <link>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</link>
+      <link>http://mviera.io/blog/nginx-como-proxy-http/</link>
       <pubDate>Sun, 06 Jan 2013 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/nginx-como-proxy-http/</guid>
+      <guid>http://mviera.io/blog/nginx-como-proxy-http/</guid>
       <description>
 
 &lt;p&gt;De regalo de Reyes os traigo un post bastante sencillo sobre Nginx. Se trata de
@@ -2163,10 +2163,10 @@ se dispone de un servidor web interno que sirva una aplicación web.&lt;/p&gt;
     
     <item>
       <title>Adiós 2012, Hello 2013!</title>
-      <link>http://blog.manuelviera.es/blog/adios-2012-hello-2013/</link>
+      <link>http://mviera.io/blog/adios-2012-hello-2013/</link>
       <pubDate>Mon, 31 Dec 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/adios-2012-hello-2013/</guid>
+      <guid>http://mviera.io/blog/adios-2012-hello-2013/</guid>
       <description>&lt;p&gt;Bueno pues el 2012 ya está a punto de terminar, ya solo quedan horas. Llevo ya
 un buen rato pensando, intentando resumir lo que ha sido mi 2012 y no se si es
 que han pasado muchas cosas, pocas o es que estoy empezando a perder la memoria
@@ -2213,10 +2213,10 @@ siguen &amp;ldquo;estando&amp;rdquo;&amp;hellip;&lt;/p&gt;
     
     <item>
       <title>Nginx</title>
-      <link>http://blog.manuelviera.es/blog/nginx/</link>
+      <link>http://mviera.io/blog/nginx/</link>
       <pubDate>Fri, 23 Nov 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/nginx/</guid>
+      <guid>http://mviera.io/blog/nginx/</guid>
       <description>
 
 &lt;p&gt;Hace bastante tiempo que tengo en mente escribir un post sobre Nginx
@@ -2516,10 +2516,10 @@ Nginx en &lt;a href=&#34;http://wiki.nginx.org/Main&#34;&gt;http://wiki.nginx.or
     
     <item>
       <title>Añadir nuevas fuentes en Linux</title>
-      <link>http://blog.manuelviera.es/blog/anadir-nuevas-fuentes-en-linux/</link>
+      <link>http://mviera.io/blog/anadir-nuevas-fuentes-en-linux/</link>
       <pubDate>Mon, 27 Aug 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/anadir-nuevas-fuentes-en-linux/</guid>
+      <guid>http://mviera.io/blog/anadir-nuevas-fuentes-en-linux/</guid>
       <description>
 
 &lt;p&gt;Añadir nuevas fuentes a mi sistema Linux siempre ha sido una incógnita, al
@@ -2801,10 +2801,10 @@ pasado a mi :-)&lt;/p&gt;
     
     <item>
       <title>Actualizate a la nueva versión de OS X</title>
-      <link>http://blog.manuelviera.es/blog/actualizate-a-la-nueva-version-de-os-x/</link>
+      <link>http://mviera.io/blog/actualizate-a-la-nueva-version-de-os-x/</link>
       <pubDate>Tue, 03 Jul 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/actualizate-a-la-nueva-version-de-os-x/</guid>
+      <guid>http://mviera.io/blog/actualizate-a-la-nueva-version-de-os-x/</guid>
       <description>
 
 &lt;p&gt;Aunque mi sistema operativo favorito es GNU/Linux, y es el que uso a diario;
@@ -2890,10 +2890,10 @@ no son nada baratos&amp;hellip;&lt;/p&gt;
     
     <item>
       <title>Entendiendo umask</title>
-      <link>http://blog.manuelviera.es/blog/entendiendo-umask/</link>
+      <link>http://mviera.io/blog/entendiendo-umask/</link>
       <pubDate>Fri, 01 Jun 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/entendiendo-umask/</guid>
+      <guid>http://mviera.io/blog/entendiendo-umask/</guid>
       <description>
 
 &lt;p&gt;Ahora mismo estoy preparándome para obtener la certificación
@@ -3033,10 +3033,10 @@ resulta ser 644.&lt;/p&gt;&lt;/li&gt;
     
     <item>
       <title>Autenticando con certificado digital tras un proxy reverso</title>
-      <link>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</link>
+      <link>http://mviera.io/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</link>
       <pubDate>Sun, 15 Apr 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</guid>
+      <guid>http://mviera.io/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</guid>
       <description>&lt;p&gt;Hace ya algún tiempo, trabajando en &lt;a title=&#34;Yaco Sistemas&#34;
 href=&#34;http://www.yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;, me encontré con un contratiempo
 tras desplegar una aplicación web y hoy he decidido compartir con vosotros la
@@ -3157,10 +3157,10 @@ mismo problema, a mi &lt;strong&gt;+ExportCertData&lt;/strong&gt; &amp;ldquo;me 
     
     <item>
       <title>Actualizando CentOS a una release concreta</title>
-      <link>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</link>
+      <link>http://mviera.io/blog/centos-a-una-release-concreta/</link>
       <pubDate>Tue, 06 Mar 2012 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/centos-a-una-release-concreta/</guid>
+      <guid>http://mviera.io/blog/centos-a-una-release-concreta/</guid>
       <description>&lt;p&gt;Ya hacía bastante tiempo que no paraba por aquí para escribir un artículo, así
 que hoy me voy a tomar mi tiempo y voy a escribir acerca de CentOS.&lt;/p&gt;
 
@@ -3290,10 +3290,10 @@ Un saludo!&lt;/p&gt;
     
     <item>
       <title>Desplegando Trac con Gunicorn</title>
-      <link>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</link>
+      <link>http://mviera.io/blog/desplegando-trac-con-gunicorn/</link>
       <pubDate>Fri, 02 Sep 2011 00:00:00 UTC</pubDate>
       
-      <guid>http://blog.manuelviera.es/blog/desplegando-trac-con-gunicorn/</guid>
+      <guid>http://mviera.io/blog/desplegando-trac-con-gunicorn/</guid>
       <description>&lt;p&gt;En &lt;a title=&#34;mi anterior post&#34;
 href=&#34;/blog/gunicorn/&#34; target=&#34;_blank&#34;&gt;mi anterior
 post&lt;/a&gt; hablé sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org&#34;
