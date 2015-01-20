@@ -64,19 +64,21 @@ generales del canal SIP son:&lt;/p&gt;
     &lt;li&gt;&lt;strong&gt;disallow&lt;/strong&gt;: códecs de audio que no vamos a permitir. Cuando vamos a restringir los códecs de audio, lo mejor es siempre prohibirlos todos (disallow=all) y luego permitir aquellos que queramos.&lt;/li&gt;
     &lt;li&gt;&lt;strong&gt;nat&lt;/strong&gt;: habilitamos o deshabilitamos el soporte de nat para la extensión.&lt;/li&gt;
 &lt;/ul&gt;
-Un ejemplo para el contexto &lt;strong&gt;[general]&lt;/strong&gt; en
-/etc/asterisk/sip.conf podría ser la siguiente:
 
-    [general]
-    port=5060
-    bindaddr=0.0.0.0
-    context=normal
-    videosupport=no
-    language=es
-    disallow=all
-    allow=alaw,gsm
+&lt;p&gt;Un ejemplo para el contexto &lt;strong&gt;[general]&lt;/strong&gt; en
+/etc/asterisk/sip.conf podría ser la siguiente:&lt;/p&gt;
 
-&lt;h2&gt;Definiendo los clientes SIP&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;[general]
+port=5060
+bindaddr=0.0.0.0
+context=normal
+videosupport=no
+language=es
+disallow=all
+allow=alaw,gsm
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;h2&gt;Definiendo los clientes SIP&lt;/h2&gt;
 Como he comentado anteriormente, antes de que un cliente SIP pueda enviar o recibir llamadas a través de Asterisk, debe ser declarado y configurado en el fichero &lt;strong&gt;/etc/asterisk/sip.conf&lt;/strong&gt;. Cada cliente SIP se configurará como si de otro contexto / sección se tratase, y podemos especificar varios parámetros. Hasta ahora los que he utilizado han sido los siguientes:
 &lt;ul&gt;
     &lt;li&gt;&lt;strong&gt;type&lt;/strong&gt;: define la clase de conexión que tendrá el cliente. Hay tres tipos de clientes SIP:
@@ -91,8 +93,8 @@ Como he comentado anteriormente, antes de que un cliente SIP pueda enviar o reci
     &lt;li&gt;&lt;strong&gt;secret&lt;/strong&gt;: contraseña con la que se realizará la autenticación en Asterisk junto con el username.&lt;/li&gt;
     &lt;li&gt;&lt;strong&gt;context&lt;/strong&gt;: contexto asociado al cliente en el dialplan de Asterisk, es decir, contexto que se aplicará en el fichero &lt;strong&gt;extensions.conf&lt;/strong&gt; del cual hablaremos más adelante.&lt;/li&gt;
     &lt;li&gt;&lt;strong&gt;dtmfmode&lt;/strong&gt;: &lt;a href=&#34;http://es.wikipedia.org/wiki/Marcaci%C3%B3n_por_tonos&#34; target=&#34;_blank&#34;&gt;Dual-Tone Multi-Frequecy (DTMF)&lt;/a&gt; se refiere a la marcación por tonos. Normalmente le especifico que use el estandar &lt;a href=&#34;http://www.ietf.org/rfc/rfc2833.txt&#34; target=&#34;_blank&#34;&gt;rfc2833&lt;/a&gt;.&lt;/li&gt;
-    &lt;li&gt;&lt;strong&gt;qualify&lt;/strong&gt;: si se establece a &#39;yes&#39; podremos monitorizar la extensión. Esta configuración no es muy recomendable cuando tenemos muchas extensiones.&lt;/li&gt;
-&lt;/ul&gt;
+    &lt;li&gt;&lt;strong&gt;qualify&lt;/strong&gt;: si se establece a &amp;lsquo;yes&amp;rsquo; podremos monitorizar la extensión. Esta configuración no es muy recomendable cuando tenemos muchas extensiones.&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
 
 &lt;p&gt;Bien! Ya tenemos lo suficiente como para empezar a registrar cada uno de los
 clientes SIP :-) De esta forma, para registrar el teléfono digital cuya
@@ -150,7 +152,7 @@ secret. ¿Cierto?&lt;/p&gt;
 podremos &amp;ldquo;heredar&amp;rdquo; parte de la configuración, pudiendo sobreescribir o incluir
 nuevos parámetros que nos sean necesarios. Utilizaremos &lt;code&gt;(!)&lt;/code&gt; junto
 al nombre de la sección, para especificar que una sección actuará como una
-máscara. Ejemplo: &lt;code&gt;&lt;a href=&#34;!&#34;&gt;nombre_seccion&lt;/a&gt;&lt;/code&gt;.&lt;/p&gt;
+máscara. Ejemplo: &lt;code&gt;[nombre_seccion](!)&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Ya que sabemos sobre la existencia de las máscaras en Asterisk, vamos a
 modificar la configuración actual en /etc/asterisk/sip.conf. Crearemos una
@@ -172,7 +174,7 @@ nat=yes
 &lt;p&gt;Para especificar que una sección &amp;ldquo;hereda&amp;rdquo; de otra que actúa como máscara
 especificaremos el nombre de la máscara a continuación del nombre de la
 sección, es decir, de la siguiente forma:
-&lt;code&gt;&lt;a href=&#34;nombre_mascara&#34;&gt;nombre_seccion&lt;/a&gt;&lt;/code&gt;. Por lo que la configuración de
+&lt;code&gt;[nombre_seccion](nombre_mascara)&lt;/code&gt;. Por lo que la configuración de
 las extensiones 1001 y 1003 se reduciría a lo siguiente:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;[1001](normal)

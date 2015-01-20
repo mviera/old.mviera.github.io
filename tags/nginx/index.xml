@@ -319,7 +319,7 @@ personalmente, optaría por una &lt;strong&gt;instalación desde las fuentes&lt;
 antes de instalar desde las fuentes sopesaría mis necesidades sobre Nginx, es
 decir, si es una instalación en producción pero sólo voy a servir &lt;strong&gt;HTML
 estático&lt;/strong&gt;, es muy posible que aun siendo una versión antigua de Nginx, hubiera
-optado por la &lt;strong&gt;instalación por PAQUETERÍa&lt;/strong&gt;. Pero si el fin es servir una
+optado por la &lt;strong&gt;instalación por paquetería&lt;/strong&gt;. Pero si el fin es servir una
 &lt;strong&gt;web más compleja&lt;/strong&gt;, optaría por &lt;strong&gt;utilizar la versión estable más reciente de
 Nginx&lt;/strong&gt; y &lt;strong&gt;compilar desde las fuentes&lt;/strong&gt;.&lt;/p&gt;
 

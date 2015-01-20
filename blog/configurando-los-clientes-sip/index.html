@@ -112,19 +112,21 @@ generales del canal SIP son:</p>
     <li><strong>disallow</strong>: códecs de audio que no vamos a permitir. Cuando vamos a restringir los códecs de audio, lo mejor es siempre prohibirlos todos (disallow=all) y luego permitir aquellos que queramos.</li>
     <li><strong>nat</strong>: habilitamos o deshabilitamos el soporte de nat para la extensión.</li>
 </ul>
-Un ejemplo para el contexto <strong>[general]</strong> en
-/etc/asterisk/sip.conf podría ser la siguiente:
 
-    [general]
-    port=5060
-    bindaddr=0.0.0.0
-    context=normal
-    videosupport=no
-    language=es
-    disallow=all
-    allow=alaw,gsm
+<p>Un ejemplo para el contexto <strong>[general]</strong> en
+/etc/asterisk/sip.conf podría ser la siguiente:</p>
 
-<h2>Definiendo los clientes SIP</h2>
+<pre><code>[general]
+port=5060
+bindaddr=0.0.0.0
+context=normal
+videosupport=no
+language=es
+disallow=all
+allow=alaw,gsm
+</code></pre>
+
+<p><h2>Definiendo los clientes SIP</h2>
 Como he comentado anteriormente, antes de que un cliente SIP pueda enviar o recibir llamadas a través de Asterisk, debe ser declarado y configurado en el fichero <strong>/etc/asterisk/sip.conf</strong>. Cada cliente SIP se configurará como si de otro contexto / sección se tratase, y podemos especificar varios parámetros. Hasta ahora los que he utilizado han sido los siguientes:
 <ul>
     <li><strong>type</strong>: define la clase de conexión que tendrá el cliente. Hay tres tipos de clientes SIP:
@@ -139,8 +141,8 @@ Como he comentado anteriormente, antes de que un cliente SIP pueda enviar o reci
     <li><strong>secret</strong>: contraseña con la que se realizará la autenticación en Asterisk junto con el username.</li>
     <li><strong>context</strong>: contexto asociado al cliente en el dialplan de Asterisk, es decir, contexto que se aplicará en el fichero <strong>extensions.conf</strong> del cual hablaremos más adelante.</li>
     <li><strong>dtmfmode</strong>: <a href="http://es.wikipedia.org/wiki/Marcaci%C3%B3n_por_tonos" target="_blank">Dual-Tone Multi-Frequecy (DTMF)</a> se refiere a la marcación por tonos. Normalmente le especifico que use el estandar <a href="http://www.ietf.org/rfc/rfc2833.txt" target="_blank">rfc2833</a>.</li>
-    <li><strong>qualify</strong>: si se establece a 'yes' podremos monitorizar la extensión. Esta configuración no es muy recomendable cuando tenemos muchas extensiones.</li>
-</ul>
+    <li><strong>qualify</strong>: si se establece a &lsquo;yes&rsquo; podremos monitorizar la extensión. Esta configuración no es muy recomendable cuando tenemos muchas extensiones.</li>
+</ul></p>
 
 <p>Bien! Ya tenemos lo suficiente como para empezar a registrar cada uno de los
 clientes SIP :-) De esta forma, para registrar el teléfono digital cuya
@@ -198,7 +200,7 @@ secret. ¿Cierto?</p>
 podremos &ldquo;heredar&rdquo; parte de la configuración, pudiendo sobreescribir o incluir
 nuevos parámetros que nos sean necesarios. Utilizaremos <code>(!)</code> junto
 al nombre de la sección, para especificar que una sección actuará como una
-máscara. Ejemplo: <code><a href="!">nombre_seccion</a></code>.</p>
+máscara. Ejemplo: <code>[nombre_seccion](!)</code>.</p>
 
 <p>Ya que sabemos sobre la existencia de las máscaras en Asterisk, vamos a
 modificar la configuración actual en /etc/asterisk/sip.conf. Crearemos una
@@ -220,7 +222,7 @@ nat=yes
 <p>Para especificar que una sección &ldquo;hereda&rdquo; de otra que actúa como máscara
 especificaremos el nombre de la máscara a continuación del nombre de la
 sección, es decir, de la siguiente forma:
-<code><a href="nombre_mascara">nombre_seccion</a></code>. Por lo que la configuración de
+<code>[nombre_seccion](nombre_mascara)</code>. Por lo que la configuración de
 las extensiones 1001 y 1003 se reduciría a lo siguiente:</p>
 
 <pre><code>[1001](normal)
