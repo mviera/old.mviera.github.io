@@ -7,15 +7,22 @@
     <language>es-es</language>
     
     
-    <updated>Sun, 04 Jan 2015 15:04:39 CET</updated>
+    <updated>Sun, 04 Jan 2015 15:04:39 &#43;0100</updated>
     
     <item>
       <title>About</title>
       <link>http://mviera.io/about/</link>
-      <pubDate>Sun, 04 Jan 2015 15:04:39 CET</pubDate>
+      <pubDate>Sun, 04 Jan 2015 15:04:39 &#43;0100</pubDate>
       
       <guid>http://mviera.io/about/</guid>
-      <description>&lt;p&gt;Hola,&lt;/p&gt;
+      <description>&lt;figure &gt;
+&lt;center&gt;
+    
+        &lt;img src=&#34;/images/mviera.about.jpg&#34;  /&gt;
+    
+    
+&lt;/center&gt;
+&lt;/figure&gt;
 
 &lt;p&gt;Soy Senior Sysadmin en &lt;a href=&#34;http://crononauta.com&#34;&gt;Crononauta&lt;/a&gt; actualmente.
 Sysadmin en &lt;a href=&#34;http://www.yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt; durante más de 2 años.
