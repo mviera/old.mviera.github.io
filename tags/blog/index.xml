@@ -7,7 +7,59 @@
     <language>es-es</language>
     
     
-    <updated>Sat, 28 Dec 2013 00:00:00 UTC</updated>
+    <updated>Mon, 02 Nov 2015 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Y pasaron dos años ...</title>
+      <link>http://mviera.io/blog/y-pasaron-dos-anos/</link>
+      <pubDate>Mon, 02 Nov 2015 00:00:00 UTC</pubDate>
+      
+      <guid>http://mviera.io/blog/y-pasaron-dos-anos/</guid>
+      <description>&lt;p&gt;Y pasaron dos años. Que se dice pronto. Realmente aún no me creo que hayan
+pasado dos años sin escribir nada en el blog. Supongo que es algo que vas
+dejando por aquello de que trabajas mucho tiempo al día, y luego te faltan las
+ganas de sentarte enfrente del portatil, otra vez, a seguir hablando de lo
+mismo.&lt;/p&gt;
+
+&lt;p&gt;No obstante, aunque no haya escrito en todo este tiempo, tengo que decir que no
+he estado &amp;ldquo;ausente&amp;rdquo;, al menos no del todo, sino que he estado en &amp;ldquo;la sombra&amp;rdquo;,
+apuntando ideas, probando y migrando a otros frameworks para bloguear,
+trabajando, y sobre todo aprendiendo. Siempre que entro aquí, me siento
+orgulloso, porque aunque no le he dedicado mucho tiempo últimamente, las visitas
+diarias no decaen. Y lo más importante, sigo recibiendo comentarios y preguntas
+en algunos posts. Con lo cual, esto me empuja a seguir con este proyecto.
+¡Gracias!&lt;/p&gt;
+
+&lt;p&gt;Durante estos dos años he estado trabajando en Crononauta. La empresa donde
+trabajo actualmente, y en la que pretendo seguir durante más tiempo. Así quiero
+que sea de momento. Si recapacito un poco en todo este tiempo, creo que he
+crecido mucho, tanto como persona, como profesionalmente hablando.&lt;/p&gt;
+
+&lt;p&gt;Estoy satisfecho en este aspecto, porque creo que ahora soy capaz de proponer y
+de aplicar mejores soluciones y, sobre todo, más profesionales. Por este motivo,
+igual incorporo algunos posts que hablen sobre la toma de decisiones a la hora
+de aplicar soluciones a problemas.&lt;/p&gt;
+
+&lt;p&gt;Además he aprendido mucho, y sigo aprendiendo, sobre monitorización. O ¿cómo
+saber qué pasa dentro de cada servidor y cómo adelantarnos a posibles problemas?
+Seguramente también incorpore posts sobre este campo. Me parece muy interesante
+poder adelantarte a problemas, o cómo definir una estrategia de monitorización
+que te permita detectar o monitorizar problemas a tan bajo nivel como necesites.&lt;/p&gt;
+
+&lt;p&gt;También, de un año hacia acá, he aprendido muchisimo sobre Cloud, y en concreto
+estamos especializándonos en AWS (Amazon Web Services). Espero no volver a
+abandonar este blog durante un tiempo de nuevo, porque me gustaría compartir
+mis conocimientos de AWS. ¡Hay muchas cosas interesantes!&lt;/p&gt;
+
+&lt;p&gt;No me enrrollo más. Este post es un poco para &amp;ldquo;romper el hielo&amp;rdquo; y convencerme a
+mí mismo, de que tengo que dedicar parte de mi tiempo a exportar conocimiento
+aquí. Espero escribir pronto de nuevo.&lt;/p&gt;
+
+&lt;p&gt;¡Nos leemos!&lt;/p&gt;
+
+&lt;p&gt;:wq! blog/y-pasaron-dos-años.md&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Migrando de Wordpress a Ghost</title>

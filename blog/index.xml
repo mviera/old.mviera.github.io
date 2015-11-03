@@ -7,7 +7,59 @@
     <language>es-es</language>
     
     
-    <updated>Sat, 28 Dec 2013 00:00:00 UTC</updated>
+    <updated>Mon, 02 Nov 2015 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Y pasaron dos años ...</title>
+      <link>http://mviera.io/blog/y-pasaron-dos-anos/</link>
+      <pubDate>Mon, 02 Nov 2015 00:00:00 UTC</pubDate>
+      
+      <guid>http://mviera.io/blog/y-pasaron-dos-anos/</guid>
+      <description>&lt;p&gt;Y pasaron dos años. Que se dice pronto. Realmente aún no me creo que hayan
+pasado dos años sin escribir nada en el blog. Supongo que es algo que vas
+dejando por aquello de que trabajas mucho tiempo al día, y luego te faltan las
+ganas de sentarte enfrente del portatil, otra vez, a seguir hablando de lo
+mismo.&lt;/p&gt;
+
+&lt;p&gt;No obstante, aunque no haya escrito en todo este tiempo, tengo que decir que no
+he estado &amp;ldquo;ausente&amp;rdquo;, al menos no del todo, sino que he estado en &amp;ldquo;la sombra&amp;rdquo;,
+apuntando ideas, probando y migrando a otros frameworks para bloguear,
+trabajando, y sobre todo aprendiendo. Siempre que entro aquí, me siento
+orgulloso, porque aunque no le he dedicado mucho tiempo últimamente, las visitas
+diarias no decaen. Y lo más importante, sigo recibiendo comentarios y preguntas
+en algunos posts. Con lo cual, esto me empuja a seguir con este proyecto.
+¡Gracias!&lt;/p&gt;
+
+&lt;p&gt;Durante estos dos años he estado trabajando en Crononauta. La empresa donde
+trabajo actualmente, y en la que pretendo seguir durante más tiempo. Así quiero
+que sea de momento. Si recapacito un poco en todo este tiempo, creo que he
+crecido mucho, tanto como persona, como profesionalmente hablando.&lt;/p&gt;
+
+&lt;p&gt;Estoy satisfecho en este aspecto, porque creo que ahora soy capaz de proponer y
+de aplicar mejores soluciones y, sobre todo, más profesionales. Por este motivo,
+igual incorporo algunos posts que hablen sobre la toma de decisiones a la hora
+de aplicar soluciones a problemas.&lt;/p&gt;
+
+&lt;p&gt;Además he aprendido mucho, y sigo aprendiendo, sobre monitorización. O ¿cómo
+saber qué pasa dentro de cada servidor y cómo adelantarnos a posibles problemas?
+Seguramente también incorpore posts sobre este campo. Me parece muy interesante
+poder adelantarte a problemas, o cómo definir una estrategia de monitorización
+que te permita detectar o monitorizar problemas a tan bajo nivel como necesites.&lt;/p&gt;
+
+&lt;p&gt;También, de un año hacia acá, he aprendido muchisimo sobre Cloud, y en concreto
+estamos especializándonos en AWS (Amazon Web Services). Espero no volver a
+abandonar este blog durante un tiempo de nuevo, porque me gustaría compartir
+mis conocimientos de AWS. ¡Hay muchas cosas interesantes!&lt;/p&gt;
+
+&lt;p&gt;No me enrrollo más. Este post es un poco para &amp;ldquo;romper el hielo&amp;rdquo; y convencerme a
+mí mismo, de que tengo que dedicar parte de mi tiempo a exportar conocimiento
+aquí. Espero escribir pronto de nuevo.&lt;/p&gt;
+
+&lt;p&gt;¡Nos leemos!&lt;/p&gt;
+
+&lt;p&gt;:wq! blog/y-pasaron-dos-años.md&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Migrando de Wordpress a Ghost</title>
@@ -3448,97 +3500,6 @@ de socket.&lt;/p&gt;
 &lt;p&gt;Y eso esto todo amig@s! Espero que os haya gustado y gracias por leerme!&lt;/p&gt;
 
 &lt;p&gt;Un saludo!&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Gunicorn</title>
-      <link>http://mviera.io/blog/gunicorn/</link>
-      <pubDate>Thu, 01 Sep 2011 00:00:00 UTC</pubDate>
-      
-      <guid>http://mviera.io/blog/gunicorn/</guid>
-      <description>&lt;p&gt;Hace no mucho que empecé a escuchar sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, creo que allá por Marzo cuando &lt;a title=&#34;Lorenzo Gil&#34; href=&#34;http://www.lorenzogil.com/&#34; target=&#34;_blank&#34;&gt;Lorenzo Gil&lt;/a&gt; se encontraba en la PyCon 2011, pero no me había propuesto probarlo hasta hace unos días. Pero bueno, empecemos por el principio&amp;hellip;&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;¿Qué es Gunicorn?&lt;/h2&gt;
-&lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org/&#34; target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, también conocido como Green Unicorn (Unicornio Verde), es un servidor WSGI HTTP para Python. Es un pre-fork del proyecto Unicorn de Ruby.
-Gunicorn es compatible con varios web frameworks, soporta WSGI, Django y Paster de forma nativa; consume pocos recursos en ejecución y es bastante rápido.&lt;/p&gt;
-
-&lt;p&gt;Como he comentado en el párrafo anterior, soporta nativamente WSGI, Django y Paster; administra los workers de forma automática, permite establecer hooks para hacerlo más extensible, compatible con Python 2.5 o superior.&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Instalando Gunicorn&lt;/h2&gt;
-Su instalación es realmente sencilla, justo como cualquier otro módulo de Python.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ pip install gunicorn
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;o si lo preferimos, podemos obtener el código con git e instalarlo como cualquier otra aplicación en Python.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ git clone git://github.com/benoitc/gunicorn.git
-$ cd gunicorn
-$ python setup.py install
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Una vez instalado Gunicorn tendremos a nuestra disposición tres comandos con los que servir diferentes web frameworks.&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Ejecutando Gunicorn&lt;/h2&gt;
-Los comandos disponibles en Gunicorn son:
-&lt;ul&gt;
-    &lt;li&gt;&lt;strong&gt;gunicorn&lt;/strong&gt;: utilizado para servir aplicaciones WSGI.&lt;/li&gt;
-    &lt;li&gt;&lt;strong&gt;gunicorn_django&lt;/strong&gt;: utilizado para servir aplicaciones Django.&lt;/li&gt;
-    &lt;li&gt;&lt;strong&gt;gunicorn_paster&lt;/strong&gt;: para frameworks compatibles con Paster como Pylons, TurboGears 2, &amp;hellip;&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;
-
-&lt;p&gt;En este post me centraré en el comando &lt;strong&gt;gunicorn&lt;/strong&gt; pero podeis encontrar más información de cada uno de ellos en &lt;a title=&#34;la documentación oficial de Gunicorn&#34; href=&#34;http://gunicorn.org/run.html&#34; target=&#34;_blank&#34;&gt;la documentación oficial de Gunicorn&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Configurando Gunicorn&lt;/h2&gt;
-La configuración de Gunicorn también es muy sencilla, básicamente consiste en un fichero Python que tenga permisos de lectura en el sistema de ficheros, excepto que nuestra aplicación haya sido desarrollada utilizando Paster, en este caso haremos uso de un fichero INI.&lt;/p&gt;
-
-&lt;p&gt;Su sintaxis de uso es:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ gunicorn [OPTIONS] APP_MODULE
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Donde APP_MODULE está compuesto por $(MODULE_NAME):$(VARIABLE_NAME). Un ejemplo de uso sería el siguiente:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ gunicorn --workers 2 prueba:aplicacion
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Gunicorn buscará el módulo, es decir, el fichero prueba.py, y el nombre de la variable (aplicacion) debe hacer referencia a una función, normalmente a la función main de nuestra aplicación, que debe encontrarse especificada en el módulo.&lt;/p&gt;
-
-&lt;p&gt;El comando &lt;strong&gt;gunicorn&lt;/strong&gt; ofrece una extensa lista de opciones para configurar su comportamiento, pero las que he utilizado y que me han parecido más interesantes son:
-&lt;ul&gt;
-    &lt;li&gt;&lt;code&gt;&amp;ndash;config FILE&lt;/code&gt;: ruta hacia el fichero de configuración.&lt;/li&gt;
-    &lt;li&gt;&lt;code&gt;&amp;ndash;bind ADDRESS&lt;/code&gt;: es posible especificar tanto &lt;code&gt;HOST:PUERTO&lt;/code&gt; como la ruta a un socket con &lt;code&gt;unix:RUTA_SOCKET&lt;/code&gt;.
-Ejemplo: &lt;code&gt;&amp;ndash;bind unix:///home/mviera/gunicorn/gunicorn.sock&lt;/code&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;code&gt;&amp;ndash;workers INT&lt;/code&gt;: número de procesos workers que se arrancarán para servir las peticiones.&lt;/li&gt;
-    &lt;li&gt;&lt;code&gt;&amp;ndash;max-requests INT&lt;/code&gt;: número máximo de peticiones que servirá un worker antes de ser reiniciado.&lt;/li&gt;
-    &lt;li&gt;&lt;code&gt;&amp;ndash;debug&lt;/code&gt;: activa el debug en el servidor.&lt;/li&gt;
-    &lt;li&gt;&lt;code&gt;&amp;ndash;log-file&lt;/code&gt;: fichero de log.&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;
-
-&lt;p&gt;Un ejemplo de ejecución sería:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ gunicorn modulo:application --workers 2 \
---bind unix:///home/mviera/gunicorn/gunicorn.sock \
---max-requets 1000 --log-file /home/mviera/gunicorn/gunicorn.log
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Podeis consultar el resto de opciones en &lt;a title=&#34;la documentación de configuración de Gunicorn&#34; href=&#34;http://gunicorn.org/configure.html&#34; target=&#34;_blank&#34;&gt;la documentación de configuración de Gunicorn&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Por último y para terminar con el despliegue, una vez que tengamos a Gunicorn sirviendo nuestra aplicación lo correcto sería instalar un servidor web que actúe como proxy HTTP hacia nuestra aplicación, yo como siempre recomiendo utilizar Nginx :-)&lt;/p&gt;
-
-&lt;p&gt;Y hasta aquí lo que he aprendido sobre Gunicorn, un breve resumen de la documentación oficial.&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Conclusiones&lt;/h2&gt;
-Gunicorn me ha sorprendido no solo por su fácil instalación, a diferencia de &lt;a title=&#34;uWSGI&#34; href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt; que necesita ser compilado; sino también por su fácil configuración y uso.&lt;/p&gt;
-
-&lt;p&gt;Como dije al principio, cuenta con una serie de hooks que permite ejecutar código Python en los diferentes puntos de ejecución: &lt;code&gt;on_start&lt;/code&gt;, &lt;code&gt;when_ready&lt;/code&gt;, &lt;code&gt;on_reload&lt;/code&gt;, &lt;code&gt;pre_fork&lt;/code&gt;, &lt;code&gt;post_fork&lt;/code&gt;, etc. Esto también me ha gustado mucho, aunque no los he llegado a probar.&lt;/p&gt;
-
-&lt;p&gt;La verdad es que Gunicorn me ha dejado con un muy buen sabor de boca aunque no he llegado a probarlo en un entorno real de producción para ver cómo se comporta. De momento seguiré con &lt;a title=&#34;uWSGI&#34; href=&#34;http://projects.unbit.it/uwsgi/&#34; target=&#34;_blank&#34;&gt;uWSGI&lt;/a&gt; hasta que tenga la ocasión de utilizar Gunicorn ;-)&lt;/p&gt;
-
-&lt;p&gt;Un saludo.&lt;/p&gt;
-
-&lt;p&gt;PD: En el próximo post explicaré cómo desplegar Trac utilizando Gunicorn!&lt;/p&gt;
 </description>
     </item>
     

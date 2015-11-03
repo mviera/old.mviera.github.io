@@ -7,7 +7,59 @@
     <language>es-es</language>
     
     
-    <updated>Sun, 04 Jan 2015 15:04:39 &#43;0100</updated>
+    <updated>Mon, 02 Nov 2015 00:00:00 UTC</updated>
+    
+    <item>
+      <title>Y pasaron dos años ...</title>
+      <link>http://mviera.io/blog/y-pasaron-dos-anos/</link>
+      <pubDate>Mon, 02 Nov 2015 00:00:00 UTC</pubDate>
+      
+      <guid>http://mviera.io/blog/y-pasaron-dos-anos/</guid>
+      <description>&lt;p&gt;Y pasaron dos años. Que se dice pronto. Realmente aún no me creo que hayan
+pasado dos años sin escribir nada en el blog. Supongo que es algo que vas
+dejando por aquello de que trabajas mucho tiempo al día, y luego te faltan las
+ganas de sentarte enfrente del portatil, otra vez, a seguir hablando de lo
+mismo.&lt;/p&gt;
+
+&lt;p&gt;No obstante, aunque no haya escrito en todo este tiempo, tengo que decir que no
+he estado &amp;ldquo;ausente&amp;rdquo;, al menos no del todo, sino que he estado en &amp;ldquo;la sombra&amp;rdquo;,
+apuntando ideas, probando y migrando a otros frameworks para bloguear,
+trabajando, y sobre todo aprendiendo. Siempre que entro aquí, me siento
+orgulloso, porque aunque no le he dedicado mucho tiempo últimamente, las visitas
+diarias no decaen. Y lo más importante, sigo recibiendo comentarios y preguntas
+en algunos posts. Con lo cual, esto me empuja a seguir con este proyecto.
+¡Gracias!&lt;/p&gt;
+
+&lt;p&gt;Durante estos dos años he estado trabajando en Crononauta. La empresa donde
+trabajo actualmente, y en la que pretendo seguir durante más tiempo. Así quiero
+que sea de momento. Si recapacito un poco en todo este tiempo, creo que he
+crecido mucho, tanto como persona, como profesionalmente hablando.&lt;/p&gt;
+
+&lt;p&gt;Estoy satisfecho en este aspecto, porque creo que ahora soy capaz de proponer y
+de aplicar mejores soluciones y, sobre todo, más profesionales. Por este motivo,
+igual incorporo algunos posts que hablen sobre la toma de decisiones a la hora
+de aplicar soluciones a problemas.&lt;/p&gt;
+
+&lt;p&gt;Además he aprendido mucho, y sigo aprendiendo, sobre monitorización. O ¿cómo
+saber qué pasa dentro de cada servidor y cómo adelantarnos a posibles problemas?
+Seguramente también incorpore posts sobre este campo. Me parece muy interesante
+poder adelantarte a problemas, o cómo definir una estrategia de monitorización
+que te permita detectar o monitorizar problemas a tan bajo nivel como necesites.&lt;/p&gt;
+
+&lt;p&gt;También, de un año hacia acá, he aprendido muchisimo sobre Cloud, y en concreto
+estamos especializándonos en AWS (Amazon Web Services). Espero no volver a
+abandonar este blog durante un tiempo de nuevo, porque me gustaría compartir
+mis conocimientos de AWS. ¡Hay muchas cosas interesantes!&lt;/p&gt;
+
+&lt;p&gt;No me enrrollo más. Este post es un poco para &amp;ldquo;romper el hielo&amp;rdquo; y convencerme a
+mí mismo, de que tengo que dedicar parte de mi tiempo a exportar conocimiento
+aquí. Espero escribir pronto de nuevo.&lt;/p&gt;
+
+&lt;p&gt;¡Nos leemos!&lt;/p&gt;
+
+&lt;p&gt;:wq! blog/y-pasaron-dos-años.md&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>About</title>
@@ -3292,193 +3344,6 @@ Kernel \r on an \m
 
 &lt;p&gt;Espero que os sea de utilidad, a mi seguro que no se me vuelve a olvidar :-D
 Un saludo!&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Desplegando Trac con Gunicorn</title>
-      <link>http://mviera.io/blog/desplegando-trac-con-gunicorn/</link>
-      <pubDate>Fri, 02 Sep 2011 00:00:00 UTC</pubDate>
-      
-      <guid>http://mviera.io/blog/desplegando-trac-con-gunicorn/</guid>
-      <description>&lt;p&gt;En &lt;a title=&#34;mi anterior post&#34;
-href=&#34;/blog/gunicorn/&#34; target=&#34;_blank&#34;&gt;mi anterior
-post&lt;/a&gt; hablé sobre &lt;a title=&#34;Gunicorn&#34; href=&#34;http://gunicorn.org&#34;
-target=&#34;_blank&#34;&gt;Gunicorn&lt;/a&gt;, un servidor HTTP WSGI para Python, y terminé
-diciendo que en el próximo articulo iba a explicar cómo desplegar Trac con
-Gunicorn y como lo prometido es deuda, vamos a ello&amp;hellip;&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Preparando el entorno&lt;/h2&gt;
-Antes de nada, vamos a crear un directorio de
-trabajo, donde se alojará todo. Se me ocurre llamarlo
-&lt;code&gt;testing-gunicorn&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ mkdir testing-gunicorn
-$ cd testing-gunicorn
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Antes de comenzar a instalar Trac y Gunicorn, vamos a crear un virtualenv en el
-directorio &lt;code&gt;testing-gunicorn&lt;/code&gt;, dentro del cual instalaremos todos
-los modulos de Python necesarios:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ virtualenv --no-site-packages --distribute .
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;y activamos el virtualenv:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ source bin/activate
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;h2&gt;Instalando Trac y Gunicorn&lt;/h2&gt;
-La instalación es realmente sencilla. Al igual que para instalar cualquier otro
-módulo de Python, utilizaremos &lt;code&gt;easy_install&lt;/code&gt; o &lt;code&gt;pip&lt;/code&gt;. Yo
-opto por utilizar &lt;code&gt;pip&lt;/code&gt;, así que ejecutamos las siguientes
-instrucciones:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ pip install Trac
-$ pip install gunicorn
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Una vez hecho esto, deberemos tener instalado Trac y Gunicorn dentro de nuestro
-virtualenv, el mismo que tenemos activado.&lt;/p&gt;
-
-&lt;p&gt;Para comprobar que la instalación se ha realizado correctamente, abriremos una
-shell de Python e importaremos los dos módulos instalados:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ python
-Python 2.7.1+ (r271:86832, Apr 11 2011, 18:13:53) 
-[GCC 4.5.2] on linux2
-Type &amp;quot;help&amp;quot;, &amp;quot;copyright&amp;quot;, &amp;quot;credits&amp;quot; or &amp;quot;license&amp;quot; for more information.
-&amp;gt;&amp;gt;&amp;gt; 
-&amp;gt;&amp;gt;&amp;gt; import trac
-&amp;gt;&amp;gt;&amp;gt; import gunicorn
-&amp;gt;&amp;gt;&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Esto quiere decir que la instalación se ha realizado correctamente. En caso
-contrario, obtendriamos un error al intentar importar el módulo, y se mostraría
-un error como el siguiente:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt; import trac
-Traceback (most recent call last):
-  File &amp;quot;&amp;quot;, line 1, in 
-ImportError: No module named trac&amp;lt;/pre&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Pero no es nuestro caso, asi que sigamos adelante :-)&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Creando un Trac de ejemplo&lt;/h2&gt; Tenemos Trac instalado, así que el
-siguiente paso será crear una instancia de Trac.&lt;/p&gt;
-
-&lt;p&gt;Crearemos un directorio llamado &amp;lsquo;projects&amp;rsquo; donde crearemos nuestras instancias
-de Trac:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ mkdir projects
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;y finalmente crearemos la instancia de Trac llamada demo, haciendo uso de la
-utilidad &lt;code&gt;trac-admin&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ trac-admin projects/demo initenv demo sqlite:db/trac.db
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;A modo de resumen, le hemos especificado a trac-admin que cree una instancia de
-Trac en el directorio &lt;code&gt;projects/demo&lt;/code&gt; con la opción
-&lt;code&gt;initenv&lt;/code&gt;, cuyo nombre es &amp;ldquo;demo&amp;rdquo; y siendo la base de datos de tipo
-sqlite, que se encontrará en &lt;code&gt;db/trac.db&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Hecho esto, tendremos nuestra instancia de Trac creada con una estructura como la siguiente:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;projects/
-└── demo
-    ├── attachments
-    ├── conf
-    │   ├── trac.ini
-    │   └── trac.ini.sample
-    ├── db
-    │   └── trac.db
-    ├── htdocs
-    ├── log
-    ├── plugins
-    ├── README
-    ├── templates
-    │   └── site.html.sample
-    └── VERSION
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;h2&gt;Configurando Gunicorn&lt;/h2&gt; Como comenté en &lt;a title=&#34;el anterior post&#34;
-href=&#34;http://blog.manuelviera.es/2011/09/gunicorn/&#34; target=&#34;_blank&#34;&gt;el anterior
-post&lt;/a&gt;, la configuración de Gunicorn la realizaremos creando un fichero
-Python.&lt;/p&gt;
-
-&lt;p&gt;Nuestro fichero de configuración se llamará &lt;code&gt;trac_launcher.py&lt;/code&gt; y su
-contenido debe ser el siguiente:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;#!/usr/bin/env python                                                                          
-import sys                                                                                     
-import os
-import trac.web.main
-
-sys.stdout = sys.stderr                                                                        
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-os.environ[&#39;TRAC_ENV_PARENT_DIR&#39;] = os.path.join(PROJECT_ROOT,&#39;projects&#39;)
-os.environ[&#39;PYTHON_EGG_CACHE&#39;] = os.path.join(PROJECT_ROOT, &#39;.egg-cache&#39;)
-application = trac.web.main.dispatch_request
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Básicamente el fichero de configuración está compuesto por:
-&lt;ol&gt;
-    &lt;li&gt;Importaciones de los módulos &lt;code&gt;sys&lt;/code&gt;, &lt;code&gt;os&lt;/code&gt; y &lt;code&gt;trac.web.main&lt;/code&gt;.&lt;/li&gt;
-    &lt;li&gt;Creación de dos variables de entorno:
-&lt;ul&gt;
-    &lt;li&gt;&lt;code&gt;TRAC_ENV_PARENT_DIR&lt;/code&gt;: directorio donde se alojan las instancias de Trac.&lt;/li&gt;
-    &lt;li&gt;&lt;code&gt;PYTHON_EGG_CACHE&lt;/code&gt;: directorio de caché de los huevos de Python.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-    &lt;li&gt;Instancia de la funcion &lt;code&gt;trac.web.main.dispatch_request&lt;/code&gt; en la variable &lt;code&gt;application&lt;/code&gt;.&lt;/li&gt;
-&lt;/ol&gt;&lt;/p&gt;
-
-&lt;p&gt;Antes de seguir hagamos un breve repaso:
-&lt;ul&gt;
-    &lt;li&gt;Nos encontramos en el directorio &lt;code&gt;testing-gunicorn&lt;/code&gt;.&lt;/li&gt;
-    &lt;li&gt;Tenemos nuestra instancia de Trac en &lt;code&gt;projects/demo&lt;/code&gt;.&lt;/li&gt;
-    &lt;li&gt;Hemos creado en el directorio actual el fichero de configuración para Gunicorn, llamado &lt;code&gt;trac_launcher.py&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;&lt;/p&gt;
-
-&lt;p&gt;El siguiente paso será ejecutar Gunicorn!&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Ejecutando Gunicorn&lt;/h2&gt;
-Tan fácil como ejecutar la siguiente instrucción:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ gunicorn trac_launcher:application
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;¡Guay! Ya deberíamos tener nuestro proyecto Trac accesible en
-&lt;a href=&#34;http://localhost:8000&#34;&gt;http://localhost:8000&lt;/a&gt; :-D&lt;/p&gt;
-
-&lt;p&gt;Por defecto Gunicorn arranca un solo worker, pero podemos indicarle que
-arranque más de uno, un número máximo de peticiones por worker y un fichero de
-log, por ejemplo:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ gunicorn trac_launcher:application \
---workers 2 \
---worker-connections 100 \
---log-file gunicorn.log
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Como hemos podido observar, Gunicorn abre por defecto el puerto 8000 en nuestro
-sistema, pero si por el contrario la comunicación la queremos hacer a través de
-un socket, deberemos indicarle la opción &lt;code&gt;&amp;ndash;bind
-unix:///home/mviera/testing-gunicorn/gunicorn.sock&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Por último y para terminar el despliegue, deberíamos instalar un servidor web
-que actuara de proxy, ya sea hacia &lt;code&gt;HOST:PUERTO&lt;/code&gt; o hacia el fichero
-de socket.&lt;/p&gt;
-
-&lt;p&gt;Y eso esto todo amig@s! Espero que os haya gustado y gracias por leerme!&lt;/p&gt;
-
-&lt;p&gt;Un saludo!&lt;/p&gt;
 </description>
     </item>
     
