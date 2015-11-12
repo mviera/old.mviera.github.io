@@ -7,7 +7,198 @@
     <language>es-es</language>
     
     
-    <updated>Mon, 02 Nov 2015 00:00:00 UTC</updated>
+    <updated>Thu, 12 Nov 2015 00:00:00 UTC</updated>
+    
+    <item>
+      <title>AWS Summit Barcelona 2015</title>
+      <link>http://mviera.io/blog/aws-summit-barcelona-2015/</link>
+      <pubDate>Thu, 12 Nov 2015 00:00:00 UTC</pubDate>
+      
+      <guid>http://mviera.io/blog/aws-summit-barcelona-2015/</guid>
+      <description>
+
+&lt;p&gt;No suelo viajar mucho por trabajo pero, desde que trabajo en Crononauta, siempre
+subo a Barcelona varias veces al año. Y además de trabajar, esta vez hemos
+aprovechado para asistir al &lt;strong&gt;AWS Summit 2015 Barcelona&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;El evento de Amazon Web Services, tuvo lugar durante todo la jornada del Jueves
+5 de Noviembre en Fira de Barcelona, Montjuïc. Nunca había estado en Fira
+Barcelona, con lo cual me impresionó el edificio, el salon de actos principal y
+toda la organización del evento. Especialmente el catering, que me pareció muy
+bueno. La calidad de la comida era bastante buena, y en ningún momento faltó de
+nada. En todo momento había snacks, zumos, agua, café y bollería.&lt;/p&gt;
+
+&lt;p&gt;En cuanto al evento, el AWS Summit Barcelona fue inaugurado por Guillem Veiga,
+Head of AWS en Iberia, con una breve introducción de todo lo que íbamos a poder ver durante la jornada.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;AWS re:Invent 2015&lt;/h3&gt;
+
+&lt;p&gt;Luego vino &lt;strong&gt;Jeff Barr&lt;/strong&gt;, el Chief Evangelist de AWS; que muchos lo conocemos
+ser quien administra y publica en el blog de AWS. Quién mejor que él, que lleva
+13 años trabajando en AWS, para contarnos cómo ha ido evolucionando AWS a lo
+largo de estos años. Entre otras cosas nos contaba cómo en 2007 AWS sólo contaba
+con tres servicios (EC2, RDS y S3), y actualmente en 2015 cuentan con más de 50
+servicios actualmente en 2015 y operando en 11 regiones diferentes. Jeff fue
+dando paso a ponencias como la de &lt;strong&gt;Luis Bosque&lt;/strong&gt; de &lt;strong&gt;CartoDB&lt;/strong&gt;, que nos
+explicó cómo funciona CartoDB, el volumen de datos que manejan y por qué
+decidieron migrar a AWS; o los chicos de &lt;strong&gt;BEEVA&lt;/strong&gt; que nos enseñaron su proyecto
+de Big Data con algoritmos de Machine Learning para ofrecer información útil a
+sus clientes sobre ventas de artículos por zonas, o incluso ventas de productos
+relacionados con su sector.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;AWS Security&lt;/h3&gt;
+
+&lt;p&gt;A continuación vino &lt;strong&gt;Bill Murray&lt;/strong&gt;, pero no el actor de cine, sino el director
+de AWS Security. Lo que más me llamó la atención de su ponencia fue la
+presentación de un nuevo producto llamado &lt;strong&gt;Amazon Inspector&lt;/strong&gt; que, de momento,
+está en &amp;ldquo;preview&amp;rdquo; y sólo está disponible en la región US West (Oregon). &lt;strong&gt;Amazon Inspector&lt;/strong&gt; te permite analizar el comportamiento de las aplicaciones que
+ejecutas en AWS y te ayuda a identificar fallos potenciales de seguridad.
+Básicamente te permite instalar un agente en las instancias EC2, para poder
+ejecutar una serie de checks que te ayudarán a comprobar la seguridad de tu
+plataforma. Bill nos enseñó algunos checks básicos como el login SSH con root.
+Una vez se ejecutan estos checks, te permite realizar un análisis general de la
+seguridad de la plataforma. De momento este servicio está algo limitado, porque
+los agentes sólo pueden ser instalados en Amazon Linux AMI 2015.03 (o
+posteriores) o Ubuntu Server 14.04 LTS, de momento.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Todo lo que necesitas saber sobre Autoscaling&lt;/h3&gt;
+
+&lt;p&gt;Seguro que si has trabajado ya sobre AWS, esto ya te suene de algo, o al menos
+ese era mi caso. Realmente el tema de Autoscaling es un servicio, sin coste
+adicional, que ofrece AWS dentro de EC2; y que permite que tu infraestructura
+escale horizontalmente, siempre y cuando esté preparada para ello, claro está.&lt;/p&gt;
+
+&lt;p&gt;Realmente, que una plataforma pueda escalar horizontalmente, no sólo depende de
+que configuremos o no el Autoscaling en EC2. Para que una plataforma pueda
+escalar horizontalmente debe estar bien diseñada, tanto a nivel de sistemas
+separando los servicios / stack de software de forma inteligente, como a nivel
+de código, porque la aplicación también debe estar preparada para escalar.&lt;/p&gt;
+
+&lt;p&gt;Si tenemos bien resuelta esta parte, AWS nos proporciona los componentes necesarios para escalar nuestra aplicación de forma más o menos sencilla, configurando los siguientes componentes:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Launch Configuration: permite definir la &amp;ldquo;template&amp;rdquo; de instancia EC2 que vamos a arrancar, en caso de que necesitemos auto escalar. Podremos definir qué AMI queremos usar, almacenamiento, security group, etc.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Auto Scaling Group: permite crear un grupo de Autoscaling basado en un Launch Configuration. Básicamente podemos definir el número mínimo de instancias en el grupo de auto escalado, número máximo de instancias, zonas de disponibilidad sobre la que vamos a operar, si queremos añadir las instancias bajo un balanceador o ELB (Elastic Load Balancer), etc.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;CloudWatch Alarms: &lt;strong&gt;CloudWatch&lt;/strong&gt; es el servicio de monitorización de AWS. Es un servicio que no supone coste adicional, siempre que no activemos el &lt;em&gt;Detailed Monitoring&lt;/em&gt;. Nos permitirá monitorizar nuestro Autoscaling Group, y en base a las alertas que configuremos, nuestra plataforma será capaz de lanzar nuevas instancias cuando sea necesario. Por ejemplo, podremos arrancar un par de instancias más en el caso de que el uso de CPU del grupo de Autoscaling supere el 80% durante 10 minutos, y volver a eliminarlas cuando la CPU del Autoscaling group baje del 40% durante 15 minutos.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Últimamente he trabajado mucho con esto, así que seguramente le dedique un post
+donde pueda entrar más en detalle.&lt;/p&gt;
+
+&lt;p&gt;### Gestionando Containers a Escala&lt;/p&gt;
+
+&lt;p&gt;En esta Live Demo se presentaba el servicio &lt;strong&gt;EC2 Container Service&lt;/strong&gt;, que
+permite desplegar, gestionar y escalar contenedores &lt;strong&gt;Docker&lt;/strong&gt; donde ejecutar
+aplicaciones, servicios o simplemente scripts para realizar cálculos.&lt;/p&gt;
+
+&lt;p&gt;En mi caso aún no tengo muchos conocimientos sobre Docker, pero si has trabajado
+con él, te facilitará la gestión de clusters de contenedores en varias
+instancias EC2. Aunque si esto no te gusta siempre puedes montar Docker desde
+cero en una instancia EC2.&lt;/p&gt;
+
+&lt;p&gt;La demo que hizo el ponente era desplegar una página web sencilla dentro de un
+cluster Docker. Podéis desplegar esta aplicación de ejemplo desde el Dashboard
+de ECS.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;ECS&lt;/strong&gt; básicamente te abstrae de todo lo referente a la administración de Docker,
+y te permite definir un cluster en unos cuantos pasos sencillos. Durante estos
+pasos puedes elegir la memoria asignada a cada contenedor, mapeo de puertos
+que se suele hacer en Docker, usar un ELB (balanceador) para el cluster, e
+incluso definir la cantidad y tipo de instancias EC2 en las que queremos
+alojar el cluster.&lt;/p&gt;
+
+&lt;p&gt;En mi caso me apunto estudiar este servicio, porque la verdad es que los conocimientos que tengo de él son bastante básicos.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Despliegue Continuo en AWS&lt;/h3&gt;
+
+&lt;p&gt;En esta Live Demo se presentaban tres servicios: &lt;strong&gt;AWS CodeCommit&lt;/strong&gt;, &lt;strong&gt;AWS
+CodePipeline&lt;/strong&gt; y &lt;strong&gt;AWS CodeDeploy&lt;/strong&gt;. Estos tres servicios están dentro de la
+categoría de &lt;em&gt;Developers Tools&lt;/em&gt; y permiten alojar código fuente, Integración
+Continua y deploy de código, respectivamente.&lt;/p&gt;
+
+&lt;p&gt;A decir verdad me perdí la demo de los dos primeros, pero pude asistir a la de
+&lt;strong&gt;AWS CodeDeploy&lt;/strong&gt;. &lt;strong&gt;CodeDeploy&lt;/strong&gt; permite desplegar código fuente de forma
+relativamente sencilla. En muy resumidas cuentas, este servicio se basa en tener
+un agente ejecutándose en cada una de las instancias y, una vez configurado un
+&lt;em&gt;Deployment Group&lt;/em&gt;, es posible especificar una URL hacía un fichero zip alojado
+en un Bucket de S3 o repositorio Github. Mediante un fichero de configuración,
+que debe ir dentro del repositorio de código, podremos indicar al agente dónde
+desplegar el código, o incluso ejecutar comandos tras realizar el deploy, en un
+&lt;em&gt;post-hook&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;CodeDeploy&lt;/strong&gt; permite configurar cuándo un deployment se considera &amp;ldquo;ok&amp;rdquo; o &amp;ldquo;fallido&amp;rdquo;.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;One at a Time&lt;/strong&gt;: se considera un deployment fallido si falla en al menos una de las instancias del &lt;em&gt;Deployment Group&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Half at a Time&lt;/strong&gt;: se considera fallido si falla en la mitad de las instancias del &lt;em&gt;Deployment Group&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;All at Once&lt;/strong&gt;: se considera deployment fallido si falla en todas las instancias del &lt;em&gt;Deployment Group&lt;/em&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Quizás una de las cosas que no me convencen de CodeDeploy es que se necesita
+tener un agente con un puerto abierto en cada instancia, lo cual puede añadir un
+punto de fallo en cuanto a seguridad; y que, si no estoy equivocado, no tiene
+opción de rollback. Si algo va mal, la única opción es volver a desplegar una
+versión del código que sepamos que funciona bien.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;Utilizando Spot Instances de Amazon EC2&lt;/h3&gt;
+
+&lt;p&gt;Las spot instances han avanzado mucho desde que fueron introducidas por primera
+vez. Normalmente el precio las instancias EC2, al margen del tipo de instancia
+que se elija con más o menos recursos; varia en función del &lt;em&gt;modelo de compra&lt;/em&gt;
+de la instancia. Puede ser &lt;em&gt;On Demand&lt;/em&gt;, &lt;em&gt;Reserved&lt;/em&gt;, o &lt;em&gt;Spot Instances&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Las instancias &lt;em&gt;On Demand&lt;/em&gt; son las de uso más común. Simplemente cada tipo de
+instancia en la modalidad de &lt;em&gt;On Demand&lt;/em&gt; tienen un precio fijo. Si arrancas una
+instancia &lt;em&gt;On Demand&lt;/em&gt; sabes que el precio que AWS te cobra es el especificado en
+la documentación, y el coste total dependerá del tiempo que esté esa instancia
+en modo &lt;em&gt;Running&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Pero también existe la modalidad de &lt;em&gt;Spot Instances&lt;/em&gt;. Para no hacer muy pesada
+la explicación, básicamente consiste en fijar el precio que te gustaría pagar
+por un tipo de instancia, y en el momento en que el precio de mercado esté por
+debajo del precio que hayas establecido, podrás arrancar instancias de ese tipo
+a ese precio. Es como jugar a bolsa, cuando las acciones caigan por debajo de un
+umbral de dinero, compro acciones.&lt;/p&gt;
+
+&lt;p&gt;La modalidad &lt;em&gt;Spot Instances&lt;/em&gt; es muy llamativa a la hora de aplicarla con un
+Autoscaling Group, pues podríamos conseguir ahorros bastante significativos,
+arrancando &lt;em&gt;Spot Instances&lt;/em&gt; cuando el precio caiga, y mientras tanto seguir
+usando &lt;em&gt;On Demand&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_5&#34;&gt;Amazon Elastic Filesystem&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Amazon Elastic Filesystem&lt;/strong&gt; es uno de los servicios que llevo esperando mucho tiempo. De momento, no está disponible en Ireland pero espero que lo estrenen en Europa de aquí a unos meses.&lt;/p&gt;
+
+&lt;p&gt;Uno de los principales problemas a resolver cuando trabajas en una
+infraestructura con escalabilidad horizontal, es la compartición de ficheros
+entre instancias. Hasta ahora mucha gente se ha configurado su propio cluster
+NFS, GlusterFS, e incluso he llegado a ver soluciones que usan un Bucket S3
+junto con &lt;em&gt;s3fs&lt;/em&gt;, lo cual me parece muy arriesgado, porque se ha demostrado que
+no funciona muy bien. Precisamente esto es lo que viene a resolver &lt;strong&gt;EFS&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Al igual que con el resto de servicios, podremos abstraernos de la creación del
+cluster de ficheros y del storage de éste. En pocos minutos podemos contar con
+un punto de montaje con varios Terabytes y con una SLA muy alta. Este servicio
+realmente se basa en &lt;em&gt;NSFv4&lt;/em&gt;. Estoy deseando poder probar este servicio en algún
+proyecto, hacer pruebas de carga y ver si realmente funciona tan bien como se
+espera, o si tendré que seguir usando mi propio cluster de GlusterFS para
+compartir ficheros entre instancias.&lt;/p&gt;
+
+&lt;p&gt;Y creo que esto es todo, la verdad es que mola mucho asistir a este tipo de
+eventos, porque no todo es resolver tickets, leer documentación, gestionar
+alertas y atender clientes. En este tipo de charlas siempre se abre un poco la
+mente, sobre todo escuchando las experiencias de los demás, en este caso con
+AWS.&lt;/p&gt;
+
+&lt;p&gt;En breve escribiré posts relacionados con Amazon Web Services, y espero poder entrar mucho más en detalle.&lt;/p&gt;
+
+&lt;p&gt;Un saludo!&lt;/p&gt;
+
+&lt;p&gt;:wq! blog/aws-summit-barcelona-2015.md&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Y pasaron dos años ...</title>
@@ -3211,139 +3402,6 @@ el usuario y los datos del certificado, haciendo posible la autenticación.&lt;/
 mismo problema, a mi &lt;strong&gt;+ExportCertData&lt;/strong&gt; &amp;ldquo;me salvó el día&amp;rdquo; :-)&lt;/p&gt;
 
 &lt;p&gt;Un saludo.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Actualizando CentOS a una release concreta</title>
-      <link>http://mviera.io/blog/centos-a-una-release-concreta/</link>
-      <pubDate>Tue, 06 Mar 2012 00:00:00 UTC</pubDate>
-      
-      <guid>http://mviera.io/blog/centos-a-una-release-concreta/</guid>
-      <description>&lt;p&gt;Ya hacía bastante tiempo que no paraba por aquí para escribir un artículo, así
-que hoy me voy a tomar mi tiempo y voy a escribir acerca de CentOS.&lt;/p&gt;
-
-&lt;p&gt;¿Y por qué sobre CentOS? Pues resulta que hoy trabajando en &lt;a title=&#34;Yaco
-Sistemas&#34; href=&#34;http://www.yaco.es&#34; target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt;, mi
-compañero &lt;a title=&#34;@sepu66&#34; href=&#34;http://twitter.com/sepu66&#34;
-target=&#34;_blank&#34;&gt;@sepu66&lt;/a&gt; necesitaba varias máquinas virtuales con CentOS
-5.6, aunque la template de la que disponía era de CentOS 5.5.&lt;/p&gt;
-
-&lt;p&gt;Fácil, pensé, creo la máquina virtual con CentOS 5.5 y actualizo la
-distribución con &lt;code&gt;yum update&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Y claro, pasados unos minutos actualizando paquetes, compruebo la release de la
-distribución y, para mi sorpresa, observo que se ha actualizado a la última
-release de CentOS 5, es decir, a CentOS 5.7:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
-
-CentOS release 5.7 (Final)
-Kernel \r on an \m
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;FAIL!, pensé (últimamente pienso mucho). Esto ya lo había yo solucionado antes,
-pero no lo recordaba bien. Es una de esas tareas que haces una vez en muchos
-meses y que al final terminas olvidando, así que por eso he decidido hacer un
-volcado de conocimiento en este artículo :-)&lt;/p&gt;
-
-&lt;p&gt;Tras un rato buscando alguna solución en internet, sin éxito por cierto, ya que
-todos los artículos que encontraba eran acerca de &amp;ldquo;Cómo actualizar CentOS de
-5.4 a 5.5&amp;rdquo; o &amp;ldquo;Cómo actualizar CentOS de 5.5 a 5.6&amp;rdquo;, en resumen, todos los
-artículos que encontraba eran actualizaciones a la release inmediatamente
-superior, así que se resumían en ejecutar &lt;code&gt;yum update&lt;/code&gt; y listo&amp;hellip;
-Pero mi idea era decidir yo a qué release concreta a actualizar.&lt;/p&gt;
-
-&lt;p&gt;Para solucionar este tema, volví a regenerar la máquina virtual con CentOS 5.5 y empecé a modificar la configuración de los repositorios.&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Configurando los repositorios&lt;/h2&gt;
-En CentOS normalmente los repositorios se encuentran configurados en ficheros
-que terminan en &lt;code&gt;.repo&lt;/code&gt; en el directorio
-&lt;code&gt;/etc/yum.repos.d/&lt;/code&gt;. En mi caso los repositorios configurados por
-defecto se encuentran en el fichero
-&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, así que lo primero que hice fue
-editar dicho fichero y deshabilitar los repositorios por defecto, añadiendo la
-siguiente linea en cada parte de configuración de cada repositorio:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;enabled=0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Dicha linea indica a &lt;code&gt;yum&lt;/code&gt; que el repositorio en cuestión se
-encuentra deshabilitado y no queremos que se utilice. Otra forma de
-deshabilitar los repositorios por defecto sería eliminando el fichero
-&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, pero no me parece un solución
-muy elegante.&lt;/p&gt;
-
-&lt;p&gt;Hecho esto, creé un nuevo fichero llamado
-&lt;code&gt;/etc/yum.repos.d/CentOS-Vault.repo&lt;/code&gt; en el que añadí lo siguiente:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;#---- Packages previously released as 5.6, and its updates
-[C5.6-base]
-name=CentOS-5.6 - Base
-baseurl=http://vault.centos.org/5.6/os/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
-enabled=1
-
-[C5.6-updates]
-name=CentOS-5.6 - Updates
-baseurl=http://vault.centos.org/5.6/updates/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
-enabled=1
-
-[C5.6-extras]
-name=CentOS-5.6 - Extras
-baseurl=http://vault.centos.org/5.6/extras/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
-enabled=1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;¿Dónde está el truco? El secreto se encuentra en el dominio utilizado en la
-URL, &lt;code&gt;vault.centos.org&lt;/code&gt; que se trata de un sitio perteneciente a
-CentOS donde se pueden encontrar los paquetes de releases antiguas de CentOS.
-Destacar como segundo truco que he fijado la versión de la release a 5.6 en la
-URL, por tanto esta distribución no pasará a una release posterior.&lt;/p&gt;
-
-&lt;p&gt;Importante también marcar los repositorios como activos especificando:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;enabled=1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;h2&gt;Listando los repositorios disponibles&lt;/h2&gt;
-Una vez configurado los repositorios a utilizar, podemos listarlos ejecutando
-&lt;code&gt;yum repolist&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# yum repolist
-Loaded plugins: fastestmirror
-Loading mirror speeds from cached hostfile
-repo id                                                                     repo name
-C5.6-base                                                                   CentOS-5.6 - Base
-C5.6-centosplus                                                             CentOS-5.6 - Plus
-C5.6-extras                                                                 CentOS-5.6 - Extras
-C5.6-updates                                                                CentOS-5.6 - Updates
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;h2&gt;Actualizando la distribución&lt;/h2&gt;
-Hecho esto, ya sólo nos queda forzar la actualización del sistema completo:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;y pasados unos minutos actualizando los paquetes del sistema, deberíamos tener
-nuestra distribución en la versión deseada, en mi caso, CentOS 5.6:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
-CentOS release 5.6 (Final)
-Kernel \r on an \m
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Espero que os sea de utilidad, a mi seguro que no se me vuelve a olvidar :-D
-Un saludo!&lt;/p&gt;
 </description>
     </item>
     

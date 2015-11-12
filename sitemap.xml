@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://mviera.io/</loc>
-    <lastmod>2015-11-02T00:00:00+00:00</lastmod>
+    <lastmod>2015-11-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://mviera.io/blog/aws-summit-barcelona-2015/</loc>
+    <lastmod>2015-11-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -148,12 +153,12 @@
   </url>
   
   <url>
-    <loc>http://mviera.io/blog/hola-mundo/</loc>
+    <loc>http://mviera.io/blog/iniciacion-a-asterisk/</loc>
     <lastmod>2011-01-04T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://mviera.io/blog/iniciacion-a-asterisk/</loc>
+    <loc>http://mviera.io/blog/hola-mundo/</loc>
     <lastmod>2011-01-04T00:00:00+00:00</lastmod>
   </url>
   
