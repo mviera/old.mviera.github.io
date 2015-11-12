@@ -29,7 +29,8 @@ bueno. La calidad de la comida era bastante buena, y en ningún momento faltó d
 nada. En todo momento había snacks, zumos, agua, café y bollería.&lt;/p&gt;
 
 &lt;p&gt;En cuanto al evento, el AWS Summit Barcelona fue inaugurado por Guillem Veiga,
-Head of AWS en Iberia, con una breve introducción de todo lo que íbamos a poder ver durante la jornada.&lt;/p&gt;
+Head of AWS en Iberia, con una breve introducción de todo lo que íbamos a poder
+ver durante la jornada.&lt;/p&gt;
 
 &lt;h3 id=&#34;toc_0&#34;&gt;AWS re:Invent 2015&lt;/h3&gt;
 
@@ -38,7 +39,7 @@ ser quien administra y publica en el blog de AWS. Quién mejor que él, que llev
 13 años trabajando en AWS, para contarnos cómo ha ido evolucionando AWS a lo
 largo de estos años. Entre otras cosas nos contaba cómo en 2007 AWS sólo contaba
 con tres servicios (EC2, RDS y S3), y actualmente en 2015 cuentan con más de 50
-servicios actualmente en 2015 y operando en 11 regiones diferentes. Jeff fue
+servicios, operando en 11 regiones diferentes. Jeff fue
 dando paso a ponencias como la de &lt;strong&gt;Luis Bosque&lt;/strong&gt; de &lt;strong&gt;CartoDB&lt;/strong&gt;, que nos
 explicó cómo funciona CartoDB, el volumen de datos que manejan y por qué
 decidieron migrar a AWS; o los chicos de &lt;strong&gt;BEEVA&lt;/strong&gt; que nos enseñaron su proyecto
@@ -51,13 +52,17 @@ relacionados con su sector.&lt;/p&gt;
 &lt;p&gt;A continuación vino &lt;strong&gt;Bill Murray&lt;/strong&gt;, pero no el actor de cine, sino el director
 de AWS Security. Lo que más me llamó la atención de su ponencia fue la
 presentación de un nuevo producto llamado &lt;strong&gt;Amazon Inspector&lt;/strong&gt; que, de momento,
-está en &amp;ldquo;preview&amp;rdquo; y sólo está disponible en la región US West (Oregon). &lt;strong&gt;Amazon Inspector&lt;/strong&gt; te permite analizar el comportamiento de las aplicaciones que
+está en &amp;ldquo;preview&amp;rdquo; y sólo está disponible en la región US West (Oregon).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Amazon Inspector&lt;/strong&gt; te permite analizar el comportamiento de las aplicaciones que
 ejecutas en AWS y te ayuda a identificar fallos potenciales de seguridad.
 Básicamente te permite instalar un agente en las instancias EC2, para poder
 ejecutar una serie de checks que te ayudarán a comprobar la seguridad de tu
 plataforma. Bill nos enseñó algunos checks básicos como el login SSH con root.
 Una vez se ejecutan estos checks, te permite realizar un análisis general de la
-seguridad de la plataforma. De momento este servicio está algo limitado, porque
+seguridad de la plataforma.&lt;/p&gt;
+
+&lt;p&gt;De momento este servicio está algo limitado, porque
 los agentes sólo pueden ser instalados en Amazon Linux AMI 2015.03 (o
 posteriores) o Ubuntu Server 14.04 LTS, de momento.&lt;/p&gt;
 
@@ -70,24 +75,37 @@ escale horizontalmente, siempre y cuando esté preparada para ello, claro está.
 
 &lt;p&gt;Realmente, que una plataforma pueda escalar horizontalmente, no sólo depende de
 que configuremos o no el Autoscaling en EC2. Para que una plataforma pueda
-escalar horizontalmente debe estar bien diseñada, tanto a nivel de sistemas
-separando los servicios / stack de software de forma inteligente, como a nivel
+escalar horizontalmente debe estar bien diseñada, tanto a nivel de sistemas,
+separando los servicios / stack de software de forma inteligente; como a nivel
 de código, porque la aplicación también debe estar preparada para escalar.&lt;/p&gt;
 
-&lt;p&gt;Si tenemos bien resuelta esta parte, AWS nos proporciona los componentes necesarios para escalar nuestra aplicación de forma más o menos sencilla, configurando los siguientes componentes:&lt;/p&gt;
+&lt;p&gt;Si tenemos bien resuelta esta parte, AWS nos proporciona los componentes
+necesarios para escalar nuestra aplicación de forma más o menos sencilla,
+configurando los siguientes componentes:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Launch Configuration: permite definir la &amp;ldquo;template&amp;rdquo; de instancia EC2 que vamos a arrancar, en caso de que necesitemos auto escalar. Podremos definir qué AMI queremos usar, almacenamiento, security group, etc.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Launch Configuration&lt;/strong&gt;: permite definir la &amp;ldquo;template&amp;rdquo; de instancia EC2 que vamos a arrancar, en
+caso de que necesitemos auto escalar. Podremos definir qué AMI queremos usar, almacenamiento,
+security group, etc.&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;Auto Scaling Group: permite crear un grupo de Autoscaling basado en un Launch Configuration. Básicamente podemos definir el número mínimo de instancias en el grupo de auto escalado, número máximo de instancias, zonas de disponibilidad sobre la que vamos a operar, si queremos añadir las instancias bajo un balanceador o ELB (Elastic Load Balancer), etc.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Auto Scaling Group&lt;/strong&gt;: permite crear un grupo de Autoscaling basado en un Launch Configuration.
+Básicamente podemos definir el número mínimo de instancias en el grupo de auto escalado, número
+máximo de instancias, zonas de disponibilidad sobre la que vamos a operar, si queremos añadir las
+instancias bajo un balanceador o ELB (Elastic Load Balancer), etc.&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;CloudWatch Alarms: &lt;strong&gt;CloudWatch&lt;/strong&gt; es el servicio de monitorización de AWS. Es un servicio que no supone coste adicional, siempre que no activemos el &lt;em&gt;Detailed Monitoring&lt;/em&gt;. Nos permitirá monitorizar nuestro Autoscaling Group, y en base a las alertas que configuremos, nuestra plataforma será capaz de lanzar nuevas instancias cuando sea necesario. Por ejemplo, podremos arrancar un par de instancias más en el caso de que el uso de CPU del grupo de Autoscaling supere el 80% durante 10 minutos, y volver a eliminarlas cuando la CPU del Autoscaling group baje del 40% durante 15 minutos.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;CloudWatch Alarms&lt;/strong&gt;: &lt;strong&gt;CloudWatch&lt;/strong&gt; es el servicio de monitorización de AWS. Es un servicio que
+no supone coste adicional, siempre que no activemos el &lt;em&gt;Detailed Monitoring&lt;/em&gt;. Nos permitirá
+monitorizar nuestro Autoscaling Group, y en base a las alertas que configuremos, nuestra
+plataforma será capaz de lanzar nuevas instancias cuando sea necesario. Por ejemplo, podremos
+arrancar un par de instancias más en el caso de que el uso de CPU del grupo de Autoscaling supere
+el 80% durante 10 minutos, y volver a eliminarlas cuando la CPU del Autoscaling group baje del
+40% durante 15 minutos.&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;Últimamente he trabajado mucho con esto, así que seguramente le dedique un post
 donde pueda entrar más en detalle.&lt;/p&gt;
 
-&lt;p&gt;### Gestionando Containers a Escala&lt;/p&gt;
+&lt;h3 id=&#34;toc_3&#34;&gt;Gestionando Containers a Escala&lt;/h3&gt;
 
 &lt;p&gt;En esta Live Demo se presentaba el servicio &lt;strong&gt;EC2 Container Service&lt;/strong&gt;, que
 permite desplegar, gestionar y escalar contenedores &lt;strong&gt;Docker&lt;/strong&gt; donde ejecutar
@@ -109,17 +127,18 @@ que se suele hacer en Docker, usar un ELB (balanceador) para el cluster, e
 incluso definir la cantidad y tipo de instancias EC2 en las que queremos
 alojar el cluster.&lt;/p&gt;
 
-&lt;p&gt;En mi caso me apunto estudiar este servicio, porque la verdad es que los conocimientos que tengo de él son bastante básicos.&lt;/p&gt;
+&lt;p&gt;En mi caso me apunto estudiar este servicio, porque la verdad es que los
+conocimientos que tengo de él son bastante básicos.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_3&#34;&gt;Despliegue Continuo en AWS&lt;/h3&gt;
+&lt;h3 id=&#34;toc_4&#34;&gt;Despliegue Continuo en AWS&lt;/h3&gt;
 
 &lt;p&gt;En esta Live Demo se presentaban tres servicios: &lt;strong&gt;AWS CodeCommit&lt;/strong&gt;, &lt;strong&gt;AWS
 CodePipeline&lt;/strong&gt; y &lt;strong&gt;AWS CodeDeploy&lt;/strong&gt;. Estos tres servicios están dentro de la
 categoría de &lt;em&gt;Developers Tools&lt;/em&gt; y permiten alojar código fuente, Integración
-Continua y deploy de código, respectivamente.&lt;/p&gt;
+Continua y deploy de código, respectivamente. A decir verdad me perdí la demo
+de los dos primeros, pero pude asistir a la de &lt;strong&gt;AWS CodeDeploy&lt;/strong&gt;.&lt;/p&gt;
 
-&lt;p&gt;A decir verdad me perdí la demo de los dos primeros, pero pude asistir a la de
-&lt;strong&gt;AWS CodeDeploy&lt;/strong&gt;. &lt;strong&gt;CodeDeploy&lt;/strong&gt; permite desplegar código fuente de forma
+&lt;p&gt;&lt;strong&gt;CodeDeploy&lt;/strong&gt; permite desplegar código fuente de forma
 relativamente sencilla. En muy resumidas cuentas, este servicio se basa en tener
 un agente ejecutándose en cada una de las instancias y, una vez configurado un
 &lt;em&gt;Deployment Group&lt;/em&gt;, es posible especificar una URL hacía un fichero zip alojado
@@ -142,7 +161,7 @@ punto de fallo en cuanto a seguridad; y que, si no estoy equivocado, no tiene
 opción de rollback. Si algo va mal, la única opción es volver a desplegar una
 versión del código que sepamos que funciona bien.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_4&#34;&gt;Utilizando Spot Instances de Amazon EC2&lt;/h3&gt;
+&lt;h3 id=&#34;toc_5&#34;&gt;Utilizando Spot Instances de Amazon EC2&lt;/h3&gt;
 
 &lt;p&gt;Las spot instances han avanzado mucho desde que fueron introducidas por primera
 vez. Normalmente el precio las instancias EC2, al margen del tipo de instancia
@@ -167,7 +186,7 @@ Autoscaling Group, pues podríamos conseguir ahorros bastante significativos,
 arrancando &lt;em&gt;Spot Instances&lt;/em&gt; cuando el precio caiga, y mientras tanto seguir
 usando &lt;em&gt;On Demand&lt;/em&gt;.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_5&#34;&gt;Amazon Elastic Filesystem&lt;/h3&gt;
+&lt;h3 id=&#34;toc_6&#34;&gt;Amazon Elastic Filesystem&lt;/h3&gt;
 
 &lt;p&gt;&lt;strong&gt;Amazon Elastic Filesystem&lt;/strong&gt; es uno de los servicios que llevo esperando mucho tiempo. De momento, no está disponible en Ireland pero espero que lo estrenen en Europa de aquí a unos meses.&lt;/p&gt;
 
