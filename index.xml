@@ -7,7 +7,276 @@
     <language>es-es</language>
     
     
-    <updated>Thu, 12 Nov 2015 00:00:00 UTC</updated>
+    <updated>Mon, 08 Feb 2016 00:30:53 CET</updated>
+    
+    <item>
+      <title>Compartiendo ficheros con GlusterFS</title>
+      <link>http://mviera.io/blog/compartiendo-ficheros-con-glusterfs/</link>
+      <pubDate>Mon, 08 Feb 2016 00:30:53 CET</pubDate>
+      
+      <guid>http://mviera.io/blog/compartiendo-ficheros-con-glusterfs/</guid>
+      <description>
+
+&lt;p&gt;Cuando aparece la necesidad de escalar una aplicación web, o cualquier otro servicio, en
+Internet; también aparecen nuevos problemas a resolver que antes incluso ni habíamos
+reparado en ellos. Uno de estos problemas es &lt;strong&gt;la compartición de ficheros&lt;/strong&gt; entre
+servidores.&lt;/p&gt;
+
+&lt;p&gt;En mi opinión, a día de hoy éste sigue siendo un dolor de cabeza para muchos Sysadmins
+o Systems Architects. Hay muchas formas de compartir ficheros entre servidores como NFS,
+S3FS, FileConveyor, un crontab con un rsync entre servidores. Hay muchas soluciones,
+algunas mejores y otras peores; pero hoy quería compartir la que hasta ahora creo que
+puede ser una buena solución para compartir ficheros, usando &lt;strong&gt;GlusterFS&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.glusterfs.org&#34;&gt;GlusterFS&lt;/a&gt; es un sistema de ficheros escalable en red, con el
+que poder crear soluciones de almacenamiento distribuidos por la red y de gran capacidad.
+Ni que decir tiene que &lt;strong&gt;GlusterFS&lt;/strong&gt; es software libre.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;Antes de empezar&lt;/h2&gt;
+
+&lt;p&gt;Normalmente en los despliegues que hacemos en AWS en &lt;a href=&#34;http://crononauta.com&#34;&gt;Crononauta&lt;/a&gt;,
+siempre utilizamos un mínimo de un par de instancias EC2 para el sistema de almacenamiento
+en red con &lt;strong&gt;GlusterFS&lt;/strong&gt;. Además, a cada una de estas dos instancias EC2, hacemos &lt;em&gt;attach&lt;/em&gt;
+de un disco EBS donde almacenaremos los ficheros en el clúster de ficheros en red. Esto
+nos permite tener &lt;strong&gt;redundancia&lt;/strong&gt; en los datos, &lt;strong&gt;alta disponibilidad&lt;/strong&gt; y &lt;strong&gt;escalabilidad
+horizontal&lt;/strong&gt; en el servicio. Con lo cual, tendremos un par de instancias que mantienen en
+clúster de almacenamiento actuando como GlusterFS Server y por otro lado, tendremos los
+clientes de GlusterFS que montarán este volumen compartido por la red.&lt;/p&gt;
+
+&lt;p&gt;Como detalle, en &lt;strong&gt;Crononauta&lt;/strong&gt; siempre usamos Debian como distribución, en este caso
+contamos con una Debian 8 (Jessie), aunque es totalmente aplicable a cualquier
+distribución basada en Debian como Ubuntu y/o derivadas.&lt;/p&gt;
+
+&lt;p&gt;Una vez tenemos esto, podemos empezar a trabajar&amp;hellip; ;-)&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Particionando los discos&lt;/h2&gt;
+
+&lt;p&gt;Utilizaremos &lt;strong&gt;XFS&lt;/strong&gt; como sistema de ficheros para el volumen compartido en red. Por lo
+que necesitaremos instalar las utilidades para trabajar con XFS, si no las tenemos ya
+instaladas.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apt-get install xfsprogs
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El siguiente paso será crear una partición en el volumen, en mi caso es &lt;code&gt;/dev/xvdf&lt;/code&gt;.
+Usaremos &lt;code&gt;fdisk&lt;/code&gt; para ello:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;fdisk /dev/xvdf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y una vez en la shell interactiva de &lt;code&gt;fdisk&lt;/code&gt;, teclearemos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;n&lt;/code&gt; para crear una nueva partición. No necesitamos especificar nada más, así que los
+siguientes datos que pide podemos usar los valores por defecto que ofrece &lt;code&gt;fdisk&lt;/code&gt;, asi
+que pulsaremos &lt;code&gt;Intro&lt;/code&gt; hasta finalizar. Una vez hecho esto, seguiremos dentro de la
+shell interactiva de &lt;code&gt;fdisk&lt;/code&gt;, y habremos creado una partición primaria que ocupa todo
+el espacio del volumen.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;w&lt;/code&gt; indicando que queremos escribir esta definición de partición en el disco y hacerla
+efectiva.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Ya tenemos la partición en el volumen, así que ahora la formatearemos y la añadiremos
+a nuestro &lt;code&gt;/etc/fstab&lt;/code&gt; para montarla en cada arranque del sistema. Seguiremos los
+siguientes pasos:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkfs.xfs -i size=512 /dev/xvdf1
+mkdir -p /export/brick1
+echo &amp;quot;/dev/xvdf1 /export/brick1 xfs defaults 1 2&amp;quot;  &amp;gt;&amp;gt; /etc/fstab
+mount -a &amp;amp;&amp;amp; mount
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Instalando GlusterFS&lt;/h2&gt;
+
+&lt;p&gt;Ya tenemos el volumen preparado para GlusterFS, ahora instalaremos el servicio.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apt-get update
+apt-get install glusterfs-server glusterfs-client glusterfs-common
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Importante realizar este paso en aquellas instancias / servidores que vayan a actuar como
+un GlusterFS Server.&lt;/p&gt;
+
+&lt;p&gt;Lo siguiente que haremos será configurar nuestro fichero &lt;code&gt;/etc/hosts&lt;/code&gt; para definir unos
+nombres DNS para nuestros GlusterFS Servers. También es posible hacerlo con un DNS
+interno. Si vuestros servidores, como en el caso de AWS EC2, contáis con IPs privadas,
+mejor usar esas. Si no, podéis usar las IPs pública.&lt;/p&gt;
+
+&lt;p&gt;Definiremos algo como lo siguiente en &lt;code&gt;/etc/hosts&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;xxx.xxx.xxx.xxx    gfs01.example.com
+xxx.xxx.xxx.xxx    gfs02.example.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;Un anillo para gobernarlos a todos&lt;/h2&gt;
+
+&lt;p&gt;Ya tenemos GlusterFS preparado para ser configurado. Ahora tendremos que configurar el
+&lt;em&gt;anillo de confianza&lt;/em&gt; entre ambos servidores GlusterFS Server. Para ello serán necesarios
+los siguientes pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Desde &lt;code&gt;gfs01.example.com&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster peer probe gfs02.example.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Desde &lt;code&gt;gfs02.example.com&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster peer probe gfs01.example.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Es &lt;strong&gt;muy importante&lt;/strong&gt; que haya conectividad entre ambos servidores, en caso contrario, los
+comandos anteriores fallarán. Si estás en AWS, asegúrate de tener bien configurado el
+&lt;strong&gt;Security Group&lt;/strong&gt; para ambas instancias de storage.&lt;/p&gt;
+
+&lt;p&gt;Si todo ha ido bien, tendremos el pool de confianza funcionando, así que lo siguiente será
+definir el volumen compartido. Usaremos la siguiente instrucción desde uno de los
+servidores GlusterFS:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster volume create gv0 replica 2 gfs01.example.com:/export/brick1/&amp;lt;volume-name&amp;gt; gfs02.example.com:/export/brick1/&amp;lt;volumen-name»
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por último, iniciaremos el volumen que justo acabamos de crear:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster volume start gv0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como detalle, podemos ver información sobre el volumen con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster volume info
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Llegados a este punto, el cluster de almacenamiento debe estar totalmente operativo. Si
+queremos hacer una prueba, es posible crear el punto de montaje hacia el volumen
+compartido y probar si se replican correctamente los ficheros. Crearemos el punto de
+montaje en &lt;code&gt;gfs01.example.com&lt;/code&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mount -t glusterfs localhost:/gv0 /mnt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ahora crearemos ficheros para comprobar si el funcionamiento de GlusterFS es correcto. Con
+la siguiente instrucción crearemos diez ficheros vacíos en el punto de montaje previamente
+creado:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;touch /mnt/test-file{1..10}.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si GlusterFS funciona correctamente, debemos poder ver estos mismos ficheros en
+&lt;code&gt;gfs02.example.com&lt;/code&gt; en el directorio &lt;code&gt;/export/brick1/&amp;lt;volume-name&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;Configurando los clientes&lt;/h2&gt;
+
+&lt;p&gt;Nos falta muy poco para terminar, ya sólo nos falta configurar los clientes de GlusterFS.
+Necesitaremos tener instalado el cliente de GlusterFS &lt;code&gt;glusterfs-client&lt;/code&gt; si no lo tenemos
+instalado.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apt-get install glusterfs-client
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Hecho esto, podremos probar a montar el volumen compartido por la red, y si todo va bien
+debemos ver los ficheros de prueba creados previamente.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mount -t glusterfs gfs01.example.com:/gv0 /mnt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por último, necesitaremos un script &lt;code&gt;/etc/init.d/glusterfs-mount&lt;/code&gt; que se encargue de montar el volumen
+compartido. En mi caso suelo utilizar el siguiente script:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#! /bin/bash
+### BEGIN INIT INFO
+# Provides:          glusterfs-mount
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5 
+# Default-Stop:      0 1 6 
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+#
+
+MOUNTPOINT=&amp;quot;/var/www/shared&amp;quot;
+GLUSTERFS_SERVER=&amp;quot;gfs01.example.com&amp;quot;
+GLUSTERFS_VOLUME=&amp;quot;gv0&amp;quot;
+
+# Some things that run always at boot
+mount -t glusterfs $GLUSTERFS_SERVER:/$GLUSTERFS_VOLUME $MOUNTPOINT
+#
+# Uncomment this line if you need to start Apache after mount glusterFS volume
+# service apache2 start
+#
+# Carry out specific functions when asked to by the system
+case &amp;quot;$1&amp;quot; in
+  start)
+    echo &amp;quot;Mounting glusterfs volumes &amp;quot;
+    mount -t glusterfs $GLUSTERFS_SERVER:/$GLUSTERFS_VOLUME $MOUNTPOINT
+    ;;
+  stop)
+    echo &amp;quot;Unmount glusterfs volumes&amp;quot;
+    umount $MOUNTPOINT
+    ;;
+  *)
+    echo &amp;quot;Usage: /etc/init.d/glusterfs-mount {start|stop}&amp;quot;
+    exit 1
+    ;;
+esac
+exit 0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ya solo nos queda dar permisos de ejecución a nuestro script y configurarlo para que se
+ejecute durante el inicio del sistema:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;chmod +x /etc/init.d/glusterfs-mount
+update-rc.d glusterfs-mount defaults
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_5&#34;&gt;FAQ&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Q:&lt;/strong&gt; No puedo crear el anillo de confianza. Los comandos &lt;code&gt;gluster peer probe&lt;/code&gt; terminan
+fallando con un timeout ¿Qué ocurre?&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Es muy probable que sea un problema de conectividad entre ambos GlusterFS Servers.
+Revisa si hay algún firewall entre ellos que pueda estar bloqueando conexiones TCP y UDP
+entre ellos. Puedes ver los puertos abiertos con &lt;code&gt;netstat -ntlp&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Si estás en AWS, asegúrate que el &lt;strong&gt;Security Group&lt;/strong&gt; que usan ambas instancias tienen
+permitidos los accesos a puerto TCP y UDP entre ellos.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Q:&lt;/strong&gt; No puedo montar el volumen compartido desde las instancias que actuan como
+clientes. El comando &lt;code&gt;mount&lt;/code&gt; responde con &lt;code&gt;mount failed&lt;/code&gt;. ¿Qué puede estar ocurriendo?&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Al igual que con los servidores GlusterFS, revisa que las instancias clientes
+tienen conectividad con los servidores. GlusterFS suele abrir un rango de puertos para
+cada volumen exportado (gv0, gv1, gv2, etc). Es recomendable permitir todo el tráfico TCP
+y UDP entre las instancias clientes y servidor. De otra forma es probable que alguna vez
+tengamos problemas al montar los volumenes.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Q:&lt;/strong&gt; Sigo sin poder crear el punto de montaje desde las instancias clientes. El
+comando &lt;code&gt;mount&lt;/code&gt; indica que hubo un problema. La conectividad entre cliente y servidor de
+GlusterFS es correcta ¿Qué problema puede haber?&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Es muy común que las versiones de las distribuciones entre cliente y servidor
+difieran. Si esto es así, es muy probable que la versión de &lt;code&gt;glusterfs-client&lt;/code&gt; difiera de
+la versión de &lt;code&gt;glusterfs-server&lt;/code&gt;. En este caso, es muy probable que no podamos montar el
+volumen compartido con el driver &lt;code&gt;glusterfs&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;GlusterFS permite montar los volumenes con el driver de NFS. En este tipo de situaciones
+es normal recurrir al driver de NFS para crear el punto de montaje. Para ello se necesita
+tener instalado &lt;code&gt;nfs-common&lt;/code&gt; y crear el punto de montaje con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mount -t nfs gfs01.example.com:/gv0 /var/www/shared
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Creo que esto es todo. ¿Encontráis algún otro problema? ¡Dejadlo en los comentarios!
+Saludos.&lt;/p&gt;
+
+&lt;p&gt;:wq&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>AWS Summit Barcelona 2015</title>
@@ -274,7 +543,7 @@ aquí. Espero escribir pronto de nuevo.&lt;/p&gt;
     <item>
       <title>About</title>
       <link>http://mviera.io/about/</link>
-      <pubDate>Sun, 04 Jan 2015 15:04:39 &#43;0100</pubDate>
+      <pubDate>Sun, 04 Jan 2015 15:04:39 CET</pubDate>
       
       <guid>http://mviera.io/about/</guid>
       <description>&lt;figure &gt;
@@ -3297,130 +3566,6 @@ resulta ser 644.&lt;/p&gt;&lt;/li&gt;
 :-)&lt;/p&gt;
 
 &lt;p&gt;Un saludo, Manu.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Autenticando con certificado digital tras un proxy reverso</title>
-      <link>http://mviera.io/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</link>
-      <pubDate>Sun, 15 Apr 2012 00:00:00 UTC</pubDate>
-      
-      <guid>http://mviera.io/blog/autenticando-con-certificado-digital-tras-un-proxy-reverso/</guid>
-      <description>&lt;p&gt;Hace ya algún tiempo, trabajando en &lt;a title=&#34;Yaco Sistemas&#34;
-href=&#34;http://www.yaco.es&#34;&gt;Yaco Sistemas&lt;/a&gt;, me encontré con un contratiempo
-tras desplegar una aplicación web y hoy he decidido compartir con vosotros la
-experiencia. Así que voy a ello.&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Escenario&lt;/h2&gt;
-Como apunte inicial, comenzaré diciendo que este post trata la autenticación
-con certificado digital x509 entre Apache y Tomcat y el escenario en el que nos
-movemos sería, a grandes rasgos, como el que muestra la imagen a continuación.&lt;/p&gt;
-
-&lt;p style=&#34;text-align: center;&#34;&gt;&lt;a
-href=&#34;/images/blog/apache-tomcat-escenario.png&#34;&gt;&lt;img class=&#34;size-full
-wp-image-510 aligncenter&#34; title=&#34;apache-tomcat-escenario&#34; src=&#34;/images/blog/apache-tomcat-escenario.png&#34; alt=&#34;Escenario autenticacion Apache Tomcat&#34; width=&#34;513&#34; height=&#34;222&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Bien, empecemos por el principio. Tenemos un usuario el cual ya tiene un
-certificado digital x509 configurado en su navegador con el cual se le permite
-autenticar en una aplicación web que se encuentra desplegada en un servidor
-&lt;strong&gt;Tomcat con el conector AJP debidamente configurado&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;Con todo esto, si el usuario lanzara la petición de autenticación directamente
-al servidor Tomcat, éste le pediría un certificado válido al usuario, y tras
-recibirlo y validar que es correcto, realizaría la autenticación sin problemas.&lt;/p&gt;
-
-&lt;p&gt;Pero nuestro escenario no es tan idílico, ya que para poder llegar al servidor
-Tomcat, antes pasaremos por un servidor Apache que actuará como proxy reverso
-(Reverse Proxy) y aquí es donde se complican las cosas, obteniendo el resultado
-que muestra la siguiente imagen.&lt;/p&gt;
-
-&lt;p style=&#34;text-align: center;&#34;&gt;&lt;a
-href=&#34;/images/blog/apache-tomcat-fail-request.png&#34;&gt;&lt;img class=&#34;size-full
-wp-image-516 aligncenter&#34; title=&#34;apache-tomcat-fail-request&#34; src=&#34;/images/blog/apache-tomcat-fail-request.png&#34; alt=&#34;Apache Tomcat autenticacion fallida&#34; width=&#34;513&#34; height=&#34;222&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;El usuario accede a la aplicación intentando autenticar con certificado
-digital, pero no obtiene la respuesta esperada sino un error indicando que no
-se ha ofrecido ningún certificado. ¿Por qué ha pasado esto?&lt;/p&gt;
-
-&lt;p&gt;Lo que ha ocurrido es que la petición del usuario ha llegado al proxy reverso
-(Apache2) y éste inicia una petición similar, &lt;strong&gt;pero nueva&lt;/strong&gt;,
-hacia la aplicación web en Tomcat. Es decir, realiza una petición similar,
-creando una nueva petición, pero &lt;strong&gt;no&lt;/strong&gt; manteniendo la anterior;
-con lo cual, la aplicación web (Tomcat) pide un certificado digital al proxy
-reverso (Apache2), originando un error e imposibilitando la autenticación, pues
-el proxy reverso no tiene configurado ningún certificado.&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Solución&lt;/h2&gt;
-Y aquí es donde viene la magia y lo que me salvó de la tragedia aquel día. Se
-trata de una opción especial en SSL
-llamada &lt;strong&gt;+ExportCertData&lt;/strong&gt;. Sí sí, a mi también me
-pareció increíble, pero esta opción lo arregla todo en la comunicación entre
-nuestro usuario y la aplicación final.&lt;/p&gt;
-
-&lt;p&gt;En la configuración HTTPS de nuestro proxy reverso, es decir Apache2, deberemos
-incluir la siguiente opción SSL:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;SSLOptions +ExportCertData
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Un ejemplo de configuración HTTPS para el proxy reverso podría ser la siguiente:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Listen 443
-NameVirtualHost *:443
-&amp;lt;VirtualHost *:443&amp;gt;
-   ServerName localhost
-
-   ErrorLog /var/log/apache2/https-error.log
-   CustomLog /var/log/apache2/https-access.log combined
-
-   SSLEngine On
-   SSLCertificateFile    /etc/apache2/ssl/server.crt
-   SSLCertificateKeyFile /etc/apache2/ssl/server.key
-
-   SSLCACertificateFile /etc/apache2/ssl/client-accepted-ca-chain.crt
-   SSLVerifyClient require
-   SSLVerifyDepth 2
-
-   SSLOptions +ExportCertData
-
-   &amp;lt;Proxy *&amp;gt;
-     AddDefaultCharset Off
-     Order deny,allow
-     Allow from all
-   &amp;lt;/Proxy&amp;gt;
-
-   ProxyPass / ajp://tomcat:8009/
-   ProxyPassReverse / ajp://tomcat:8009/
-
-&amp;lt;/VirtualHost&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Bien! Ya tenemos el proxy reverso configurado correctamente! Rápidamente
-comprobamos que la sintaxis sea correcta y reiniciamos el servicio para que los
-cambios se hagan al fin efectivos.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# apachectl -t
-Syntax OK
-# apachectl graceful
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;h2&gt;Comprobando el resultado&lt;/h2&gt;
-Hecho todo esto, ahora la autenticación debería realizarse sin problemas. El
-esquema de la comunicación entre el usuario y la aplicación final sería algo
-como lo que muestra la imagen que sigue:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;/images/blog/apache-tomcat-cert-ok.png&#34;&gt;&lt;img src=&#34;/images/blog/apache-tomcat-cert-ok.png&#34; alt=&#34;Apache Tomcat autenticación correcta&#34; title=&#34;apache-tomcat-cert-ok&#34; width=&#34;513&#34; height=&#34;222&#34; class=&#34;aligncenter size-full wp-image-521&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;El usuario inicia la petición de autenticación a la aplicación web haciendo uso
-de su navegador. La petición viaja a través del proxy reverso (Apache2) que
-ahora, al contar con la opción especial &lt;strong&gt;+ExportCertData&lt;/strong&gt;, éste
-no inicia una nueva petición, sino que &amp;ldquo;retransmite&amp;rdquo; la petición iniciada por
-el usuario y los datos del certificado, haciendo posible la autenticación.&lt;/p&gt;
-
-&lt;p&gt;Pues esto es todo. Espero que a alguien le sirva de ayuda en caso de tener el
-mismo problema, a mi &lt;strong&gt;+ExportCertData&lt;/strong&gt; &amp;ldquo;me salvó el día&amp;rdquo; :-)&lt;/p&gt;
-
-&lt;p&gt;Un saludo.&lt;/p&gt;
 </description>
     </item>
     

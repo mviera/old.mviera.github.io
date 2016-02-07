@@ -1,0 +1,487 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="sysadmin, sevilla, jerez de la frontera, bofh, linux, lpic-1
+    certified, servers, debian, amazon, aws, bash, centos" />
+    <title>
+      
+        Compartiendo ficheros con GlusterFS
+      
+    </title>
+    
+
+<link
+href='http://fonts.googleapis.com/css?family=Ubuntu+Condensed|Roboto+Slab:400,700|Roboto:500,400'
+rel='stylesheet' type='text/css'>
+    
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/mviera.io.jpg"/>
+    <link href="http://mviera.io/index.xml" rel="alternate" type="application/rss+xml" title="Manuel Viera" />
+    <meta name="title" content="http://mviera.io">
+    <link rel="canonical" href="http://mviera.io">
+    <meta property="og:title" content="Manuel Viera"/>
+    <meta property="og:url" content="http://mviera.io"/>
+    <meta property="og:image" content="http://mviera.io/images/mviera.io.jpg"/>   
+    <meta property="og:site_name" content="Manuel Viera">
+</head>
+<body>
+    
+<section class="site-nav">
+    <header>
+        <nav id="navigation">
+            <a class="brand" href="/">
+                <img src="/images/mviera.io.jpg" alt="Inc">
+            </a>
+            <a href="/blog" class="home">Blog</a>
+            
+            <a href="/about/">About</a>
+        </nav>
+        <nav class="tagline">
+            
+            
+        </nav>
+    </header>
+</section>
+
+
+
+<article>
+
+    <div class="container">
+        <header>
+            <div class="meta">
+                By <address><a rel="author" href="" title="Manuel Viera" target="_blank">Manuel Viera</a></address> &mdash;
+                <time pubdate datetime="2016-02-08" title="2016-02-08">February 08, 2016</time>
+            </div>
+            <h1 class="title">Compartiendo ficheros con GlusterFS</h1>
+            
+            <div class="meta">
+              
+              <a href="/tags/aws">#aws</a>
+              
+              <a href="/tags/glusterfs">#glusterfs</a>
+              
+              <a href="/tags/crononauta">#crononauta</a>
+              
+            </div>
+        </header>
+
+        <section>
+            
+
+<p>Cuando aparece la necesidad de escalar una aplicación web, o cualquier otro servicio, en
+Internet; también aparecen nuevos problemas a resolver que antes incluso ni habíamos
+reparado en ellos. Uno de estos problemas es <strong>la compartición de ficheros</strong> entre
+servidores.</p>
+
+<p>En mi opinión, a día de hoy éste sigue siendo un dolor de cabeza para muchos Sysadmins
+o Systems Architects. Hay muchas formas de compartir ficheros entre servidores como NFS,
+S3FS, FileConveyor, un crontab con un rsync entre servidores. Hay muchas soluciones,
+algunas mejores y otras peores; pero hoy quería compartir la que hasta ahora creo que
+puede ser una buena solución para compartir ficheros, usando <strong>GlusterFS</strong>.</p>
+
+<p><a href="https://www.glusterfs.org">GlusterFS</a> es un sistema de ficheros escalable en red, con el
+que poder crear soluciones de almacenamiento distribuidos por la red y de gran capacidad.
+Ni que decir tiene que <strong>GlusterFS</strong> es software libre.</p>
+
+<h2 id="toc_0">Antes de empezar</h2>
+
+<p>Normalmente en los despliegues que hacemos en AWS en <a href="http://crononauta.com">Crononauta</a>,
+siempre utilizamos un mínimo de un par de instancias EC2 para el sistema de almacenamiento
+en red con <strong>GlusterFS</strong>. Además, a cada una de estas dos instancias EC2, hacemos <em>attach</em>
+de un disco EBS donde almacenaremos los ficheros en el clúster de ficheros en red. Esto
+nos permite tener <strong>redundancia</strong> en los datos, <strong>alta disponibilidad</strong> y <strong>escalabilidad
+horizontal</strong> en el servicio. Con lo cual, tendremos un par de instancias que mantienen en
+clúster de almacenamiento actuando como GlusterFS Server y por otro lado, tendremos los
+clientes de GlusterFS que montarán este volumen compartido por la red.</p>
+
+<p>Como detalle, en <strong>Crononauta</strong> siempre usamos Debian como distribución, en este caso
+contamos con una Debian 8 (Jessie), aunque es totalmente aplicable a cualquier
+distribución basada en Debian como Ubuntu y/o derivadas.</p>
+
+<p>Una vez tenemos esto, podemos empezar a trabajar&hellip; ;-)</p>
+
+<h2 id="toc_1">Particionando los discos</h2>
+
+<p>Utilizaremos <strong>XFS</strong> como sistema de ficheros para el volumen compartido en red. Por lo
+que necesitaremos instalar las utilidades para trabajar con XFS, si no las tenemos ya
+instaladas.</p>
+
+<pre><code>apt-get install xfsprogs
+</code></pre>
+
+<p>El siguiente paso será crear una partición en el volumen, en mi caso es <code>/dev/xvdf</code>.
+Usaremos <code>fdisk</code> para ello:</p>
+
+<pre><code>fdisk /dev/xvdf
+</code></pre>
+
+<p>y una vez en la shell interactiva de <code>fdisk</code>, teclearemos:</p>
+
+<ol>
+<li><code>n</code> para crear una nueva partición. No necesitamos especificar nada más, así que los
+siguientes datos que pide podemos usar los valores por defecto que ofrece <code>fdisk</code>, asi
+que pulsaremos <code>Intro</code> hasta finalizar. Una vez hecho esto, seguiremos dentro de la
+shell interactiva de <code>fdisk</code>, y habremos creado una partición primaria que ocupa todo
+el espacio del volumen.</li>
+<li><code>w</code> indicando que queremos escribir esta definición de partición en el disco y hacerla
+efectiva.</li>
+</ol>
+
+<p>Ya tenemos la partición en el volumen, así que ahora la formatearemos y la añadiremos
+a nuestro <code>/etc/fstab</code> para montarla en cada arranque del sistema. Seguiremos los
+siguientes pasos:</p>
+
+<pre><code>mkfs.xfs -i size=512 /dev/xvdf1
+mkdir -p /export/brick1
+echo &quot;/dev/xvdf1 /export/brick1 xfs defaults 1 2&quot;  &gt;&gt; /etc/fstab
+mount -a &amp;&amp; mount
+</code></pre>
+
+<h2 id="toc_2">Instalando GlusterFS</h2>
+
+<p>Ya tenemos el volumen preparado para GlusterFS, ahora instalaremos el servicio.</p>
+
+<pre><code>apt-get update
+apt-get install glusterfs-server glusterfs-client glusterfs-common
+</code></pre>
+
+<p>Importante realizar este paso en aquellas instancias / servidores que vayan a actuar como
+un GlusterFS Server.</p>
+
+<p>Lo siguiente que haremos será configurar nuestro fichero <code>/etc/hosts</code> para definir unos
+nombres DNS para nuestros GlusterFS Servers. También es posible hacerlo con un DNS
+interno. Si vuestros servidores, como en el caso de AWS EC2, contáis con IPs privadas,
+mejor usar esas. Si no, podéis usar las IPs pública.</p>
+
+<p>Definiremos algo como lo siguiente en <code>/etc/hosts</code>:</p>
+
+<pre><code>xxx.xxx.xxx.xxx    gfs01.example.com
+xxx.xxx.xxx.xxx    gfs02.example.com
+</code></pre>
+
+<h2 id="toc_3">Un anillo para gobernarlos a todos</h2>
+
+<p>Ya tenemos GlusterFS preparado para ser configurado. Ahora tendremos que configurar el
+<em>anillo de confianza</em> entre ambos servidores GlusterFS Server. Para ello serán necesarios
+los siguientes pasos:</p>
+
+<ol>
+<li><p>Desde <code>gfs01.example.com</code>:</p>
+
+<pre><code>gluster peer probe gfs02.example.com
+</code></pre></li>
+
+<li><p>Desde <code>gfs02.example.com</code>:</p>
+
+<pre><code>gluster peer probe gfs01.example.com
+</code></pre></li>
+</ol>
+
+<p>Es <strong>muy importante</strong> que haya conectividad entre ambos servidores, en caso contrario, los
+comandos anteriores fallarán. Si estás en AWS, asegúrate de tener bien configurado el
+<strong>Security Group</strong> para ambas instancias de storage.</p>
+
+<p>Si todo ha ido bien, tendremos el pool de confianza funcionando, así que lo siguiente será
+definir el volumen compartido. Usaremos la siguiente instrucción desde uno de los
+servidores GlusterFS:</p>
+
+<pre><code>gluster volume create gv0 replica 2 gfs01.example.com:/export/brick1/&lt;volume-name&gt; gfs02.example.com:/export/brick1/&lt;volumen-name»
+</code></pre>
+
+<p>Por último, iniciaremos el volumen que justo acabamos de crear:</p>
+
+<pre><code>gluster volume start gv0
+</code></pre>
+
+<p>Como detalle, podemos ver información sobre el volumen con la siguiente instrucción:</p>
+
+<pre><code>gluster volume info
+</code></pre>
+
+<p>Llegados a este punto, el cluster de almacenamiento debe estar totalmente operativo. Si
+queremos hacer una prueba, es posible crear el punto de montaje hacia el volumen
+compartido y probar si se replican correctamente los ficheros. Crearemos el punto de
+montaje en <code>gfs01.example.com</code> de la siguiente forma:</p>
+
+<pre><code>mount -t glusterfs localhost:/gv0 /mnt
+</code></pre>
+
+<p>Ahora crearemos ficheros para comprobar si el funcionamiento de GlusterFS es correcto. Con
+la siguiente instrucción crearemos diez ficheros vacíos en el punto de montaje previamente
+creado:</p>
+
+<pre><code>touch /mnt/test-file{1..10}.txt
+</code></pre>
+
+<p>Si GlusterFS funciona correctamente, debemos poder ver estos mismos ficheros en
+<code>gfs02.example.com</code> en el directorio <code>/export/brick1/&lt;volume-name&gt;</code>.</p>
+
+<h2 id="toc_4">Configurando los clientes</h2>
+
+<p>Nos falta muy poco para terminar, ya sólo nos falta configurar los clientes de GlusterFS.
+Necesitaremos tener instalado el cliente de GlusterFS <code>glusterfs-client</code> si no lo tenemos
+instalado.</p>
+
+<pre><code>apt-get install glusterfs-client
+</code></pre>
+
+<p>Hecho esto, podremos probar a montar el volumen compartido por la red, y si todo va bien
+debemos ver los ficheros de prueba creados previamente.</p>
+
+<pre><code>mount -t glusterfs gfs01.example.com:/gv0 /mnt
+</code></pre>
+
+<p>Por último, necesitaremos un script <code>/etc/init.d/glusterfs-mount</code> que se encargue de montar el volumen
+compartido. En mi caso suelo utilizar el siguiente script:</p>
+
+<pre><code>#! /bin/bash
+### BEGIN INIT INFO
+# Provides:          glusterfs-mount
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5 
+# Default-Stop:      0 1 6 
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+#
+
+MOUNTPOINT=&quot;/var/www/shared&quot;
+GLUSTERFS_SERVER=&quot;gfs01.example.com&quot;
+GLUSTERFS_VOLUME=&quot;gv0&quot;
+
+# Some things that run always at boot
+mount -t glusterfs $GLUSTERFS_SERVER:/$GLUSTERFS_VOLUME $MOUNTPOINT
+#
+# Uncomment this line if you need to start Apache after mount glusterFS volume
+# service apache2 start
+#
+# Carry out specific functions when asked to by the system
+case &quot;$1&quot; in
+  start)
+    echo &quot;Mounting glusterfs volumes &quot;
+    mount -t glusterfs $GLUSTERFS_SERVER:/$GLUSTERFS_VOLUME $MOUNTPOINT
+    ;;
+  stop)
+    echo &quot;Unmount glusterfs volumes&quot;
+    umount $MOUNTPOINT
+    ;;
+  *)
+    echo &quot;Usage: /etc/init.d/glusterfs-mount {start|stop}&quot;
+    exit 1
+    ;;
+esac
+exit 0
+</code></pre>
+
+<p>Ya solo nos queda dar permisos de ejecución a nuestro script y configurarlo para que se
+ejecute durante el inicio del sistema:</p>
+
+<pre><code>chmod +x /etc/init.d/glusterfs-mount
+update-rc.d glusterfs-mount defaults
+</code></pre>
+
+<h3 id="toc_5">FAQ</h3>
+
+<ul>
+<li><p><strong>Q:</strong> No puedo crear el anillo de confianza. Los comandos <code>gluster peer probe</code> terminan
+fallando con un timeout ¿Qué ocurre?</p></li>
+
+<li><p><strong>A:</strong> Es muy probable que sea un problema de conectividad entre ambos GlusterFS Servers.
+Revisa si hay algún firewall entre ellos que pueda estar bloqueando conexiones TCP y UDP
+entre ellos. Puedes ver los puertos abiertos con <code>netstat -ntlp</code>.</p></li>
+</ul>
+
+<p>Si estás en AWS, asegúrate que el <strong>Security Group</strong> que usan ambas instancias tienen
+permitidos los accesos a puerto TCP y UDP entre ellos.</p>
+
+<ul>
+<li><p><strong>Q:</strong> No puedo montar el volumen compartido desde las instancias que actuan como
+clientes. El comando <code>mount</code> responde con <code>mount failed</code>. ¿Qué puede estar ocurriendo?</p></li>
+
+<li><p><strong>A:</strong> Al igual que con los servidores GlusterFS, revisa que las instancias clientes
+tienen conectividad con los servidores. GlusterFS suele abrir un rango de puertos para
+cada volumen exportado (gv0, gv1, gv2, etc). Es recomendable permitir todo el tráfico TCP
+y UDP entre las instancias clientes y servidor. De otra forma es probable que alguna vez
+tengamos problemas al montar los volumenes.</p></li>
+
+<li><p><strong>Q:</strong> Sigo sin poder crear el punto de montaje desde las instancias clientes. El
+comando <code>mount</code> indica que hubo un problema. La conectividad entre cliente y servidor de
+GlusterFS es correcta ¿Qué problema puede haber?</p></li>
+
+<li><p><strong>A:</strong> Es muy común que las versiones de las distribuciones entre cliente y servidor
+difieran. Si esto es así, es muy probable que la versión de <code>glusterfs-client</code> difiera de
+la versión de <code>glusterfs-server</code>. En este caso, es muy probable que no podamos montar el
+volumen compartido con el driver <code>glusterfs</code>.</p></li>
+</ul>
+
+<p>GlusterFS permite montar los volumenes con el driver de NFS. En este tipo de situaciones
+es normal recurrir al driver de NFS para crear el punto de montaje. Para ello se necesita
+tener instalado <code>nfs-common</code> y crear el punto de montaje con la siguiente instrucción:</p>
+
+<pre><code>mount -t nfs gfs01.example.com:/gv0 /var/www/shared
+</code></pre>
+
+<p>Creo que esto es todo. ¿Encontráis algún otro problema? ¡Dejadlo en los comentarios!
+Saludos.</p>
+
+<p>:wq</p>
+
+            
+<div class="social">
+    <div>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Compartiendo ficheros con GlusterFS [7 min read] #blog" data-related="mviera" data-url="http://mviera.io/blog/compartiendo-ficheros-con-glusterfs/">Tweet</a>
+    </div>
+    
+    
+    <div>
+        <div class="fb-like" data-width="150" data-layout="button_count" data-action="like" data-show-faces="true" data-send="false"></div>
+    </div>
+    
+    
+    <div>
+        <div class="g-plusone" data-size="medium"></div>
+    </div>
+    
+    
+    
+</div>
+
+
+        </section>
+
+        <footer>
+            <address>
+               <img src="/images/mviera.jpg">
+               <p>Written with <i class="fa fa-heart"></i> by <strong><a rel="author" href="https://twitter.com/mviera" title="Manuel Viera" target="_blank">Manuel Viera</a></strong><br>
+                <span class="muted"></span>
+                </p>
+            </address>
+
+        </footer>
+
+        
+        <section>
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+     
+    var disqus_shortname = 'blogmanuelviera'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+        </section>
+        
+    </div>
+</article>
+
+<footer class="site-footer">
+    <div class="container">
+        <nav>
+            <a href="http://mviera.io/">Manuel Viera</a> &middot;
+            <a href="/blog/">Blog</a> &middot;
+            
+            <a href="/about/">About</a>
+        </nav>
+        
+        <nav class="social">
+            
+            <a href="https://twitter.com/mviera" title="Follow on Twitter" target="_blank"><i class="icon icon-twitter black"></i></a>
+            
+            
+            <a href="https://github.com/mviera" title="Follow on Github" target="_blank"><i class="icon icon-github black"></i></a>
+            
+            
+            <a href="http://facebook.com/manuel.viera.tirado" title="Follow on Facebook" target="_blank"><i class="icon icon-facebook black"></i></a>
+                
+            
+            <a href="http://es.linkedin.com/in/manuelviera" title="Follow on Linkedin"
+              target="_blank"><i class="fa fa-linkedin fa-lg"></i></a>
+            
+            
+            <a href="http://instagram.com/manuel.viera" title="Follow on Instagram"
+              target="_blank"><i class="fa fa-instagram fa-lg"></i></a>
+             
+            <a href="/index.xml" title="RSS Feed">
+                <i class="icon icon-rss black"></i>
+            </a>
+        </nav>
+    </div>
+    <br />
+    <br />
+    <div class="container">
+      <center>
+        <p>Powered by <strong>Hugo</strong> &amp; hosted by <a href="https://github.com" target="_blank">
+          <img src="/images/github-logo.png" width="100" height="35" alt="GitHub • Social coding">
+          </a>
+          | &nbsp; &nbsp; <a rel="license"
+        href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img
+        alt="Licencia de Creative Commons" style="border-width:0"
+        src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+        </p>
+        <p>Hecho con 
+        <i class="fa fa-linux fa-lg"></i> 
+        + <i class="fa fa-code fa-lg"></i>
+        + <i class="fa fa-html5 fa-lg"></i>
+        + <i class="fa fa-heart fa-lg"></i> 
+        + <i class="fa fa-coffee fa-lg"></i>
+        </p>
+      <br />
+     </center>
+    </div>
+</footer>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=253595308025739";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+
+
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-21023400-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+<script type="text/javascript" src="/js/theater.js"></script>
+<script type="text/javascript" src="/js/skills.js"></script>
+
+
+
+
+
+  
+
+</body>
+</html>
+

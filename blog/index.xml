@@ -7,7 +7,276 @@
     <language>es-es</language>
     
     
-    <updated>Thu, 12 Nov 2015 00:00:00 UTC</updated>
+    <updated>Mon, 08 Feb 2016 00:30:53 CET</updated>
+    
+    <item>
+      <title>Compartiendo ficheros con GlusterFS</title>
+      <link>http://mviera.io/blog/compartiendo-ficheros-con-glusterfs/</link>
+      <pubDate>Mon, 08 Feb 2016 00:30:53 CET</pubDate>
+      
+      <guid>http://mviera.io/blog/compartiendo-ficheros-con-glusterfs/</guid>
+      <description>
+
+&lt;p&gt;Cuando aparece la necesidad de escalar una aplicación web, o cualquier otro servicio, en
+Internet; también aparecen nuevos problemas a resolver que antes incluso ni habíamos
+reparado en ellos. Uno de estos problemas es &lt;strong&gt;la compartición de ficheros&lt;/strong&gt; entre
+servidores.&lt;/p&gt;
+
+&lt;p&gt;En mi opinión, a día de hoy éste sigue siendo un dolor de cabeza para muchos Sysadmins
+o Systems Architects. Hay muchas formas de compartir ficheros entre servidores como NFS,
+S3FS, FileConveyor, un crontab con un rsync entre servidores. Hay muchas soluciones,
+algunas mejores y otras peores; pero hoy quería compartir la que hasta ahora creo que
+puede ser una buena solución para compartir ficheros, usando &lt;strong&gt;GlusterFS&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.glusterfs.org&#34;&gt;GlusterFS&lt;/a&gt; es un sistema de ficheros escalable en red, con el
+que poder crear soluciones de almacenamiento distribuidos por la red y de gran capacidad.
+Ni que decir tiene que &lt;strong&gt;GlusterFS&lt;/strong&gt; es software libre.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;Antes de empezar&lt;/h2&gt;
+
+&lt;p&gt;Normalmente en los despliegues que hacemos en AWS en &lt;a href=&#34;http://crononauta.com&#34;&gt;Crononauta&lt;/a&gt;,
+siempre utilizamos un mínimo de un par de instancias EC2 para el sistema de almacenamiento
+en red con &lt;strong&gt;GlusterFS&lt;/strong&gt;. Además, a cada una de estas dos instancias EC2, hacemos &lt;em&gt;attach&lt;/em&gt;
+de un disco EBS donde almacenaremos los ficheros en el clúster de ficheros en red. Esto
+nos permite tener &lt;strong&gt;redundancia&lt;/strong&gt; en los datos, &lt;strong&gt;alta disponibilidad&lt;/strong&gt; y &lt;strong&gt;escalabilidad
+horizontal&lt;/strong&gt; en el servicio. Con lo cual, tendremos un par de instancias que mantienen en
+clúster de almacenamiento actuando como GlusterFS Server y por otro lado, tendremos los
+clientes de GlusterFS que montarán este volumen compartido por la red.&lt;/p&gt;
+
+&lt;p&gt;Como detalle, en &lt;strong&gt;Crononauta&lt;/strong&gt; siempre usamos Debian como distribución, en este caso
+contamos con una Debian 8 (Jessie), aunque es totalmente aplicable a cualquier
+distribución basada en Debian como Ubuntu y/o derivadas.&lt;/p&gt;
+
+&lt;p&gt;Una vez tenemos esto, podemos empezar a trabajar&amp;hellip; ;-)&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Particionando los discos&lt;/h2&gt;
+
+&lt;p&gt;Utilizaremos &lt;strong&gt;XFS&lt;/strong&gt; como sistema de ficheros para el volumen compartido en red. Por lo
+que necesitaremos instalar las utilidades para trabajar con XFS, si no las tenemos ya
+instaladas.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apt-get install xfsprogs
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;El siguiente paso será crear una partición en el volumen, en mi caso es &lt;code&gt;/dev/xvdf&lt;/code&gt;.
+Usaremos &lt;code&gt;fdisk&lt;/code&gt; para ello:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;fdisk /dev/xvdf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;y una vez en la shell interactiva de &lt;code&gt;fdisk&lt;/code&gt;, teclearemos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;n&lt;/code&gt; para crear una nueva partición. No necesitamos especificar nada más, así que los
+siguientes datos que pide podemos usar los valores por defecto que ofrece &lt;code&gt;fdisk&lt;/code&gt;, asi
+que pulsaremos &lt;code&gt;Intro&lt;/code&gt; hasta finalizar. Una vez hecho esto, seguiremos dentro de la
+shell interactiva de &lt;code&gt;fdisk&lt;/code&gt;, y habremos creado una partición primaria que ocupa todo
+el espacio del volumen.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;w&lt;/code&gt; indicando que queremos escribir esta definición de partición en el disco y hacerla
+efectiva.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Ya tenemos la partición en el volumen, así que ahora la formatearemos y la añadiremos
+a nuestro &lt;code&gt;/etc/fstab&lt;/code&gt; para montarla en cada arranque del sistema. Seguiremos los
+siguientes pasos:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkfs.xfs -i size=512 /dev/xvdf1
+mkdir -p /export/brick1
+echo &amp;quot;/dev/xvdf1 /export/brick1 xfs defaults 1 2&amp;quot;  &amp;gt;&amp;gt; /etc/fstab
+mount -a &amp;amp;&amp;amp; mount
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Instalando GlusterFS&lt;/h2&gt;
+
+&lt;p&gt;Ya tenemos el volumen preparado para GlusterFS, ahora instalaremos el servicio.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apt-get update
+apt-get install glusterfs-server glusterfs-client glusterfs-common
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Importante realizar este paso en aquellas instancias / servidores que vayan a actuar como
+un GlusterFS Server.&lt;/p&gt;
+
+&lt;p&gt;Lo siguiente que haremos será configurar nuestro fichero &lt;code&gt;/etc/hosts&lt;/code&gt; para definir unos
+nombres DNS para nuestros GlusterFS Servers. También es posible hacerlo con un DNS
+interno. Si vuestros servidores, como en el caso de AWS EC2, contáis con IPs privadas,
+mejor usar esas. Si no, podéis usar las IPs pública.&lt;/p&gt;
+
+&lt;p&gt;Definiremos algo como lo siguiente en &lt;code&gt;/etc/hosts&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;xxx.xxx.xxx.xxx    gfs01.example.com
+xxx.xxx.xxx.xxx    gfs02.example.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;Un anillo para gobernarlos a todos&lt;/h2&gt;
+
+&lt;p&gt;Ya tenemos GlusterFS preparado para ser configurado. Ahora tendremos que configurar el
+&lt;em&gt;anillo de confianza&lt;/em&gt; entre ambos servidores GlusterFS Server. Para ello serán necesarios
+los siguientes pasos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Desde &lt;code&gt;gfs01.example.com&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster peer probe gfs02.example.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Desde &lt;code&gt;gfs02.example.com&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster peer probe gfs01.example.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Es &lt;strong&gt;muy importante&lt;/strong&gt; que haya conectividad entre ambos servidores, en caso contrario, los
+comandos anteriores fallarán. Si estás en AWS, asegúrate de tener bien configurado el
+&lt;strong&gt;Security Group&lt;/strong&gt; para ambas instancias de storage.&lt;/p&gt;
+
+&lt;p&gt;Si todo ha ido bien, tendremos el pool de confianza funcionando, así que lo siguiente será
+definir el volumen compartido. Usaremos la siguiente instrucción desde uno de los
+servidores GlusterFS:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster volume create gv0 replica 2 gfs01.example.com:/export/brick1/&amp;lt;volume-name&amp;gt; gfs02.example.com:/export/brick1/&amp;lt;volumen-name»
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por último, iniciaremos el volumen que justo acabamos de crear:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster volume start gv0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Como detalle, podemos ver información sobre el volumen con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gluster volume info
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Llegados a este punto, el cluster de almacenamiento debe estar totalmente operativo. Si
+queremos hacer una prueba, es posible crear el punto de montaje hacia el volumen
+compartido y probar si se replican correctamente los ficheros. Crearemos el punto de
+montaje en &lt;code&gt;gfs01.example.com&lt;/code&gt; de la siguiente forma:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mount -t glusterfs localhost:/gv0 /mnt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ahora crearemos ficheros para comprobar si el funcionamiento de GlusterFS es correcto. Con
+la siguiente instrucción crearemos diez ficheros vacíos en el punto de montaje previamente
+creado:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;touch /mnt/test-file{1..10}.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Si GlusterFS funciona correctamente, debemos poder ver estos mismos ficheros en
+&lt;code&gt;gfs02.example.com&lt;/code&gt; en el directorio &lt;code&gt;/export/brick1/&amp;lt;volume-name&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_4&#34;&gt;Configurando los clientes&lt;/h2&gt;
+
+&lt;p&gt;Nos falta muy poco para terminar, ya sólo nos falta configurar los clientes de GlusterFS.
+Necesitaremos tener instalado el cliente de GlusterFS &lt;code&gt;glusterfs-client&lt;/code&gt; si no lo tenemos
+instalado.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apt-get install glusterfs-client
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Hecho esto, podremos probar a montar el volumen compartido por la red, y si todo va bien
+debemos ver los ficheros de prueba creados previamente.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mount -t glusterfs gfs01.example.com:/gv0 /mnt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Por último, necesitaremos un script &lt;code&gt;/etc/init.d/glusterfs-mount&lt;/code&gt; que se encargue de montar el volumen
+compartido. En mi caso suelo utilizar el siguiente script:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#! /bin/bash
+### BEGIN INIT INFO
+# Provides:          glusterfs-mount
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5 
+# Default-Stop:      0 1 6 
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+#
+
+MOUNTPOINT=&amp;quot;/var/www/shared&amp;quot;
+GLUSTERFS_SERVER=&amp;quot;gfs01.example.com&amp;quot;
+GLUSTERFS_VOLUME=&amp;quot;gv0&amp;quot;
+
+# Some things that run always at boot
+mount -t glusterfs $GLUSTERFS_SERVER:/$GLUSTERFS_VOLUME $MOUNTPOINT
+#
+# Uncomment this line if you need to start Apache after mount glusterFS volume
+# service apache2 start
+#
+# Carry out specific functions when asked to by the system
+case &amp;quot;$1&amp;quot; in
+  start)
+    echo &amp;quot;Mounting glusterfs volumes &amp;quot;
+    mount -t glusterfs $GLUSTERFS_SERVER:/$GLUSTERFS_VOLUME $MOUNTPOINT
+    ;;
+  stop)
+    echo &amp;quot;Unmount glusterfs volumes&amp;quot;
+    umount $MOUNTPOINT
+    ;;
+  *)
+    echo &amp;quot;Usage: /etc/init.d/glusterfs-mount {start|stop}&amp;quot;
+    exit 1
+    ;;
+esac
+exit 0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ya solo nos queda dar permisos de ejecución a nuestro script y configurarlo para que se
+ejecute durante el inicio del sistema:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;chmod +x /etc/init.d/glusterfs-mount
+update-rc.d glusterfs-mount defaults
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_5&#34;&gt;FAQ&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Q:&lt;/strong&gt; No puedo crear el anillo de confianza. Los comandos &lt;code&gt;gluster peer probe&lt;/code&gt; terminan
+fallando con un timeout ¿Qué ocurre?&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Es muy probable que sea un problema de conectividad entre ambos GlusterFS Servers.
+Revisa si hay algún firewall entre ellos que pueda estar bloqueando conexiones TCP y UDP
+entre ellos. Puedes ver los puertos abiertos con &lt;code&gt;netstat -ntlp&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Si estás en AWS, asegúrate que el &lt;strong&gt;Security Group&lt;/strong&gt; que usan ambas instancias tienen
+permitidos los accesos a puerto TCP y UDP entre ellos.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Q:&lt;/strong&gt; No puedo montar el volumen compartido desde las instancias que actuan como
+clientes. El comando &lt;code&gt;mount&lt;/code&gt; responde con &lt;code&gt;mount failed&lt;/code&gt;. ¿Qué puede estar ocurriendo?&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Al igual que con los servidores GlusterFS, revisa que las instancias clientes
+tienen conectividad con los servidores. GlusterFS suele abrir un rango de puertos para
+cada volumen exportado (gv0, gv1, gv2, etc). Es recomendable permitir todo el tráfico TCP
+y UDP entre las instancias clientes y servidor. De otra forma es probable que alguna vez
+tengamos problemas al montar los volumenes.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Q:&lt;/strong&gt; Sigo sin poder crear el punto de montaje desde las instancias clientes. El
+comando &lt;code&gt;mount&lt;/code&gt; indica que hubo un problema. La conectividad entre cliente y servidor de
+GlusterFS es correcta ¿Qué problema puede haber?&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Es muy común que las versiones de las distribuciones entre cliente y servidor
+difieran. Si esto es así, es muy probable que la versión de &lt;code&gt;glusterfs-client&lt;/code&gt; difiera de
+la versión de &lt;code&gt;glusterfs-server&lt;/code&gt;. En este caso, es muy probable que no podamos montar el
+volumen compartido con el driver &lt;code&gt;glusterfs&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;GlusterFS permite montar los volumenes con el driver de NFS. En este tipo de situaciones
+es normal recurrir al driver de NFS para crear el punto de montaje. Para ello se necesita
+tener instalado &lt;code&gt;nfs-common&lt;/code&gt; y crear el punto de montaje con la siguiente instrucción:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mount -t nfs gfs01.example.com:/gv0 /var/www/shared
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Creo que esto es todo. ¿Encontráis algún otro problema? ¡Dejadlo en los comentarios!
+Saludos.&lt;/p&gt;
+
+&lt;p&gt;:wq&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>AWS Summit Barcelona 2015</title>
@@ -3390,139 +3659,6 @@ el usuario y los datos del certificado, haciendo posible la autenticación.&lt;/
 mismo problema, a mi &lt;strong&gt;+ExportCertData&lt;/strong&gt; &amp;ldquo;me salvó el día&amp;rdquo; :-)&lt;/p&gt;
 
 &lt;p&gt;Un saludo.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Actualizando CentOS a una release concreta</title>
-      <link>http://mviera.io/blog/centos-a-una-release-concreta/</link>
-      <pubDate>Tue, 06 Mar 2012 00:00:00 UTC</pubDate>
-      
-      <guid>http://mviera.io/blog/centos-a-una-release-concreta/</guid>
-      <description>&lt;p&gt;Ya hacía bastante tiempo que no paraba por aquí para escribir un artículo, así
-que hoy me voy a tomar mi tiempo y voy a escribir acerca de CentOS.&lt;/p&gt;
-
-&lt;p&gt;¿Y por qué sobre CentOS? Pues resulta que hoy trabajando en &lt;a title=&#34;Yaco
-Sistemas&#34; href=&#34;http://www.yaco.es&#34; target=&#34;_blank&#34;&gt;Yaco Sistemas&lt;/a&gt;, mi
-compañero &lt;a title=&#34;@sepu66&#34; href=&#34;http://twitter.com/sepu66&#34;
-target=&#34;_blank&#34;&gt;@sepu66&lt;/a&gt; necesitaba varias máquinas virtuales con CentOS
-5.6, aunque la template de la que disponía era de CentOS 5.5.&lt;/p&gt;
-
-&lt;p&gt;Fácil, pensé, creo la máquina virtual con CentOS 5.5 y actualizo la
-distribución con &lt;code&gt;yum update&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Y claro, pasados unos minutos actualizando paquetes, compruebo la release de la
-distribución y, para mi sorpresa, observo que se ha actualizado a la última
-release de CentOS 5, es decir, a CentOS 5.7:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
-
-CentOS release 5.7 (Final)
-Kernel \r on an \m
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;FAIL!, pensé (últimamente pienso mucho). Esto ya lo había yo solucionado antes,
-pero no lo recordaba bien. Es una de esas tareas que haces una vez en muchos
-meses y que al final terminas olvidando, así que por eso he decidido hacer un
-volcado de conocimiento en este artículo :-)&lt;/p&gt;
-
-&lt;p&gt;Tras un rato buscando alguna solución en internet, sin éxito por cierto, ya que
-todos los artículos que encontraba eran acerca de &amp;ldquo;Cómo actualizar CentOS de
-5.4 a 5.5&amp;rdquo; o &amp;ldquo;Cómo actualizar CentOS de 5.5 a 5.6&amp;rdquo;, en resumen, todos los
-artículos que encontraba eran actualizaciones a la release inmediatamente
-superior, así que se resumían en ejecutar &lt;code&gt;yum update&lt;/code&gt; y listo&amp;hellip;
-Pero mi idea era decidir yo a qué release concreta a actualizar.&lt;/p&gt;
-
-&lt;p&gt;Para solucionar este tema, volví a regenerar la máquina virtual con CentOS 5.5 y empecé a modificar la configuración de los repositorios.&lt;/p&gt;
-
-&lt;p&gt;&lt;h2&gt;Configurando los repositorios&lt;/h2&gt;
-En CentOS normalmente los repositorios se encuentran configurados en ficheros
-que terminan en &lt;code&gt;.repo&lt;/code&gt; en el directorio
-&lt;code&gt;/etc/yum.repos.d/&lt;/code&gt;. En mi caso los repositorios configurados por
-defecto se encuentran en el fichero
-&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, así que lo primero que hice fue
-editar dicho fichero y deshabilitar los repositorios por defecto, añadiendo la
-siguiente linea en cada parte de configuración de cada repositorio:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;enabled=0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Dicha linea indica a &lt;code&gt;yum&lt;/code&gt; que el repositorio en cuestión se
-encuentra deshabilitado y no queremos que se utilice. Otra forma de
-deshabilitar los repositorios por defecto sería eliminando el fichero
-&lt;code&gt;/etc/yum.repos.d/CentOS-Base.repo&lt;/code&gt;, pero no me parece un solución
-muy elegante.&lt;/p&gt;
-
-&lt;p&gt;Hecho esto, creé un nuevo fichero llamado
-&lt;code&gt;/etc/yum.repos.d/CentOS-Vault.repo&lt;/code&gt; en el que añadí lo siguiente:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;#---- Packages previously released as 5.6, and its updates
-[C5.6-base]
-name=CentOS-5.6 - Base
-baseurl=http://vault.centos.org/5.6/os/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
-enabled=1
-
-[C5.6-updates]
-name=CentOS-5.6 - Updates
-baseurl=http://vault.centos.org/5.6/updates/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
-enabled=1
-
-[C5.6-extras]
-name=CentOS-5.6 - Extras
-baseurl=http://vault.centos.org/5.6/extras/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
-enabled=1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;¿Dónde está el truco? El secreto se encuentra en el dominio utilizado en la
-URL, &lt;code&gt;vault.centos.org&lt;/code&gt; que se trata de un sitio perteneciente a
-CentOS donde se pueden encontrar los paquetes de releases antiguas de CentOS.
-Destacar como segundo truco que he fijado la versión de la release a 5.6 en la
-URL, por tanto esta distribución no pasará a una release posterior.&lt;/p&gt;
-
-&lt;p&gt;Importante también marcar los repositorios como activos especificando:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;enabled=1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;h2&gt;Listando los repositorios disponibles&lt;/h2&gt;
-Una vez configurado los repositorios a utilizar, podemos listarlos ejecutando
-&lt;code&gt;yum repolist&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# yum repolist
-Loaded plugins: fastestmirror
-Loading mirror speeds from cached hostfile
-repo id                                                                     repo name
-C5.6-base                                                                   CentOS-5.6 - Base
-C5.6-centosplus                                                             CentOS-5.6 - Plus
-C5.6-extras                                                                 CentOS-5.6 - Extras
-C5.6-updates                                                                CentOS-5.6 - Updates
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;h2&gt;Actualizando la distribución&lt;/h2&gt;
-Hecho esto, ya sólo nos queda forzar la actualización del sistema completo:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# yum update
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;y pasados unos minutos actualizando los paquetes del sistema, deberíamos tener
-nuestra distribución en la versión deseada, en mi caso, CentOS 5.6:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[root@test ~]# cat /etc/issue
-CentOS release 5.6 (Final)
-Kernel \r on an \m
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Espero que os sea de utilidad, a mi seguro que no se me vuelve a olvidar :-D
-Un saludo!&lt;/p&gt;
 </description>
     </item>
     
