@@ -271,6 +271,19 @@ tener instalado &lt;code&gt;nfs-common&lt;/code&gt; y crear el punto de montaje 
 &lt;pre&gt;&lt;code&gt;mount -t nfs gfs01.example.com:/gv0 /var/www/shared
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Q:&lt;/strong&gt; ¿Por qué crear un script en &lt;code&gt;/etc/init.d&lt;/code&gt; pudiendo configurar el montaje en el
+fichero &lt;code&gt;/etc/fstab&lt;/code&gt;?&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Sí, es posible configurar el punto de montaje en &lt;code&gt;/etc/fstab&lt;/code&gt;, pero a diferencia
+del resto de punto de montajes, en este caso se trata de un volumen compartido por la red.
+Es muy probable que cuando se monten los volumenes de &lt;code&gt;/etc/fstab&lt;/code&gt;, aún no esté disponible
+la red en el sistema, con lo cual el montaje no solo fallará, sino que además es posible
+que ralentize el arranque del sistema hasta que el intento de montar el volumen por la red
+de un Timeout. Por eso es más fiable hacerlo con un script en &lt;code&gt;init.d&lt;/code&gt;, una vez la red ya
+esté disponible.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;p&gt;Creo que esto es todo. ¿Encontráis algún otro problema? ¡Dejadlo en los comentarios!
 Saludos.&lt;/p&gt;
 

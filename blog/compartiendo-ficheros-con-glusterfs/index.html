@@ -327,6 +327,19 @@ tener instalado <code>nfs-common</code> y crear el punto de montaje con la sigui
 <pre><code>mount -t nfs gfs01.example.com:/gv0 /var/www/shared
 </code></pre>
 
+<ul>
+<li><p><strong>Q:</strong> ¿Por qué crear un script en <code>/etc/init.d</code> pudiendo configurar el montaje en el
+fichero <code>/etc/fstab</code>?</p></li>
+
+<li><p><strong>A:</strong> Sí, es posible configurar el punto de montaje en <code>/etc/fstab</code>, pero a diferencia
+del resto de punto de montajes, en este caso se trata de un volumen compartido por la red.
+Es muy probable que cuando se monten los volumenes de <code>/etc/fstab</code>, aún no esté disponible
+la red en el sistema, con lo cual el montaje no solo fallará, sino que además es posible
+que ralentize el arranque del sistema hasta que el intento de montar el volumen por la red
+de un Timeout. Por eso es más fiable hacerlo con un script en <code>init.d</code>, una vez la red ya
+esté disponible.</p></li>
+</ul>
+
 <p>Creo que esto es todo. ¿Encontráis algún otro problema? ¡Dejadlo en los comentarios!
 Saludos.</p>
 
@@ -335,7 +348,7 @@ Saludos.</p>
             
 <div class="social">
     <div>
-      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Compartiendo ficheros con GlusterFS [7 min read] #blog" data-related="mviera" data-url="http://mviera.io/blog/compartiendo-ficheros-con-glusterfs/">Tweet</a>
+      <a href="https://twitter.com/share" class="twitter-share-button"  data-via="mviera" data-text="Compartiendo ficheros con GlusterFS [8 min read] #blog" data-related="mviera" data-url="http://mviera.io/blog/compartiendo-ficheros-con-glusterfs/">Tweet</a>
     </div>
     
     
