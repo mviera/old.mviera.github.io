@@ -2834,7 +2834,9 @@ span#position {
 }
 
 span#skills {
-  color: #A9A9A9;
+  font-size: 20pt;
+  color: #7D8082;
+  word-spacing: 5px;
 }
 
 img.cover-avatar {
